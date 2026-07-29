@@ -348,7 +348,9 @@ export function SectionCard({
   bodyClassName?: string;
 }) {
   return (
-    <section className={cn("card", className)}>
+    // Colonne flex : quand la grille étire la carte, le corps grandit avec elle
+    // au lieu de laisser du blanc sous le contenu.
+    <section className={cn("card flex flex-col", className)}>
       {(title || actions) && (
         <header className="flex flex-wrap items-center justify-between gap-2 px-5 pt-4 pb-1">
           <div className="flex items-center gap-2.5">
@@ -358,7 +360,7 @@ export function SectionCard({
           {actions && <div className="flex items-center gap-2">{actions}</div>}
         </header>
       )}
-      <div className={cn("px-5 pt-2 pb-5", bodyClassName)}>{children}</div>
+      <div className={cn("flex-1 px-5 pt-2 pb-5", bodyClassName)}>{children}</div>
     </section>
   );
 }

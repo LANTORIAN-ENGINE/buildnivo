@@ -198,8 +198,8 @@ export default function DashboardPage() {
             <span className="flex items-center gap-1.5"><span className="h-0.75 w-4 rounded-full" style={{ background: BLUE }} /> {d.dashboard.curve.planned}</span>
             <span className="flex items-center gap-1.5"><span className="h-0.75 w-4 rounded-full" style={{ background: GREEN }} /> {d.dashboard.curve.actual}</span>
           </div>
-        }>
-          <div className="h-72">
+        } bodyClassName="flex flex-col">
+          <div className="min-h-72 flex-1">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={curveData} margin={{ top: 8, right: 12, bottom: 0, left: -18 }}>
                 <CartesianGrid stroke="oklch(0.93 0.006 255)" strokeDasharray="3 5" vertical={false} />
