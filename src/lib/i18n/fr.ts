@@ -161,6 +161,8 @@ export const fr = {
       fieldEmail: "Email",
       fieldPassword: "Mot de passe",
       submit: "Se connecter",
+      or: "ou",
+      sso: "SSO entreprise",
     },
   },
 

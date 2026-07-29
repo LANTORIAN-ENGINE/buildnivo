@@ -74,6 +74,24 @@ body {
     16px 16px;
 }
 
+/* Panneau bleu de connexion : trame blanche sur aplat de marque.
+   Le dégradé est porté par cette règle (une utilitaire Tailwind bg-linear-to-b
+   serait écrasée par le background-image de la trame). */
+.auth-panel {
+  background-image:
+    linear-gradient(oklch(1 0 0 / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.06) 1px, transparent 1px),
+    linear-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-blue), var(--color-blue-deep));
+  background-size:
+    96px 96px,
+    96px 96px,
+    16px 16px,
+    16px 16px,
+    cover;
+}
+
 .card {
   background: var(--color-card);
   border: 1px solid var(--color-line);

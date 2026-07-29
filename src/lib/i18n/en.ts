@@ -163,6 +163,8 @@ export const en: Dict = {
       fieldEmail: "Email",
       fieldPassword: "Password",
       submit: "Sign in",
+      or: "or",
+      sso: "Company SSO",
     },
   },
 
