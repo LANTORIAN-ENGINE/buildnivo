@@ -7,6 +7,7 @@ import { personas } from "@/data";
 import { useI18n } from "@/lib/i18n";
 import { useDemo } from "@/lib/store";
 import { Avatar, Badge, LanguageSelect, Logo } from "@/components/ui";
+import { AuthShowcase } from "@/components/AuthShowcase";
 
 const roleIcons: Record<Role, React.ComponentType<{ className?: string }>> = {
   direction: LineChart,
@@ -36,13 +37,16 @@ export default function LoginPage() {
       </header>
 
       <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center px-6 pb-14">
-        <div className="max-w-2xl">
-          <Badge tone="blue" className="mb-4">{d.common.demoBadge}</Badge>
-          <h1 className="text-[30px] leading-tight font-bold tracking-tight text-ink lg:text-[36px]">{d.login.welcome}</h1>
-          <p className="mt-3 max-w-[64ch] text-[14.5px] leading-relaxed text-ink-soft">{d.login.subtitle}</p>
+        <div className="flex flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
+          <div className="max-w-xl lg:self-center">
+            <Badge tone="blue" className="mb-4">{d.common.demoBadge}</Badge>
+            <h1 className="text-[30px] leading-tight font-bold tracking-tight text-ink lg:text-[36px]">{d.login.welcome}</h1>
+            <p className="mt-3 max-w-[64ch] text-[14.5px] leading-relaxed text-ink-soft">{d.login.subtitle}</p>
+          </div>
+          <AuthShowcase />
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {personas.map((p) => {
             const Icon = roleIcons[p.role];
             return (

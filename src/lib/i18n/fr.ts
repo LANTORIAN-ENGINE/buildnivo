@@ -141,6 +141,27 @@ export const fr = {
       ouvrier: "Pointage en deux gestes, heures, plannings",
       soustraitant: "Portail simplifié : tâches, documents, réserves",
     },
+    auth: {
+      title: "Une connexion adaptée au terrain",
+      simulated: "Simulation",
+      note: "Aperçu animé : ces modes de connexion s'activent selon vos équipements et votre politique de sécurité. Rien n'est réel dans cette démo.",
+      success: "Accès autorisé",
+      methods: {
+        password: "Identifiants",
+        faceid: "Face ID",
+        fingerprint: "Empreinte",
+        nfc: "Badge NFC",
+      },
+      prompts: {
+        password: "Connexion classique : email et mot de passe, SSO entreprise possible.",
+        faceid: "Placez votre visage dans le cadre.",
+        fingerprint: "Posez votre doigt sur le capteur.",
+        nfc: "Approchez votre badge du lecteur.",
+      },
+      fieldEmail: "Email",
+      fieldPassword: "Mot de passe",
+      submit: "Se connecter",
+    },
   },
 
   dashboard: {

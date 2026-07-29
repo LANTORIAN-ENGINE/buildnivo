@@ -143,6 +143,27 @@ export const en: Dict = {
       ouvrier: "Two-tap clock-in, hours, schedules",
       soustraitant: "Simplified portal: tasks, documents, punch list",
     },
+    auth: {
+      title: "Sign-in built for the field",
+      simulated: "Simulation",
+      note: "Animated preview: these sign-in methods can be enabled depending on your devices and security policy. Nothing is live in this demo.",
+      success: "Access granted",
+      methods: {
+        password: "Credentials",
+        faceid: "Face ID",
+        fingerprint: "Fingerprint",
+        nfc: "NFC badge",
+      },
+      prompts: {
+        password: "Classic sign-in: email and password, company SSO ready.",
+        faceid: "Center your face in the frame.",
+        fingerprint: "Place your finger on the sensor.",
+        nfc: "Tap your badge on the reader.",
+      },
+      fieldEmail: "Email",
+      fieldPassword: "Password",
+      submit: "Sign in",
+    },
   },
 
   dashboard: {
