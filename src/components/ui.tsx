@@ -10,12 +10,15 @@ export const cn = (...args: ClassValue[]) => clsx(args);
 
 /* ---------------------------------- Logo ---------------------------------- */
 
+/** Marque relevée au pixel sur reference.png : trois barres à côtés verticaux,
+ *  bords haut et bas obliques (5 unités de montée pour 10 de large), base commune.
+ *  Rythme court / haute / moyenne, la plus haute au centre, toutes pleines. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden="true">
-      <rect x="3" y="17" width="7" height="12" rx="1.6" fill="currentColor" opacity="0.55" />
-      <rect x="12.5" y="10" width="7" height="19" rx="1.6" fill="currentColor" opacity="0.8" />
-      <rect x="22" y="3" width="7" height="26" rx="1.6" fill="currentColor" />
+    <svg viewBox="0 0 34 38" className={className} aria-hidden="true" fill="currentColor">
+      <polygon points="0,17 10,12 10,33 0,38" />
+      <polygon points="12,5 22,0 22,33 12,38" />
+      <polygon points="24,13 34,8 34,33 24,38" />
     </svg>
   );
 }
@@ -25,7 +28,7 @@ export function Logo({ dark = false, className }: { dark?: boolean; className?: 
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark className={cn("h-7 w-7", dark ? "text-white" : "text-blue")} />
       <span className={cn("text-lg font-bold tracking-tight", dark ? "text-white" : "text-ink")}>
-        Buildnivo
+        BuildNivo
       </span>
     </span>
   );

@@ -104,7 +104,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     >
       <Link href="/dashboard" className="flex items-center gap-2.5 px-5 pt-5 pb-4" onClick={onNavigate}>
         <LogoMark className="h-7 w-7 shrink-0 text-white" />
-        {!collapsed && <span className="text-[17px] font-bold tracking-tight text-white">Buildnivo</span>}
+        {!collapsed && <span className="text-[17px] font-bold tracking-tight text-white">BuildNivo</span>}
       </Link>
 
       <div className="flex-1 overflow-y-auto px-3 pb-4">

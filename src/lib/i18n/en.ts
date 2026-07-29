@@ -2,7 +2,7 @@ import type { Dict } from "./fr";
 
 export const en: Dict = {
   common: {
-    appName: "Buildnivo",
+    appName: "BuildNivo",
     tagline: "The intelligent jobsite management platform",
     search: "Search a project, document, task…",
     seeAll: "See all",
@@ -110,7 +110,7 @@ export const en: Dict = {
     equipes: "Teams & companies",
     parametres: "Settings",
     collapse: "Collapse",
-    prototype: "Buildnivo · Sales demo",
+    prototype: "BuildNivo · Sales demo",
   },
 
   topbar: {
@@ -124,7 +124,7 @@ export const en: Dict = {
   },
 
   login: {
-    welcome: "Welcome to the Buildnivo demo",
+    welcome: "Welcome to the BuildNivo demo",
     subtitle:
       "One platform connecting the jobsite, the company, partners and clients. Pick a profile to explore the interface tailored to each role.",
     choosePersona: "Use this profile",

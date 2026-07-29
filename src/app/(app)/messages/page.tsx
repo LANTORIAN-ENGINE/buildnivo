@@ -423,7 +423,7 @@ export default function MessagesPage() {
 
               {typingConvId === selected.id && (
                 <div className="flex items-end gap-2 py-1">
-                  <Avatar name={selected.kind === "direct" ? convName(selected) : "Buildnivo"} size="sm" />
+                  <Avatar name={selected.kind === "direct" ? convName(selected) : "BuildNivo"} size="sm" />
                   <span className="flex items-center gap-1 rounded-2xl rounded-bl-sm border border-line bg-card px-3.5 py-2.5">
                     {[0, 1, 2].map((i) => (
                       <span key={i} className="typing-dot h-1.5 w-1.5 rounded-full bg-ink-faint" style={{ animationDelay: `${i * 0.18}s` }} />

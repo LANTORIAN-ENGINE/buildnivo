@@ -1,4 +1,4 @@
-/** Domaine Buildnivo — démo frontend, données 100 % factices. */
+/** Domaine BuildNivo — démo frontend, données 100 % factices. */
 
 export type Role =
   | "direction"

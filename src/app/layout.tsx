@@ -6,7 +6,7 @@ import { DemoProvider } from "@/lib/store";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Buildnivo — Pilotage intelligent du chantier",
+  title: "BuildNivo — Pilotage intelligent du chantier",
   description:
     "Plateforme SaaS de pilotage pour la construction : pointage, tâches, journal de chantier, documents et IA. Démo commerciale (données factices).",
 };

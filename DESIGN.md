@@ -46,7 +46,7 @@ blanc cassé `oklch(0.985 0.005 262)`).
 
 ## Layout (fidèle à la référence)
 
-- Sidebar 248px bleu vif, logo Buildnivo (marque « niveaux » SVG), groupes :
+- Sidebar 248px bleu vif, logo BuildNivo, groupes :
   PILOTAGE (Vue d'ensemble, Chantiers) / TERRAIN (Pointage, Tâches, Journal, Photos &
   problèmes) / GESTION (Réserves, Achats & livraisons, Finances, Documents) /
   INTELLIGENCE (Rapports IA, Copilote) / COMMUNICATION (Messages avec badge de non-lus,
@@ -57,6 +57,17 @@ blanc cassé `oklch(0.985 0.005 262)`).
 - Cartes blanches radius 14px, bordure `--color-line`, ombre `0 1px 2px oklch(0 0 0/0.05)`.
 - KPI conformes à la référence : chip icône teintée, label, grande valeur mono, barre de
   progression.
+
+## Logo
+
+Marque relevée au pixel sur `reference.png`, portée par `LogoMark` (`components/ui.tsx`) :
+trois barres à côtés verticaux, bords haut et bas obliques (5 unités de montée pour 10 de
+large, soit −26,6°), base commune, toutes pleines en `currentColor`. Rythme court / haute /
+moyenne — **la plus haute au centre**. viewBox `0 0 34 38`, largeur 10, écart 2, hauteurs
+21 / 33 / 25. Pas d'opacités dégradées, pas d'angles arrondis.
+
+Mot-symbole : **BuildNivo** (N majuscule), Archivo bold `tracking-tight`. Hauteur de marque
+≈ 1,65 × la taille du mot (h-7 pour text-lg, h-7 pour le 17px de la sidebar).
 
 ## Signature
 

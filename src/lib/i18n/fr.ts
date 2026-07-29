@@ -1,6 +1,6 @@
 export const fr = {
   common: {
-    appName: "Buildnivo",
+    appName: "BuildNivo",
     tagline: "La plateforme de pilotage intelligente du chantier",
     search: "Rechercher un projet, document, tâche…",
     seeAll: "Voir tout",
@@ -108,7 +108,7 @@ export const fr = {
     equipes: "Équipes & sociétés",
     parametres: "Paramètres",
     collapse: "Réduire",
-    prototype: "Buildnivo · Démo commerciale",
+    prototype: "BuildNivo · Démo commerciale",
   },
 
   topbar: {
@@ -122,7 +122,7 @@ export const fr = {
   },
 
   login: {
-    welcome: "Bienvenue sur la démo Buildnivo",
+    welcome: "Bienvenue sur la démo BuildNivo",
     subtitle:
       "Une plateforme unique reliant le chantier, l'entreprise, les partenaires et les clients. Choisissez un profil pour découvrir l'interface adaptée à chaque métier.",
     choosePersona: "Choisir ce profil",

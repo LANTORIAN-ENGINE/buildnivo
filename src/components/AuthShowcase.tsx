@@ -154,7 +154,7 @@ export function AuthShowcase({ className }: { className?: string }) {
           </div>
           <div className="flex items-center justify-center gap-1.5 pt-4">
             <LogoMark className="h-4 w-4 text-blue" />
-            <span className="text-[12.5px] font-bold text-ink">Buildnivo</span>
+            <span className="text-[12.5px] font-bold text-ink">BuildNivo</span>
           </div>
           <div key={method} className="rise-in flex h-[300px] flex-col items-center justify-center gap-3.5 px-4">
             {method === "password" && (
