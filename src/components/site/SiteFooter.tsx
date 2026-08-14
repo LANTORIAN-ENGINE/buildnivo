@@ -40,8 +40,8 @@ export function SiteFooter() {
             <p className="mt-4 max-w-[34ch] text-[14px] leading-relaxed font-semibold text-blue-ink/85 text-balance">
               {d.site.footer.tagline}
             </p>
-            <p className="mt-4 font-mono text-[11px] tracking-[0.16em] text-blue-ink/50 uppercase">
-              {d.site.footer.company}
+            <p className="mt-4 font-mono text-[11px] tracking-[0.16em] text-blue-ink/40 uppercase">
+              {d.site.footer.confidential}
             </p>
           </div>
 
@@ -82,7 +82,8 @@ export function SiteFooter() {
           <p>
             © {year} {d.site.footer.company} — {d.site.footer.rights}
           </p>
-          <p className="font-mono tracking-[0.14em] uppercase">{d.site.footer.confidential}</p>
+          {/* Mention légale de l'éditeur : présente, discrète, nulle part ailleurs. */}
+          <p className="text-[10.5px] text-blue-ink/35">{d.site.footer.legalEntity}</p>
         </div>
       </div>
     </footer>

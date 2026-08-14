@@ -987,7 +987,7 @@ export const fr = {
       seePricing: "Voir les tarifs",
       talkToUs: "Parler à un humain",
       section: "Niveau",
-      source: "Source : document de référence produit BuildNivo v2.0 — Blue Valoris FZCO.",
+      source: "Source : document de référence produit BuildNivo v2.0.",
       mockNotice:
         "Cette vitrine et la démo utilisent des données factices. Aucun compte, aucune base de données : tout est simulé dans votre navigateur.",
       access: {
@@ -1008,7 +1008,7 @@ export const fr = {
     },
 
     hero: {
-      badge: "Blue Valoris FZCO — version 2.0",
+      badge: "Plateforme de pilotage d'opération — version 2.0",
       titleLine1: "Le BTP a des millions d'outils.",
       titleLine2: "Il ne vous en faut qu'un.",
       lead: "BuildNivo relie tous les acteurs d'une opération immobilière autour d'une source unique de vérité : pointage, tâches, journal, documents, achats, finances et IA, de la conception jusqu'au SAV.",
@@ -1366,7 +1366,7 @@ export const fr = {
       indexHint: "base 100 = achat local",
       partnerTitle: "Le rôle de BlueFulfill",
       partner:
-        "Dans un premier temps, le moteur Supply est alimenté par BlueFulfill, partenaire sourcing du groupe Blue Valoris spécialisé dans l'import depuis la Chine. Le principe est économique : sourcer à moindre coût des ressources qui reviendraient beaucoup plus cher en achat local.",
+        "Dans un premier temps, le moteur Supply est alimenté par BlueFulfill, partenaire sourcing spécialisé dans l'import depuis la Chine. Le principe est économique : sourcer à moindre coût des ressources qui reviendraient beaucoup plus cher en achat local.",
       neutral:
         "BuildNivo reste une plateforme neutre : le moteur Supply pourra intégrer d'autres fournisseurs, d'autres fabricants et d'autres pays au-delà de BlueFulfill.",
       demoNote: "Délais et indices affichés ici sont des ordres de grandeur de démonstration.",
@@ -1456,7 +1456,7 @@ export const fr = {
     pricing: {
       eyebrow: "Tarifs",
       title: "Une tarification lisible, sans surprise",
-      lead: "Facturation portée par Blue Valoris FZCO (Émirats arabes unis). Prix hors taxes, par mois.",
+      lead: "Prix hors taxes, par mois. Sans engagement de durée ni frais de mise en service.",
       familyProject: "Pour le porteur d'opération",
       familyCompany: "Pour l'entreprise",
       familyStudio: "Pour un métier",
@@ -1681,13 +1681,14 @@ export const fr = {
 
     footer: {
       tagline: "Le BTP a des millions d'outils. Il ne vous en faut qu'un.",
-      company: "Blue Valoris FZCO",
+      company: "BuildNivo",
+      legalEntity: "Édité et facturé par Blue Valoris FZCO — Émirats arabes unis",
       product: "Produit",
       resources: "Ressources",
       legal: "Légal",
       demoLink: "Démo interactive",
       docLink: "Document de référence produit",
-      confidential: "Document de référence v2.0 — usage interne",
+      confidential: "Version 2.0",
       rights: "Démo commerciale. Toutes les données présentées sont factices.",
       privacy: "Confidentialité",
       terms: "Conditions",

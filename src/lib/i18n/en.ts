@@ -989,7 +989,7 @@ export const en: Dict = {
       seePricing: "See pricing",
       talkToUs: "Talk to a human",
       section: "Level",
-      source: "Source: BuildNivo product reference document v2.0 — Blue Valoris FZCO.",
+      source: "Source: BuildNivo product reference document v2.0.",
       mockNotice:
         "This site and the demo use fictional data. No account, no database: everything is simulated in your browser.",
       access: {
@@ -1010,7 +1010,7 @@ export const en: Dict = {
     },
 
     hero: {
-      badge: "Blue Valoris FZCO — version 2.0",
+      badge: "Construction management platform — version 2.0",
       titleLine1: "Construction has millions of tools.",
       titleLine2: "You only need one.",
       lead: "BuildNivo connects everyone working on a development around a single source of truth: time tracking, tasks, site log, documents, purchasing, finances and AI — from design through to after-sales.",
@@ -1367,7 +1367,7 @@ export const en: Dict = {
       indexHint: "base 100 = local purchase",
       partnerTitle: "The role of BlueFulfill",
       partner:
-        "At first, the Supply engine is powered by BlueFulfill, the Blue Valoris group's sourcing partner specialised in importing from China. The principle is economic: source at lower cost what would be far more expensive bought locally.",
+        "At first, the Supply engine is powered by BlueFulfill, a sourcing partner specialised in importing from China. The principle is economic: source at lower cost what would be far more expensive bought locally.",
       neutral:
         "BuildNivo stays a neutral platform: the Supply engine will be able to integrate other suppliers, manufacturers and countries beyond BlueFulfill.",
       demoNote: "The lead times and indices shown here are demonstration orders of magnitude.",
@@ -1457,7 +1457,7 @@ export const en: Dict = {
     pricing: {
       eyebrow: "Pricing",
       title: "Readable pricing, no surprises",
-      lead: "Billing carried by Blue Valoris FZCO (United Arab Emirates). Prices excluding tax, per month.",
+      lead: "Prices excluding tax, per month. No minimum term and no set-up fee.",
       familyProject: "For the project owner",
       familyCompany: "For the firm",
       familyStudio: "For one trade",
@@ -1682,13 +1682,14 @@ export const en: Dict = {
 
     footer: {
       tagline: "Construction has millions of tools. You only need one.",
-      company: "Blue Valoris FZCO",
+      company: "BuildNivo",
+      legalEntity: "Published and billed by Blue Valoris FZCO — United Arab Emirates",
       product: "Product",
       resources: "Resources",
       legal: "Legal",
       demoLink: "Interactive demo",
       docLink: "Product reference document",
-      confidential: "Reference document v2.0 — internal use",
+      confidential: "Version 2.0",
       rights: "Commercial demo. Every figure shown is fictional.",
       privacy: "Privacy",
       terms: "Terms",
