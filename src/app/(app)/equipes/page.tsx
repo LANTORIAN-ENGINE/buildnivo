@@ -1,21 +1,28 @@
 "use client";
 
-import { Bot, Building2, Phone, Plus, ShieldCheck } from "lucide-react";
+import { Bot, Building2, Mail, Phone, Plus, ShieldCheck, UserPlus } from "lucide-react";
 import { useState } from "react";
-import { companies, employees, fullName, projectById } from "@/data";
+import { companies, employees, externalContacts, fullName, projectById } from "@/data";
 import { useI18n } from "@/lib/i18n";
+import { internalRoles } from "@/types";
+import { type AccessLevel, moduleAccess, type ModuleKey, roleOrder } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
-import { Avatar, Button, cn, DemoTip, SectionCard, StatusPill, Tabs } from "@/components/ui";
+import { Avatar, Badge, Button, cn, DemoTip, SectionCard, StatusPill, Tabs } from "@/components/ui";
 
-const matrix: { moduleKey: string; access: [string, string, string, string, string] }[] = [
-  { moduleKey: "dashboard", access: ["full", "full", "read", "none", "none"] },
-  { moduleKey: "pointage", access: ["full", "full", "write", "own", "own"] },
-  { moduleKey: "taches", access: ["full", "full", "write", "read", "own"] },
-  { moduleKey: "journal", access: ["read", "full", "write", "none", "read"] },
-  { moduleKey: "photos", access: ["read", "full", "write", "write", "own"] },
-  { moduleKey: "documents", access: ["full", "full", "read", "read", "own"] },
-  { moduleKey: "finances", access: ["full", "write", "none", "none", "none"] },
-  { moduleKey: "rapports", access: ["full", "full", "read", "none", "none"] },
+/** Modules présentés dans la matrice (les plus parlants en rendez-vous). */
+const matrixModules: ModuleKey[] = [
+  "dashboard",
+  "pointage",
+  "taches",
+  "journal",
+  "photos",
+  "visas",
+  "reunions",
+  "documents",
+  "achats",
+  "finances",
+  "rapports",
+  "messages",
 ];
 
 export default function EquipesPage() {
@@ -23,11 +30,12 @@ export default function EquipesPage() {
   const { toast } = useDemo();
   const [tab, setTab] = useState("salaries");
 
-  const salaries = employees.filter((e) => e.role !== "soustraitant");
+  const salaries = employees.filter((e) => internalRoles.includes(e.role) && e.role !== "soustraitant");
   const soustraitants = companies.filter((c) => c.kind === "soustraitant");
   const fournisseurs = companies.filter((c) => c.kind === "fournisseur");
+  const intervenants = companies.filter((c) => ["moa", "moex", "architecte", "bet", "controle"].includes(c.kind));
 
-  const accessLabel = (a: string) =>
+  const accessLabel = (a: AccessLevel) =>
     a === "full" ? d.equipes.permissions.full : a === "write" ? d.equipes.permissions.write : a === "read" ? d.equipes.permissions.read : a === "own" ? d.equipes.permissions.own : d.equipes.permissions.none;
 
   return (
@@ -40,7 +48,10 @@ export default function EquipesPage() {
           </div>
           <p className="mt-0.5 text-[13px] text-ink-soft">{d.equipes.subtitle}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={() => toast(d.equipes.invited)}>
+            <UserPlus className="h-4 w-4" /> {d.equipes.invite}
+          </Button>
           <Button variant="outline" onClick={() => toast(d.equipes.added)}>
             <Building2 className="h-4 w-4" /> {d.equipes.addCompany}
           </Button>
@@ -55,6 +66,7 @@ export default function EquipesPage() {
           { id: "salaries", label: d.equipes.tabs.salaries, count: salaries.length },
           { id: "soustraitants", label: d.equipes.tabs.soustraitants, count: soustraitants.length },
           { id: "fournisseurs", label: d.equipes.tabs.fournisseurs, count: fournisseurs.length },
+          { id: "intervenants", label: d.equipes.tabs.intervenants, count: intervenants.length },
           { id: "roles", label: d.equipes.tabs.roles },
         ]}
         active={tab}
@@ -133,44 +145,106 @@ export default function EquipesPage() {
         </div>
       )}
 
+      {tab === "intervenants" && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {intervenants.map((c) => {
+            const contact = externalContacts.find((e) => e.companyId === c.id);
+            return (
+              <SectionCard key={c.id}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h2 className="text-[14.5px] font-bold text-ink">{c.name}</h2>
+                    <p className="mt-0.5 text-[12px] text-ink-soft">
+                      {c.discipline ? `${t(`disciplines.${c.discipline}`)} · ` : ""}
+                      {c.city}
+                    </p>
+                  </div>
+                  <Badge tone="blue">{c.role ? t(`roles.${c.role}`) : ""}</Badge>
+                </div>
+
+                {c.missionKey && (
+                  <p className="mt-3 rounded-xl bg-line-soft/50 px-3.5 py-2.5 text-[12px] leading-relaxed text-ink-soft">
+                    <span className="block text-[10.5px] font-bold tracking-wider text-ink-faint uppercase">{d.equipes.mission}</span>
+                    {t(`equipes.missions.${c.missionKey}`)}
+                  </p>
+                )}
+
+                {c.expiringDoc && (
+                  <p className="mt-3 flex items-center gap-1.5 rounded-lg bg-safety-soft px-3 py-2 text-[11.5px] font-semibold text-safety-deep">
+                    <Bot className="h-3.5 w-3.5 shrink-0" /> {d.equipes.docsExpiring} : {c.expiringDoc}
+                  </p>
+                )}
+
+                <p className="mt-3 flex flex-wrap items-center gap-2 border-t border-line-soft pt-3 text-[12px] text-ink-soft">
+                  <Avatar name={c.contact} size="sm" />
+                  <span>
+                    <span className="block font-semibold text-ink">{c.contact}</span>
+                    {contact && <span className="block text-[11px]">{t(`jobs.${contact.jobKey}`)}</span>}
+                  </span>
+                  <span className="ml-auto flex items-center gap-1 font-mono text-[11.5px]">
+                    <Phone className="h-3 w-3" /> {c.phone}
+                  </span>
+                </p>
+                <p className="mt-2 flex items-center gap-1.5 text-[11px] font-semibold text-blue-deep">
+                  <Mail className="h-3 w-3" /> {d.equipes.externalFree}
+                </p>
+              </SectionCard>
+            );
+          })}
+        </div>
+      )}
+
       {tab === "roles" && (
         <SectionCard bodyClassName="overflow-x-auto">
-          <p className="mb-4 max-w-[80ch] text-[12.5px] leading-relaxed text-ink-soft">{d.equipes.permissions.intro}</p>
-          <table className="w-full min-w-[720px] text-left">
+          <p className="mb-4 max-w-[95ch] text-[12.5px] leading-relaxed text-ink-soft">{d.equipes.permissions.intro}</p>
+          <table className="w-full min-w-[1100px] text-left">
             <thead>
+              <tr className="text-[10px] font-bold tracking-wider text-ink-faint uppercase">
+                <th className="py-1.5 pr-3" />
+                <th className="px-3 py-1.5 text-center" colSpan={5}>
+                  {d.equipes.permissions.internal}
+                </th>
+                <th className="px-3 py-1.5 text-center" colSpan={6}>
+                  {d.equipes.permissions.external}
+                </th>
+              </tr>
               <tr className="border-b border-line text-[11px] font-bold tracking-wider text-ink-faint uppercase">
                 <th className="py-2.5 pr-3">{d.equipes.permissions.module}</th>
-                <th className="px-3 py-2.5">{d.equipes.permissions.direction}</th>
-                <th className="px-3 py-2.5">{d.equipes.permissions.conducteur}</th>
-                <th className="px-3 py-2.5">{d.equipes.permissions.chef}</th>
-                <th className="px-3 py-2.5">{d.equipes.permissions.ouvrier}</th>
-                <th className="py-2.5 pl-3">{d.equipes.permissions.soustraitant}</th>
+                {roleOrder.map((r) => (
+                  <th key={r} className="px-2 py-2.5 whitespace-nowrap">
+                    {t(`equipes.permissions.${r}`)}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-line-soft">
-              {matrix.map((row) => (
-                <tr key={row.moduleKey} className="text-[12.5px]">
-                  <td className="py-2.5 pr-3 font-bold text-ink">{t(`nav.${row.moduleKey}`)}</td>
-                  {row.access.map((a, i) => (
-                    <td key={i} className={cn("px-3 py-2.5", i === 4 && "pl-3")}>
-                      <span
-                        className={cn(
-                          "inline-flex rounded-md px-2 py-0.5 text-[11px] font-bold",
-                          a === "full" && "bg-blue-soft text-blue-deep",
-                          a === "write" && "bg-ok-soft text-ok-deep",
-                          a === "read" && "bg-line-soft text-ink-soft",
-                          a === "own" && "bg-viz-soft text-viz",
-                          a === "none" && "text-ink-faint"
-                        )}
-                      >
-                        {accessLabel(a)}
-                      </span>
-                    </td>
-                  ))}
+              {matrixModules.map((moduleKey) => (
+                <tr key={moduleKey} className="text-[12.5px]">
+                  <td className="py-2.5 pr-3 font-bold whitespace-nowrap text-ink">{t(`nav.${moduleKey}`)}</td>
+                  {roleOrder.map((r) => {
+                    const a = moduleAccess[moduleKey][r];
+                    return (
+                      <td key={r} className="px-2 py-2.5">
+                        <span
+                          className={cn(
+                            "inline-flex rounded-md px-2 py-0.5 text-[11px] font-bold whitespace-nowrap",
+                            a === "full" && "bg-blue-soft text-blue-deep",
+                            a === "write" && "bg-ok-soft text-ok-deep",
+                            a === "read" && "bg-line-soft text-ink-soft",
+                            a === "own" && "bg-viz-soft text-viz",
+                            a === "none" && "text-ink-faint"
+                          )}
+                        >
+                          {accessLabel(a)}
+                        </span>
+                      </td>
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
           </table>
+          <p className="mt-4 text-[11.5px] leading-relaxed text-ink-faint">{d.equipes.permissions.legend}</p>
         </SectionCard>
       )}
     </div>

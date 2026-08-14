@@ -3,22 +3,28 @@
 import {
   AlertTriangle,
   Bot,
+  Calculator,
   CalendarClock,
   CheckCheck,
   Download,
   FileArchive,
+  FileSignature,
+  FileText,
+  Gavel,
   ListTodo,
   Megaphone,
   PenLine,
   Send,
+  Sparkles,
+  Stamp,
   TrendingUp,
   Truck,
   UsersRound,
 } from "lucide-react";
 import { useState } from "react";
-import type { ReminderKind } from "@/types";
-import { dailyReport, inDays, projectById, weeklyReport } from "@/data";
-import { fmtDate, useI18n } from "@/lib/i18n";
+import type { DraftKind, ReminderKind } from "@/types";
+import { dailyReport, documents, inDays, projectById, weeklyReport } from "@/data";
+import { fmtDate, fmtEuro, useI18n } from "@/lib/i18n";
 import { useDemo } from "@/lib/store";
 import { Badge, Button, cn, DemoTip, SectionCard, StatusPill, Tabs, type Tone } from "@/components/ui";
 
@@ -28,6 +34,14 @@ const reminderTones: Record<ReminderKind, Tone> = {
   fournisseur: "blue",
   livraison: "viz",
   tache: "neutral",
+  visa: "blue",
+};
+
+const draftIcons: Record<DraftKind, React.ComponentType<{ className?: string }>> = {
+  cctp: FileText,
+  estimatif: Calculator,
+  contrat: FileSignature,
+  ordreService: Gavel,
 };
 
 function ReportSection({ icon: Icon, title, text, tone = "blue" }: { icon: React.ComponentType<{ className?: string }>; title: string; text: string; tone?: Tone }) {
@@ -55,10 +69,22 @@ function ReportSection({ icon: Icon, title, text, tone = "blue" }: { icon: React
 
 export default function RapportsPage() {
   const { d, t, lang } = useI18n();
-  const { reminders, sendReminder, toast, activeProjectId } = useDemo();
+  const { reminders, sendReminder, toast, activeProjectId, drafts, validateDraft, submissions, avis } = useDemo();
   const [tab, setTab] = useState("daily");
   const project = projectById(activeProjectId)!;
   const pending = reminders.filter((r) => r.status === "aValider").length;
+
+  const projectDrafts = drafts.filter((dr) => dr.projectId === activeProjectId);
+  const savedHours = projectDrafts.reduce((s, dr) => s + dr.savedHours, 0);
+
+  /* Le rapport hebdo reprend désormais l'état des visas et les avis des intervenants. */
+  const projectSubs = submissions.filter((s) => s.projectId === activeProjectId);
+  const visaSummary = `${projectSubs.filter((s) => s.status === "enAttente").length} ${d.visas.pending}, ${projectSubs.filter((s) => s.status === "defavorable").length} ${d.visas.shortStatus.defavorable.toLowerCase()}, ${projectSubs.filter((s) => s.status === "favorableObs").length} ${d.visas.shortStatus.favorableObs.toLowerCase()}.`;
+  const visibleAvis = avis.filter((a) => a.projectId === activeProjectId && !a.hidden);
+  const avisSummary = visibleAvis
+    .slice(0, 3)
+    .map((a) => `${a.author} : ${a.subject}`)
+    .join(" · ");
 
   return (
     <div className="space-y-4">
@@ -80,6 +106,7 @@ export default function RapportsPage() {
           { id: "daily", label: d.rapports.tabs.daily },
           { id: "weekly", label: d.rapports.tabs.weekly },
           { id: "relances", label: d.rapports.tabs.relances, count: pending },
+          { id: "docsIA", label: d.rapports.tabs.docsIA, count: projectDrafts.length },
         ]}
         active={tab}
         onChange={setTab}
@@ -117,6 +144,8 @@ export default function RapportsPage() {
                 <ReportSection icon={UsersRound} title={d.rapports.sections.absences} text={weeklyReport.absences} tone="blue" />
                 <ReportSection icon={FileArchive} title={d.rapports.sections.documentsManquants} text={weeklyReport.documentsManquants} tone="danger" />
                 <ReportSection icon={TrendingUp} title={d.rapports.sections.avancement} text={weeklyReport.avancement} tone="ok" />
+                <ReportSection icon={Stamp} title={d.rapports.sections.visas} text={visaSummary} tone="blue" />
+                <ReportSection icon={Gavel} title={d.rapports.sections.avis} text={avisSummary} tone="viz" />
               </>
             )}
           </div>
@@ -177,6 +206,105 @@ export default function RapportsPage() {
               </div>
             </SectionCard>
           ))}
+        </div>
+      )}
+
+      {tab === "docsIA" && (
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-[15px] font-bold text-ink">{d.rapports.docsIA.title}</h2>
+              <DemoTip text={d.tips.docsIA.main} />
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <StatusPill tone="viz" dot={false}>
+                {d.rapports.docsIA.totalSaved} : <span className="font-mono font-bold">{savedHours} {d.rapports.docsIA.hours}</span>
+              </StatusPill>
+              <Button variant="outline" onClick={() => toast(d.rapports.docsIA.generated)}>
+                <Sparkles className="h-4 w-4" /> {d.rapports.docsIA.generate}
+              </Button>
+            </div>
+          </div>
+          <p className="max-w-[95ch] rounded-xl bg-line-soft/60 px-4 py-2.5 text-[12px] leading-relaxed text-ink-soft">
+            {d.rapports.docsIA.disclaimer}
+          </p>
+
+          {projectDrafts.map((dr) => {
+            const Icon = draftIcons[dr.kind];
+            const total = dr.lines.reduce((s, l) => s + (l.amount ?? 0), 0);
+            return (
+              <SectionCard key={dr.id}>
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div className="flex items-start gap-3">
+                    <span className="mt-0.5 flex h-8.5 w-8.5 shrink-0 items-center justify-center rounded-[10px] bg-viz-soft text-viz">
+                      <Icon className="h-4 w-4" />
+                    </span>
+                    <div className="min-w-0">
+                      <p className="flex flex-wrap items-center gap-2">
+                        <span className="text-[13.5px] font-bold text-ink">{dr.title}</span>
+                        <StatusPill tone="blue" dot={false}>
+                          {t(`rapports.docsIA.kinds.${dr.kind}`)}
+                        </StatusPill>
+                        <StatusPill tone={dr.status === "valide" ? "ok" : "safety"} dot={false}>
+                          {t(`rapports.docsIA.status.${dr.status}`)}
+                        </StatusPill>
+                      </p>
+                      <p className="mt-1 text-[11.5px] text-ink-soft">
+                        {d.rapports.docsIA.sources} :{" "}
+                        <span className="font-semibold text-ink-soft">
+                          {dr.sourceDocIds
+                            .map((id) => documents.find((doc) => doc.id === id)?.name ?? id)
+                            .join(" · ")}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  <StatusPill tone="viz" dot={false}>
+                    {d.rapports.docsIA.savedTime} : <span className="font-mono font-bold">{dr.savedHours} {d.rapports.docsIA.hours}</span>
+                  </StatusPill>
+                </div>
+
+                <ul className="mt-3 divide-y divide-line-soft rounded-xl bg-line-soft/40 px-3.5">
+                  {dr.lines.map((l) => (
+                    <li key={l.label} className="flex flex-wrap items-baseline gap-x-3 gap-y-1 py-2.5">
+                      <span className="text-[12.5px] font-bold text-ink">{l.label}</span>
+                      <span className="min-w-0 flex-1 text-[12px] leading-relaxed text-ink-soft">{l.detail}</span>
+                      {l.qty && <span className="font-mono text-[11.5px] font-semibold text-ink-soft">{l.qty}</span>}
+                      {typeof l.amount === "number" && (
+                        <span className="font-mono text-[12px] font-bold text-blue-deep">{fmtEuro(l.amount, lang)}</span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-3 flex flex-wrap items-center justify-end gap-3">
+                  {total > 0 && (
+                    <span className="text-[12.5px] font-semibold text-ink">
+                      {d.rapports.docsIA.total} :{" "}
+                      <span className="font-mono text-[14px] font-bold text-blue-deep">{fmtEuro(total, lang)}</span>
+                    </span>
+                  )}
+                  <Button variant="outline" onClick={() => toast(d.journal.pdfDone)}>
+                    <Download className="h-4 w-4" /> {d.rapports.downloadPdf}
+                  </Button>
+                  {dr.status === "valide" ? (
+                    <StatusPill tone="ok">
+                      <CheckCheck className="h-3 w-3" /> {d.rapports.docsIA.status.valide}
+                    </StatusPill>
+                  ) : (
+                    <Button
+                      onClick={() => {
+                        validateDraft(dr.id);
+                        toast(d.rapports.docsIA.validated);
+                      }}
+                    >
+                      <CheckCheck className="h-4 w-4" /> {d.rapports.docsIA.validate}
+                    </Button>
+                  )}
+                </div>
+              </SectionCard>
+            );
+          })}
         </div>
       )}
     </div>

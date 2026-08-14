@@ -1,0 +1,527 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildNivo — Nouveaux profils et modules issus de la réunion du 31 juillet 2026</title>
+</head>
+<body>
+
+<h1>BuildNivo — Ce qui a été ajouté à la démo après la réunion du 31 juillet 2026</h1>
+
+<p>Ce document reprend les demandes formulées pendant la réunion et décrit ce qui est
+désormais visible dans la démonstration. Il se lit en deux temps : d'abord un
+récapitulatif court, ensuite une description fonctionnelle détaillée, profil par
+profil et écran par écran, utilisable comme trame de présentation client.</p>
+
+<p><strong>Rappel important :</strong> la démonstration reste une maquette. Toutes les
+personnes, sociétés, montants et documents cités sont fictifs et n'existent que
+dans le navigateur de la personne qui fait la démonstration. Rien n'est enregistré,
+rien n'est envoyé.</p>
+
+<hr>
+
+<h1>Partie 1 — Récapitulatif</h1>
+
+<h2>Les profils</h2>
+
+<p>La plateforme comptait cinq profils, tous internes à l'entreprise de travaux.
+Elle en compte maintenant onze : les cinq d'origine, plus les six intervenants de
+l'opération demandés en réunion.</p>
+
+<ul>
+  <li><strong>Maître d'ouvrage</strong> — Foncière Bourbon Promotion, Hélène Vitry</li>
+  <li><strong>Maître d'œuvre d'exécution</strong> — Cap Sud Maîtrise d'Œuvre, Cédric Hoareau</li>
+  <li><strong>Architecte</strong> — Atelier Archipel, Léa Fontaine</li>
+  <li><strong>Bureaux d'études</strong> — cinq spécialités : structure et gros œuvre
+      (BET Structura), fluides (BET Fluides OI), électricité (Ohm Ingénierie),
+      VRD (Géo VRD Austral), charpente et couverture (Trame Bois Ingénierie)</li>
+  <li><strong>Contrôleur technique</strong> — Veritas Océan Indien, Jean-Marc Perrin</li>
+  <li><strong>Coordonnateur sécurité</strong> — Prévencia SPS, Karine Payet</li>
+</ul>
+
+<p>L'écran de connexion sépare visuellement l'entreprise de travaux des intervenants
+de l'opération. Le changement de profil en cours de démonstration se fait toujours
+en haut à droite, avec la même séparation.</p>
+
+<h2>Les droits</h2>
+
+<p>Chaque profil ne voit que son périmètre. Les intervenants extérieurs déposent
+des documents, émettent des avis et lisent les comptes rendus, mais n'accèdent ni
+aux achats, ni aux finances, ni à la paie de l'entreprise. Ce n'est pas une
+promesse commerciale : le menu de gauche change réellement selon le profil
+connecté, et les rubriques d'accueil ne sont pas les mêmes.</p>
+
+<h2>Les indicateurs</h2>
+
+<p>L'écran d'accueil affiche des indicateurs différents selon le métier. Un
+contrôleur technique n'ouvre pas sur le budget, il ouvre sur la conformité des
+visas et sur ses avis en cours. Un bureau d'études ouvre sur ses propres dépôts et
+sur les observations qu'il doit lever. Le promoteur ouvre sur l'avancement et sur
+les marchés facturés.</p>
+
+<h2>Les modules nouveaux</h2>
+
+<ul>
+  <li><strong>Visas et plans d'exécution</strong> — le circuit complet, du dépôt par
+      le bureau d'études jusqu'à la diffusion sur le chantier.</li>
+  <li><strong>Réunions et comptes rendus</strong> — la convocation, les présences, le
+      compte rendu hebdomadaire rédigé automatiquement et les avis de chaque
+      intervenant, avec la possibilité pour le maître d'ouvrage de retirer les
+      avis non réglementaires.</li>
+  <li><strong>Reprise de chantier</strong> — l'intégration d'une opération déjà
+      démarrée à partir des documents existants.</li>
+  <li><strong>Documents générés</strong> — cahiers des clauses techniques,
+      estimatifs, contrats et ordres de service rédigés à partir des plans.</li>
+  <li><strong>Paliers de fonctionnalités</strong> — les niveaux à débloquer évoqués en
+      fin de réunion, présentés dans les paramètres.</li>
+</ul>
+
+<hr>
+
+<h1>Partie 2 — Description fonctionnelle détaillée</h1>
+
+<h2>1. Le principe général</h2>
+
+<p>Une opération de construction fait travailler ensemble des sociétés qui ne
+partagent ni les mêmes logiciels, ni les mêmes intérêts, ni le même niveau
+d'information. Aujourd'hui, cette coordination passe par le courrier
+électronique : les plans circulent en pièce jointe, les avis se perdent dans les
+fils de discussion, personne ne sait avec certitude quel indice de plan fait foi.</p>
+
+<p>Le principe retenu est simple : chaque intervenant dispose d'un accès à la
+plateforme, mais uniquement sur son périmètre. Il y dépose ce qu'il produit, y
+consulte ce qui le concerne, y émet ses avis. Tout ce qui est déposé est daté,
+tracé et repris automatiquement dans le compte rendu de chantier. Plus rien ne
+dépend de la mémoire d'une boîte mail.</p>
+
+<h2>2. Les onze profils, un par un</h2>
+
+<h3>2.1 Direction de l'entreprise de travaux</h3>
+
+<p><em>Nathalie Rivière, directrice générale de Bâtir Océan Indien.</em></p>
+
+<p><strong>À l'ouverture, elle voit :</strong> le budget consommé rapporté au budget
+total, l'avancement global comparé au planning, le retard prévisionnel en jours,
+et l'effectif présent sur le chantier du jour.</p>
+
+<p><strong>Elle a accès à :</strong> la vue d'ensemble, les chantiers, le pointage et
+les heures, les tâches, le journal, les photos, les réserves, les achats et
+livraisons, les finances par lot, les documents, les rapports, le copilote, la
+messagerie, les équipes et les paramètres. Elle consulte les visas et les comptes
+rendus sans les modifier : ce n'est pas son rôle contractuel.</p>
+
+<h3>2.2 Conducteur de travaux</h3>
+
+<p><em>Marc Dorseuil. C'est le profil utilisé pour la démonstration principale.</em></p>
+
+<p><strong>À l'ouverture, il voit :</strong> les mêmes quatre indicateurs que la
+direction, sur le chantier actif. Sur la Résidence SUNSET, soit 48 logements :
+5,55 millions d'euros consommés sur 7,4 millions, 68 % d'avancement réalisé pour
+75 % planifié, 12 jours de retard prévisionnel, 42 personnes présentes sur 48
+prévues.</p>
+
+<p><strong>Ce qu'il faut dire en démonstration :</strong> les 68 % ne sont pas une
+estimation de réunion. Ils se calculent en continu à partir des tâches validées
+sur le terrain, des photos jointes et des zones renseignées. C'est la différence
+entre un tableau de bord rempli à la main le lundi matin et une donnée qui vit.</p>
+
+<p><strong>Il peut :</strong> tout piloter côté entreprise, y compris déposer des
+pièces dans le circuit de visa et préparer un compte rendu.</p>
+
+<h3>2.3 Chef de chantier</h3>
+
+<p><em>Sofia Bègue.</em></p>
+
+<p><strong>À l'ouverture, elle voit :</strong> l'effectif du jour, l'avancement, ses
+tâches en cours et le retard. L'ordre est volontairement différent : sur le
+terrain, on regarde d'abord qui est là.</p>
+
+<p><strong>Elle peut :</strong> saisir les présences, alimenter le journal à la voix,
+prendre des photos et les transformer en problèmes ou en réserves, créer et
+valider des tâches. Elle ne voit ni les finances, ni les visas de plans.</p>
+
+<h3>2.4 Salarié sur chantier</h3>
+
+<p><em>Jimmy Hoarau, maçon coffreur.</em></p>
+
+<p><strong>À l'ouverture, il voit :</strong> ses heures de la semaine, ses tâches en
+cours et l'effectif du jour. Rien d'autre. Pas de budget, pas d'avancement
+global, pas d'alertes de direction.</p>
+
+<p><strong>Il peut :</strong> pointer son arrivée et son départ, consulter son
+planning, prendre des photos, écrire dans la messagerie. C'est un usage de
+quelques secondes par jour, sur téléphone.</p>
+
+<h3>2.5 Sous-traitant</h3>
+
+<p><em>Éric Payet, gérant de Charpentes Payet.</em></p>
+
+<p><strong>À l'ouverture, il voit :</strong> ses tâches, les réserves qui le
+concernent, l'avancement du chantier et le retard.</p>
+
+<p><strong>Il peut :</strong> consulter et faire avancer ses tâches, déposer des
+photos, répondre aux réserves, échanger dans la messagerie, consulter les
+documents de ses lots. Son accès est gratuit — c'est un argument commercial
+important : plus il y a d'entreprises connectées, plus la donnée est fiable, donc
+il ne faut pas facturer l'accès des sous-traitants.</p>
+
+<h3>2.6 Maître d'ouvrage</h3>
+
+<p><em>Hélène Vitry, responsable de programme chez Foncière Bourbon Promotion.</em></p>
+
+<p><strong>Sa mission :</strong> elle porte l'opération, arbitre, et valide ce qui
+sort officiellement du chantier.</p>
+
+<p><strong>À l'ouverture, elle voit :</strong> l'avancement du programme, le montant
+des marchés facturés rapporté au montant total, le retard prévisionnel et le
+nombre d'avis en cours avec la part d'avis réglementaires. En dessous : la courbe
+d'avancement, les alertes, la liste des avis émis par les intervenants, la
+prochaine réunion et la répartition budgétaire.</p>
+
+<p><strong>Ce qu'elle peut faire de particulier :</strong> retirer du compte rendu
+diffusé un avis qui n'est pas réglementaire. C'est la demande exprimée en réunion.
+La règle a été rendue explicite dans l'interface : un avis réglementaire — celui
+d'un contrôleur technique, du coordonnateur sécurité, ou un avis défavorable de
+maîtrise d'œuvre — est verrouillé et ne peut pas être masqué. Un avis
+d'appréciation, par exemple une suggestion esthétique de l'architecte, peut être
+retiré du compte rendu diffusé. Dans ce cas, l'avis n'est pas supprimé : il reste
+tracé et son auteur continue de le voir. On protège l'arbitrage du maître
+d'ouvrage sans créer de trou de mémoire.</p>
+
+<p><strong>Ce qu'elle ne voit pas :</strong> les achats de l'entreprise de travaux,
+les heures des salariés, les marges. Ce sont les données internes de l'entreprise.</p>
+
+<h3>2.7 Maître d'œuvre d'exécution</h3>
+
+<p><em>Cédric Hoareau, Cap Sud Maîtrise d'Œuvre. C'est le profil pivot de toute
+l'organisation.</em></p>
+
+<p><strong>Sa mission, telle que décrite en réunion :</strong> piloter le chantier,
+vérifier les conformités, viser les plans d'exécution, organiser les réunions avec
+tous les intervenants, produire le compte rendu hebdomadaire, et centraliser la
+communication pour éviter la déperdition d'information par courrier électronique.</p>
+
+<p><strong>À l'ouverture, il voit :</strong> le nombre de visas en attente avec
+signalement des échéances dépassées, le nombre d'avis en cours, l'avancement et le
+retard. En dessous : la courbe d'avancement, les alertes, la liste des plans en
+attente de visa avec l'échéance de chacun, les avis des intervenants, la prochaine
+réunion et le compte rendu à valider, puis les échéances de tâches.</p>
+
+<p><strong>Il peut :</strong> viser les plans, animer et diffuser les comptes rendus,
+suivre l'avancement, les tâches, le journal, les photos, les réserves, les
+documents et les rapports. Il consulte les situations financières qu'il doit
+valider, mais pas les achats de l'entreprise.</p>
+
+<h3>2.8 Architecte</h3>
+
+<p><em>Léa Fontaine, Atelier Archipel.</em></p>
+
+<p><strong>Sa mission :</strong> déposer les esquisses et pièces de conception,
+émettre des avis sur la mise en œuvre et sur le respect du projet.</p>
+
+<p><strong>À l'ouverture, elle voit :</strong> ses plans et esquisses déposés avec le
+taux d'acceptation au premier dépôt, les observations qu'elle doit lever,
+l'avancement, et le compte à rebours jusqu'à la prochaine réunion.</p>
+
+<p><strong>Exemple présent dans la démonstration :</strong> elle a déposé une esquisse
+modificative du hall d'entrée du bâtiment A. La maîtrise d'œuvre a rendu un avis
+favorable avec observation : l'incidence financière, estimée à 18 400 euros, doit
+être validée par le maître d'ouvrage avant l'ordre de service. Elle a par ailleurs
+émis un avis sur la teinte d'enduit du hall, qui tire vers le gris alors que la
+teinte contractuelle est un blanc corail.</p>
+
+<h3>2.9 Bureau d'études</h3>
+
+<p><em>Rémi Lauret, Ohm Ingénierie, électricité. Le même profil existe pour la
+structure, les fluides, la VRD et la charpente.</em></p>
+
+<p><strong>Sa mission :</strong> réaliser les études, déposer les plans d'exécution et
+les notes de calcul de sa spécialité, consulter les avis favorables ou
+défavorables de la maîtrise d'œuvre, lever les observations, répondre aux
+questions d'exécution.</p>
+
+<p><strong>À l'ouverture, il voit :</strong> ses dépôts, le délai moyen de visa, les
+observations qu'il doit lever et la prochaine réunion.</p>
+
+<p><strong>Point clé à montrer :</strong> il ne voit que les dépôts de sa société. Un
+bandeau le lui rappelle explicitement. Le bureau d'études électricité ne consulte
+pas les notes de calcul du bureau d'études structure, et aucun d'eux ne voit les
+marchés de travaux. C'est ce qui rend l'ouverture des accès acceptable pour tout
+le monde.</p>
+
+<h3>2.10 Contrôleur technique</h3>
+
+<p><em>Jean-Marc Perrin, Veritas Océan Indien.</em></p>
+
+<p><strong>Sa mission :</strong> vérifier les plans déjà visés par la maîtrise d'œuvre
+d'exécution, s'assurer du bon déroulement des travaux, émettre des avis et déposer
+ses rapports de visite, en demandant au besoin des pièces complémentaires.</p>
+
+<p><strong>À l'ouverture, il voit :</strong> le taux de conformité des visas, les avis
+en cours, les plans en attente de contre-visa et le nombre d'avis touchant à la
+sécurité.</p>
+
+<p><strong>Il peut :</strong> contre-viser un plan, favorablement ou avec réserve,
+déposer un rapport de visite, et demander un document à la maîtrise d'œuvre en un
+clic. Ces pièces deviennent accessibles à tous les intervenants concernés. Il ne
+voit ni le pointage, ni les achats, ni les finances : son accès est volontairement
+limité, exactement comme demandé en réunion.</p>
+
+<h3>2.11 Coordonnateur sécurité et protection de la santé</h3>
+
+<p><em>Karine Payet, Prévencia SPS.</em></p>
+
+<p><strong>Sa mission :</strong> veiller au déroulement des travaux sur le plan
+sécuritaire, tenir le plan de prévention à jour, émettre des observations.</p>
+
+<p><strong>À l'ouverture, elle voit :</strong> les avis sécurité ouverts, les avis en
+cours, l'effectif présent sur le chantier et l'avancement. L'effectif l'intéresse
+directement : c'est la co-activité qui crée le risque.</p>
+
+<p><strong>Elle peut :</strong> émettre des avis, déposer des documents et des photos,
+consulter le journal et les présences. Elle n'a accès ni aux tâches, ni aux
+achats, ni aux finances.</p>
+
+<h2>3. Le circuit des plans d'exécution</h2>
+
+<p>C'est le module qui remplace le plus directement les échanges par courrier
+électronique. Il suit quatre étapes, affichées en haut de l'écran.</p>
+
+<ol>
+  <li><strong>Dépôt.</strong> Le bureau d'études dépose son plan : intitulé,
+      spécialité, indice, note de calcul éventuellement jointe. La maîtrise
+      d'œuvre est notifiée immédiatement.</li>
+  <li><strong>Visa de la maîtrise d'œuvre d'exécution.</strong> Trois réponses
+      possibles : favorable, favorable avec observations, ou défavorable. Les deux
+      dernières exigent une motivation écrite — on ne peut pas refuser un plan
+      sans dire pourquoi. Les observations sont numérotées et restent attachées au
+      dépôt.</li>
+  <li><strong>Contre-visa du contrôleur technique.</strong> Il n'intervient qu'après
+      le visa de la maîtrise d'œuvre, favorablement ou avec réserve.</li>
+  <li><strong>Diffusion.</strong> Le plan visé devient la référence du chantier. Tout
+      le monde travaille sur le bon indice.</li>
+</ol>
+
+<p><strong>L'apport décisif :</strong> chaque dépôt indique les travaux qu'il
+conditionne et son échéance de visa. Un plan non visé n'est plus un dossier en
+attente dans une boîte mail, c'est un risque chiffré sur le planning.</p>
+
+<h3>Les quatre situations visibles dans la démonstration</h3>
+
+<ul>
+  <li><strong>Plans électricité courants forts, niveaux 2 et 3</strong> — déposés il y
+      a deux jours par Ohm Ingénierie, en attente de visa, échéance demain. Ils
+      conditionnent la fermeture des cloisons du deuxième étage. C'est l'exemple à
+      montrer : le visa n'est pas une formalité administrative, il bloque le
+      chantier.</li>
+  <li><strong>Charpente du bâtiment B</strong> — avis défavorable rendu il y a trois
+      jours. Motif : la descente de charges a été établie sans la surcharge
+      cyclonique réglementaire, et les fixations ne sont pas cotées sur plusieurs
+      files. Redépôt exigé sous cinq jours, commande de charpente bloquée
+      entre-temps.</li>
+  <li><strong>Fluides, colonnes du bâtiment A</strong> — favorable avec deux
+      observations, contre-visé favorablement par le contrôleur technique.</li>
+  <li><strong>Coffrage et note de calcul de la dalle du deuxième étage</strong> —
+      favorable, contre-visa favorable, conformité vérifiée y compris pour la zone
+      cyclonique.</li>
+</ul>
+
+<h2>4. La réunion de chantier et son compte rendu</h2>
+
+<p>L'écran présente l'historique des réunions, la prochaine échéance avec un ordre
+du jour proposé, et le compte rendu de la semaine.</p>
+
+<p>Le compte rendu est composé automatiquement à partir de ce que la plateforme
+sait déjà : les pointages, les tâches validées, les visas, les avis, les
+livraisons et les photos de la semaine. Il comporte cinq sections — avancement des
+travaux, effectifs et entreprises, visas et plans, sécurité, administratif et
+financier — puis le relevé de décisions, avec un pilote et une date pour chaque
+action.</p>
+
+<p>Les présences sont affichées intervenant par intervenant : présent, excusé ou
+absent. Dans la démonstration, le coordonnateur sécurité est excusé et le plombier
+est absent sans avoir prévenu, ce qui est cohérent avec les alertes du jour.</p>
+
+<p>La maîtrise d'œuvre relit et diffuse. Le gain de temps est l'argument central
+pour ce métier : la rédaction hebdomadaire du compte rendu est une charge lourde,
+et l'essentiel de son contenu existe déjà dans la plateforme.</p>
+
+<h3>Les avis des intervenants</h3>
+
+<p>Sous le compte rendu figurent les avis émis pendant la semaine, chacun marqué
+comme réglementaire ou comme simple observation. Dans la démonstration :</p>
+
+<ul>
+  <li>Avis suspensif du contrôleur technique sur la trémie d'ascenseur du deuxième
+      étage, dont le garde-corps provisoire avait été déposé sans remplacement.
+      Réglementaire, donc verrouillé.</li>
+  <li>Demande du coordonnateur sécurité de mettre à jour le plan de prévention
+      avant lundi, la panne de la grue numéro 2 concentrant tous les levages sur la
+      grue numéro 1 en co-activité avec les équipes de cloisons. Réglementaire.</li>
+  <li>Avis défavorable de la maîtrise d'œuvre sur la charpente. Réglementaire.</li>
+  <li>Observation de l'architecte sur la teinte de l'enduit du hall. Non
+      réglementaire, donc masquable par le maître d'ouvrage.</li>
+  <li>Suggestion de l'architecte sur l'implantation des luminaires, sans incidence
+      réglementaire ni financière. Elle est déjà masquée dans la démonstration,
+      pour montrer l'état « retiré du compte rendu diffusé ».</li>
+</ul>
+
+<h2>5. La reprise d'un chantier déjà démarré</h2>
+
+<p>C'est la réponse à la question posée en réunion : peut-on utiliser la
+plateforme sur une opération déjà bien avancée, et à partir de quand est-ce
+rentable ?</p>
+
+<p>Le principe : on dépose les documents existants — plans, comptes rendus
+antérieurs, marchés et avenants, situations et factures, planning — et la
+plateforme reconstitue l'état du chantier. Dans la démonstration, cinq lots de
+documents totalisant plus de huit cents pages sont analysés en quelques secondes.</p>
+
+<p>Pour chaque type de document, l'écran indique ce qui en a été tiré : les zones,
+lots et surfaces depuis les plans ; l'historique des décisions et des retards
+depuis les comptes rendus ; les montants des marchés et avenants ; la facturation
+par lot depuis les situations ; les jalons et le chemin critique depuis le
+planning.</p>
+
+<p><strong>Le résultat reconstitué :</strong> 54 % d'avancement, 49 % des marchés
+facturés, neuf mois de durée de vie restante, un tableau lot par lot avec le
+montant du marché, l'avancement et le pourcentage facturé, et la liste des travaux
+restants.</p>
+
+<p><strong>Le point qui inspire confiance :</strong> une rubrique « points à
+confirmer » liste ce que la plateforme n'a pas trouvé plutôt que de l'inventer —
+trois avenants cités dans les comptes rendus mais absents du dossier fourni, aucun
+procès-verbal de réception de supports pour l'étanchéité d'un bâtiment, un planning
+non mis à jour depuis deux mois. Un responsable relit, complète, puis met le
+chantier en service.</p>
+
+<p>Cette même mécanique sert la prospection commerciale évoquée en réunion : les
+chantiers déjà lancés se repèrent aux informations publiques, et cette reprise
+assistée permet d'entrer sur une opération en cours de route sans imposer une
+ressaisie décourageante.</p>
+
+<h2>6. Les documents rédigés à partir des plans</h2>
+
+<p>Demande exprimée en réunion : la maîtrise d'œuvre d'exécution passe un temps
+considérable à rédiger des cahiers des clauses techniques particulières, des
+pièces contractuelles et des estimatifs, alors que l'essentiel de l'information se
+trouve déjà dans les plans.</p>
+
+<p>Quatre documents sont proposés dans la démonstration, chacun indiquant les
+pièces analysées et le temps de rédaction économisé :</p>
+
+<ul>
+  <li><strong>Cahier des clauses techniques du lot cloisons et doublages</strong> —
+      consistance des travaux avec métré déduit des plans, prescriptions
+      techniques, exigences acoustiques et de tenue au feu, limites de prestation
+      et modalités de réception. Six heures économisées.</li>
+  <li><strong>Estimatif quantitatif du même lot</strong> — cinq lignes chiffrées avec
+      quantités et montants, aléas compris, pour un total cohérent avec le budget
+      du projet. Quatre heures économisées.</li>
+  <li><strong>Contrat de sous-traitance</strong> — clauses reprises du marché type,
+      pièces contractuelles listées, et mention explicite de ce qui reste à
+      compléter. Trois heures économisées.</li>
+  <li><strong>Ordre de service</strong> — reprise du hall, avec incidence financière
+      chiffrée et incidence sur le délai. Une heure économisée.</li>
+</ul>
+
+<p>Chaque document est présenté comme un brouillon. La relecture par la maîtrise
+d'œuvre reste obligatoire, et c'est elle qui engage sa responsabilité. C'est un
+point à dire clairement en rendez-vous : la plateforme fait gagner des heures de
+saisie, elle ne remplace pas une signature professionnelle.</p>
+
+<h2>7. Les alertes croisées</h2>
+
+<p>Les alertes existantes ont été complétées par trois alertes issues de ces
+nouveaux circuits :</p>
+
+<ul>
+  <li>Un visa en attente dont l'échéance arrive à terme, avec l'effet chiffré sur
+      le chemin critique — quatre jours estimés sur la fermeture des cloisons.</li>
+  <li>Un avis défavorable non levé depuis trois jours, avec la commande qu'il
+      bloque.</li>
+  <li>Un avis suspensif du contrôleur technique conditionnant la reprise des
+      travaux dans une zone.</li>
+</ul>
+
+<p>Elles s'ajoutent aux alertes déjà présentées en réunion : la grue en panne qui
+reporte tous les levages sur l'autre grue et met en tension les approvisionnements
+du bâtiment B, les trois plaquistes présents sur six prévus, la livraison de
+menuiseries en retard sur le chemin critique, l'attestation sociale expirée d'une
+entreprise, la facture supérieure à la commande. Le message reste le même : ces
+alertes naissent du croisement de données que personne ne rapproche à la main.</p>
+
+<h2>8. La communication centralisée</h2>
+
+<p>Un canal de discussion réunit la maîtrise d'œuvre et les bureaux d'études, en
+plus des canaux de chantier existants. On y voit le rappel de la maîtrise d'œuvre
+demandant que les avis soient déposés sur la plateforme plutôt qu'envoyés par
+courrier électronique, l'annonce du dépôt des plans électricité, la prise en
+compte de l'avis défavorable par le bureau d'études charpente, l'avis suspensif du
+contrôleur technique, et la mention automatique indiquant que cet avis a été
+repris dans le compte rendu.</p>
+
+<p>Une discussion directe entre le conducteur de travaux et la maîtrise d'œuvre
+complète l'ensemble, autour de la situation financière en attente de validation.</p>
+
+<h2>9. Le copilote</h2>
+
+<p>Deux nouvelles questions ont été ajoutées aux questions suggérées : l'état des
+plans en attente de visa, et la liste des avis réglementaires ouverts. Comme les
+autres réponses, celles-ci citent les documents sur lesquels elles s'appuient et
+ne portent que sur ce que le profil connecté a le droit de voir.</p>
+
+<h2>10. Les paliers de fonctionnalités</h2>
+
+<p>La progressivité évoquée en fin de réunion, sous l'image des niveaux à
+débloquer, est présentée dans les paramètres sous forme de quatre paliers :</p>
+
+<ul>
+  <li><strong>Terrain</strong> — le socle : pointage, tâches, journal, photos,
+      messagerie, avec accès gratuit des sous-traitants.</li>
+  <li><strong>Pilotage</strong> — achats et livraisons, finances par lot, réserves,
+      rapports et copilote documentaire.</li>
+  <li><strong>Coordination</strong> — le palier de la maîtrise d'œuvre d'exécution :
+      visas, avis, réunions et comptes rendus, génération de documents.</li>
+  <li><strong>Offre promoteur</strong> — portée par le maître d'ouvrage pour toute
+      l'opération, tous les intervenants connectés, reprise des chantiers en cours
+      incluse.</li>
+</ul>
+
+<p>Les accès invités des intervenants sont inclus dans tous les paliers. Cela
+correspond aux deux modèles économiques évoqués : une offre globale payée par le
+promoteur, ou une offre ciblée pour l'entreprise de construction avec des accès
+limités ouverts aux autres acteurs pour faciliter la communication.</p>
+
+<h2>11. Cohérence de la démonstration</h2>
+
+<p>Toutes les données ajoutées prolongent les histoires déjà présentées en
+réunion, afin qu'un même récit tienne d'un écran à l'autre : la panne de grue, la
+rupture de rails de cloisons, les menuiseries en retard, l'absence du plombier,
+l'indice de plan périmé encore consulté par deux personnes. Les plans en attente
+de visa portent sur les mêmes zones, les avis de sécurité portent sur l'incident de
+garde-corps déjà mentionné dans le journal, et le compte rendu hebdomadaire reprend
+l'ensemble.</p>
+
+<p>Les dates sont toujours relatives au jour de la démonstration : un plan déposé
+« il y a deux jours » le sera toujours, quelle que soit la date du rendez-vous.</p>
+
+<h2>12. Points ouverts</h2>
+
+<ul>
+  <li>Les quatre modes de connexion présentés en réunion — mot de passe,
+      reconnaissance faciale, empreinte digitale et badge sans contact — restent une
+      animation de démonstration. Leur activation réelle dépendra des équipements et
+      de la politique de sécurité de chaque entreprise.</li>
+  <li>La reprise de chantier, la rédaction de documents et les réponses du copilote
+      sont simulées de façon crédible, mais ne s'appuient pas encore sur une
+      analyse réelle de documents.</li>
+  <li>Le retour d'expérience demandé pendant le week-end reste attendu : les
+      remarques de navigation et d'accessibilité des onglets pourront être intégrées
+      dans la prochaine version.</li>
+  <li>Un prochain point de suivi reste à planifier.</li>
+</ul>
+
+</body>
+</html>

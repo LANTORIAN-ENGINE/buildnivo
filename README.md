@@ -18,22 +18,25 @@ npm run build && npm start
 
 | Module | Contenu |
 |---|---|
-| **Connexion par persona** | 5 profils métier (direction, conducteur, chef de chantier, ouvrier, sous-traitant) — l'interface s'adapte au rôle |
-| **Vue d'ensemble** | KPI (budget, avancement, retard, effectif), courbe planifié/réalisé, alertes IA prioritaires, présence par corps d'état, échéances, répartition budgétaire |
+| **Connexion par persona** | 11 profils : 5 côté entreprise (direction, conducteur, chef de chantier, ouvrier, sous-traitant) et 6 intervenants de l'opération (maître d'ouvrage, maître d'œuvre d'exécution, architecte, bureau d'études, contrôleur technique, coordonnateur SPS) — navigation, indicateurs et droits s'adaptent au rôle |
+| **Vue d'ensemble** | Indicateurs et rubriques choisis selon le profil (budget/avancement/retard/effectif, visas en attente, avis en cours, conformité, prochaine réunion, marchés facturés…), courbe planifié/réalisé, alertes IA prioritaires, présence par corps d'état, échéances, répartition budgétaire |
 | **Pointage** | Simulateur NFC / QR dynamique / GPS, présents en temps réel, feuille de pointage, anomalies (retard, oubli, double chantier, hors zone), liste d'évacuation imprimable, export paie |
 | **Tâches** | Kanban + liste, localisation bâtiment/zone/lot, affectation entreprise ou salarié, priorités, circuit de validation, tâches créées par l'IA |
 | **Journal de chantier** | Timeline auto-composée (présences, tâches, livraisons, incidents, météo, photos) + dictée vocale simulée |
 | **Photos & problèmes** | Galerie filtrable ; chaque photo devient problème, tâche ou réserve avec entreprise responsable et échéance |
+| **Visas & plans d'exécution** | Dépôt des plans par les bureaux d'études, avis du maître d'œuvre d'exécution (favorable / avec observations / défavorable), contre-visa du contrôleur technique, travaux conditionnés par un visa |
+| **Réunions & comptes rendus** | Convocation, présences, CR hebdomadaire composé automatiquement, avis des intervenants intégrés — le maître d'ouvrage peut retirer du CR les avis non réglementaires (jamais les réglementaires) |
+| **Reprise de chantier** | Onboarding assisté par l'IA d'une opération déjà démarrée : dépôt des plans, CR, marchés et situations, reconstruction de l'avancement, de la facturation et du reste à faire |
 | **Réserves** | Suivi des levées par entreprise, relances IA |
 | **Achats & livraisons** | Commandes, retards, confirmations de réception, rapprochement planning |
 | **Finances** | Budget / engagé / facturé / payé par lot, détection de dépassement |
 | **Documents** | Plans, CCTP, contrats avec historique d'indices, classement automatique IA, recherche |
-| **Rapports IA** | Rapport journalier, synthèse hebdo, relances préparées par l'IA avec validation humaine |
+| **Rapports IA** | Rapport journalier, synthèse hebdo (visas et avis inclus), relances préparées par l'IA, génération de CCTP / estimatifs / contrats / ordres de service à partir des plans — validation humaine obligatoire |
 | **Copilote IA** | Q&A documentaire scriptée **citant ses sources** + dictée terrain transformée en actions structurées (CDC §6.1) |
 | **Messages** | Messagerie type Messenger rattachée aux chantiers : conversations directes + canaux de chantier, présence en ligne, photos/documents/vocaux, accusés de lecture, indicateur de saisie, réponses simulées, « créer une tâche depuis un message » |
 | **Support & aide** | FAQ recherchable, contact (téléphone/WhatsApp/email, fuseau Réunion), statut du service, tickets suivis avec création inline |
-| **Équipes & sociétés** | Salariés, sous-traitants, fournisseurs, matrice rôles & permissions, documents administratifs surveillés |
-| **Paramètres** | Langue FR/EN, mode découverte, réinitialisation de la démo |
+| **Équipes & sociétés** | Salariés, sous-traitants, fournisseurs, intervenants de l'opération (mission et périmètre), matrice rôles & permissions sur 11 profils, documents administratifs surveillés |
+| **Paramètres** | Langue FR/EN, mode découverte, paliers de fonctionnalités (Terrain / Pilotage / Coordination / offre promoteur), réinitialisation de la démo |
 
 ## Fonctions transverses
 

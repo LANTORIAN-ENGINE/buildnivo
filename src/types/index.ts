@@ -5,7 +5,20 @@ export type Role =
   | "conducteur"
   | "chef"
   | "ouvrier"
-  | "soustraitant";
+  | "soustraitant"
+  /* Intervenants externes de l'opération (réunion du 31/07/2026) */
+  | "moa" // maître d'ouvrage / promoteur
+  | "moex" // maître d'œuvre d'exécution
+  | "architecte"
+  | "bet" // bureau d'études (VRD, fluides, électricité, structure, charpente)
+  | "controleur" // contrôleur technique (type Veritas)
+  | "csps"; // coordonnateur sécurité et protection de la santé
+
+/** Rôles internes à l'entreprise de travaux (par opposition aux intervenants externes). */
+export const internalRoles: Role[] = ["direction", "conducteur", "chef", "ouvrier", "soustraitant"];
+
+/** Spécialités des bureaux d'études. */
+export type Discipline = "vrd" | "fluides" | "electricite" | "structure" | "charpente";
 
 export interface Persona {
   id: string;
@@ -14,6 +27,8 @@ export interface Persona {
   lastName: string;
   jobKey: string; // clé i18n du métier
   company: string;
+  companyId?: string;
+  discipline?: Discipline;
 }
 
 export type Trade =
@@ -26,11 +41,26 @@ export type Trade =
   | "peinture"
   | "vrd";
 
+export type CompanyKind =
+  | "generale"
+  | "soustraitant"
+  | "fournisseur"
+  | "moa"
+  | "moex"
+  | "architecte"
+  | "bet"
+  | "controle";
+
 export interface Company {
   id: string;
   name: string;
-  kind: "generale" | "soustraitant" | "fournisseur";
+  kind: CompanyKind;
   trade?: Trade;
+  discipline?: Discipline;
+  /** Rôle plateforme accordé aux comptes de cette société. */
+  role?: Role;
+  /** Clé i18n décrivant la mission contractuelle (intervenants externes). */
+  missionKey?: string;
   city: string;
   contact: string;
   phone: string;
@@ -75,6 +105,7 @@ export interface Employee {
   lastName: string;
   jobKey: string;
   trade: Trade;
+  discipline?: Discipline;
   companyId: string;
   projectId: string;
   phone: string;
@@ -156,7 +187,17 @@ export interface SitePhoto {
   linkedTaskId?: string;
 }
 
-export type DocCategory = "plan" | "cctp" | "contrat" | "administratif" | "livraison" | "compteRendu";
+export type DocCategory =
+  | "plan"
+  | "cctp"
+  | "contrat"
+  | "administratif"
+  | "livraison"
+  | "compteRendu"
+  | "planExe" // plan d'exécution déposé par un bureau d'études
+  | "noteCalcul"
+  | "esquisse"
+  | "avis"; // avis contrôleur technique / SPS
 
 export interface SiteDocument {
   id: string;
@@ -178,7 +219,9 @@ export type AlertKind =
   | "livraison"
   | "document"
   | "budget"
-  | "incoherence";
+  | "incoherence"
+  | "visa"
+  | "securite";
 
 export interface AiAlert {
   id: string;
@@ -192,7 +235,7 @@ export interface AiAlert {
   handled: boolean;
 }
 
-export type ReminderKind = "entreprise" | "document" | "fournisseur" | "livraison" | "tache";
+export type ReminderKind = "entreprise" | "document" | "fournisseur" | "livraison" | "tache" | "visa";
 
 export interface AiReminder {
   id: string;
@@ -299,6 +342,126 @@ export interface CopilotAction {
   kind: "anomalie" | "tache" | "achat" | "risque" | "journal" | "avancement";
   label: string;
   detail: string;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Circuit de visa des plans d'exécution (MOEX ↔ BET ↔ contrôleur technique)  */
+/* ------------------------------------------------------------------------- */
+
+export type VisaStatus =
+  | "enAttente"
+  | "favorable"
+  | "favorableObs" // favorable avec observations
+  | "defavorable";
+
+export interface PlanSubmission {
+  id: string; // « EXE-ELE-204 »
+  projectId: string;
+  name: string;
+  discipline: Discipline;
+  version: string; // « ind. B »
+  /** Société émettrice (bureau d'études ou architecte). */
+  submittedBy: string; // companyId
+  submittedAt: string;
+  /** Avis du maître d'œuvre d'exécution. */
+  status: VisaStatus;
+  reviewedAt?: string;
+  observations: string[];
+  /** Contre-visa du contrôleur technique, uniquement après visa MOEX. */
+  ctStatus?: VisaStatus;
+  ctNote?: string;
+  /** Note de calcul jointe au dépôt. */
+  calcNote?: boolean;
+  zoneId?: string;
+  /** Tâche ou lot dont le démarrage dépend de ce visa. */
+  blocksKey?: string;
+  dueAt?: string;
+}
+
+/** Avis d'un intervenant, repris automatiquement dans le compte rendu hebdomadaire. */
+export type AvisNature = "reglementaire" | "observation";
+
+export interface Avis {
+  id: string;
+  projectId: string;
+  authorRole: Role;
+  author: string; // « Veritas OI — J.-M. Perrin »
+  nature: AvisNature;
+  subject: string;
+  body: string;
+  date: string;
+  severity: AlertSeverity;
+  /** Le maître d'ouvrage peut masquer les avis non réglementaires du CR diffusé. */
+  hidden: boolean;
+  docRef?: string;
+  submissionId?: string;
+}
+
+/* --------------------- Réunions de chantier hebdomadaires ------------------ */
+
+export type MeetingStatus = "planifiee" | "brouillon" | "diffuse";
+
+export interface MeetingAttendee {
+  name: string;
+  role: Role;
+  company: string;
+  present: boolean;
+  excused?: boolean;
+}
+
+export interface SiteMeeting {
+  id: string; // « CR-35 »
+  projectId: string;
+  number: number;
+  date: string;
+  nextDate: string;
+  status: MeetingStatus;
+  attendees: MeetingAttendee[];
+  /** Sections rédigées par l'IA à partir des données du chantier. */
+  sections: { key: string; text: string }[];
+  /** Avis repris dans le compte rendu. */
+  avisIds: string[];
+  actions: { label: string; owner: string; due: string }[];
+}
+
+/* ------------- Production documentaire assistée (CCTP, estimatif) ---------- */
+
+export type DraftKind = "cctp" | "estimatif" | "contrat" | "ordreService";
+
+export interface AiDocDraft {
+  id: string;
+  projectId: string;
+  kind: DraftKind;
+  title: string;
+  /** Documents sources analysés (plans, CCTP existants). */
+  sourceDocIds: string[];
+  lines: { label: string; detail: string; qty?: string; amount?: number }[];
+  status: "aValider" | "valide";
+  /** Temps de rédaction manuel estimé, en heures — argument commercial MOEX. */
+  savedHours: number;
+}
+
+/* --------------- Reprise d'un chantier déjà démarré (onboarding) ----------- */
+
+export interface RepriseFile {
+  name: string;
+  categoryKey: DocCategory;
+  pages: number;
+  extractedKey: string; // clé i18n de ce que l'IA en a tiré
+}
+
+export interface RepriseStep {
+  key: string;
+  status: "fait" | "enCours" | "attente";
+}
+
+export interface RepriseResult {
+  progress: number;
+  invoicedPct: number;
+  monthsLeft: number;
+  lots: { lotKey: string; progress: number; invoiced: number; marketAmount: number }[];
+  remaining: string[];
+  gaps: string[];
 }
 
 export interface CopilotAnswer {

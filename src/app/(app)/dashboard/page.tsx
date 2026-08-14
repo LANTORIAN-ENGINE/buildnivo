@@ -3,11 +3,17 @@
 import {
   AlarmClockCheck,
   AlertTriangle,
+  CalendarClock,
   Camera,
+  CheckCircle2,
   Euro,
   Clock3,
   Download,
+  Gavel,
+  ListChecks,
   Mic,
+  ShieldCheck,
+  Stamp,
   TrendingUp,
   UsersRound,
 } from "lucide-react";
@@ -25,10 +31,11 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { projectById } from "@/data";
+import { companyById, inDays, projectById } from "@/data";
 import { fmtDate, fmtEuro, useI18n } from "@/lib/i18n";
+import { canSee, type KpiKey, roleKpis, roleSections } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
-import { Button, cn, DemoTip, ProgressBar, SectionCard, StatusPill, Tooltip } from "@/components/ui";
+import { Button, cn, DemoTip, ProgressBar, SectionCard, StatusPill, type Tone, Tooltip } from "@/components/ui";
 
 const BLUE = "oklch(0.51 0.2 264)";
 const GREEN = "oklch(0.58 0.13 152)";
@@ -60,9 +67,23 @@ const presenceByProject: Record<string, { key: string; present: number; planned:
   ],
 };
 
+interface Kpi {
+  id: string;
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  sub?: string;
+  note?: string;
+  bar?: number;
+  barLabel?: string;
+  pulse?: boolean;
+  tone: Tone;
+}
+
 export default function DashboardPage() {
   const { d, t, lang } = useI18n();
-  const { persona, activeProjectId, alerts, tasks, markAlertHandled, toast } = useDemo();
+  const { persona, activeProjectId, alerts, tasks, submissions, avis, meetings, reserveItems, markAlertHandled, toast } =
+    useDemo();
   const project = projectById(activeProjectId)!;
 
   const projectAlerts = alerts.filter((a) => a.projectId === activeProjectId && !a.handled);
@@ -82,8 +103,39 @@ export default function DashboardPage() {
   }));
   const todayLabel = curveData.findLast((c) => c.actual !== null)?.label;
 
-  const kpis = [
-    {
+  /* ---- Données transverses aux profils externes (visas, avis, réunions) ---- */
+  const projectSubs = submissions.filter((s) => s.projectId === activeProjectId);
+  const mySubs = projectSubs.filter((s) => s.submittedBy === persona.companyId);
+  const pendingVisas = projectSubs.filter((s) => s.status === "enAttente");
+  const overdueVisas = pendingVisas.filter((s) => s.dueAt && s.dueAt < inDays(0));
+  const myObsToLift = (persona.companyId ? mySubs : projectSubs).filter(
+    (s) => s.status === "favorableObs" || s.status === "defavorable"
+  );
+  const reviewed = projectSubs.filter((s) => s.status !== "enAttente");
+  const conformityPct = reviewed.length
+    ? Math.round((reviewed.filter((s) => s.status === "favorable").length / reviewed.length) * 100)
+    : 0;
+
+  const projectAvis = avis.filter((a) => a.projectId === activeProjectId);
+  const myAvis = projectAvis.filter((a) => a.author.includes(persona.lastName));
+  const safetyAvis = projectAvis.filter((a) => a.authorRole === "csps" || a.authorRole === "controleur");
+  const regulatoryCount = projectAvis.filter((a) => a.nature === "reglementaire").length;
+
+  const projectMeetings = meetings.filter((m) => m.projectId === activeProjectId);
+  const nextMeeting = projectMeetings.find((m) => m.status === "planifiee");
+  const draftMeeting = projectMeetings.find((m) => m.status === "brouillon");
+  const daysToMeeting = nextMeeting
+    ? Math.max(0, Math.round((new Date(nextMeeting.date).getTime() - new Date(inDays(0)).getTime()) / 86_400_000))
+    : 0;
+
+  const myTasks = tasks.filter(
+    (tk) => tk.projectId === activeProjectId && tk.status !== "terminee" && (persona.role !== "soustraitant" || tk.assigneeCompanyId === persona.companyId)
+  );
+  const openReserves = reserveItems.filter((r) => r.projectId === activeProjectId && r.status !== "levee");
+
+  /** Catalogue complet : chaque profil n'en affiche que ses rubriques. */
+  const kpiCatalog: Record<KpiKey, Kpi> = {
+    budget: {
       id: "budget",
       icon: Euro,
       label: d.dashboard.kpi.budget,
@@ -91,9 +143,9 @@ export default function DashboardPage() {
       sub: `/ ${fmtEuro(project.budgetTotal, lang, true)}`,
       bar: budgetPct,
       barLabel: `${budgetPct}%`,
-      tone: "blue" as const,
+      tone: "blue",
     },
-    {
+    progress: {
       id: "progress",
       icon: TrendingUp,
       label: d.dashboard.kpi.progress,
@@ -101,18 +153,18 @@ export default function DashboardPage() {
       sub: "%",
       bar: project.progress,
       barLabel: `${project.plannedProgress}% ${d.common.vs} ${d.dashboard.curve.planned.toLowerCase()}`,
-      tone: "ok" as const,
+      tone: "ok",
     },
-    {
+    delay: {
       id: "delay",
       icon: Clock3,
       label: d.dashboard.kpi.delay,
       value: `${project.delayDays}`,
       sub: d.common.days,
       note: d.dashboard.kpi.vsPlanning,
-      tone: project.delayDays > 5 ? ("safety" as const) : ("ok" as const),
+      tone: project.delayDays > 5 ? "safety" : "ok",
     },
-    {
+    team: {
       id: "team",
       icon: UsersRound,
       label: d.dashboard.kpi.team,
@@ -120,19 +172,125 @@ export default function DashboardPage() {
       sub: d.common.people,
       note: d.dashboard.kpi.onSite,
       pulse: true,
-      tone: "blue" as const,
+      tone: "blue",
     },
-  ];
+    myHours: {
+      id: "myHours",
+      icon: Clock3,
+      label: d.dashboard.kpi.myHours,
+      value: "31,5",
+      sub: d.common.hours,
+      note: d.dashboard.kpi.thisWeekSub,
+      tone: "blue",
+    },
+    myTasks: {
+      id: "myTasks",
+      icon: ListChecks,
+      label: d.dashboard.kpi.myTasks,
+      value: `${myTasks.length}`,
+      note: d.dashboard.kpi.assignedToMe,
+      tone: "blue",
+    },
+    visasPending: {
+      id: "visasPending",
+      icon: Stamp,
+      label: d.dashboard.kpi.visasPending,
+      value: `${pendingVisas.length}`,
+      note: overdueVisas.length > 0 ? d.dashboard.kpi.overdueVisa : d.dashboard.kpi.toHandle,
+      tone: overdueVisas.length > 0 ? "danger" : "safety",
+    },
+    visaDelay: {
+      id: "visaDelay",
+      icon: Clock3,
+      label: d.dashboard.kpi.visaDelay,
+      value: "2,4",
+      sub: d.dashboard.kpi.daysUnit,
+      note: d.dashboard.kpi.thisWeekSub,
+      tone: "blue",
+    },
+    myPlans: {
+      id: "myPlans",
+      icon: Stamp,
+      label: d.dashboard.kpi.myPlans,
+      value: `${mySubs.length || projectSubs.length}`,
+      note: `${conformityPct}% ${d.dashboard.kpi.favorableRate}`,
+      tone: "blue",
+    },
+    obsToLift: {
+      id: "obsToLift",
+      icon: AlertTriangle,
+      label: d.dashboard.kpi.obsToLift,
+      value: `${myObsToLift.length}`,
+      note: d.dashboard.kpi.toHandle,
+      tone: myObsToLift.length > 0 ? "safety" : "ok",
+    },
+    avisOpen: {
+      id: "avisOpen",
+      icon: Gavel,
+      label: d.dashboard.kpi.avisOpen,
+      value: `${projectAvis.length}`,
+      note: `${regulatoryCount} ${d.dashboard.kpi.regulatory}`,
+      tone: "viz",
+    },
+    conformity: {
+      id: "conformity",
+      icon: CheckCircle2,
+      label: d.dashboard.kpi.conformity,
+      value: `${conformityPct}`,
+      sub: "%",
+      bar: conformityPct,
+      barLabel: d.dashboard.kpi.favorableRate,
+      tone: "ok",
+    },
+    safetyAvis: {
+      id: "safetyAvis",
+      icon: ShieldCheck,
+      label: d.dashboard.kpi.safetyAvis,
+      value: `${safetyAvis.length}`,
+      note: d.dashboard.kpi.toHandle,
+      tone: safetyAvis.length > 1 ? "danger" : "safety",
+    },
+    nextMeeting: {
+      id: "nextMeeting",
+      icon: CalendarClock,
+      label: d.dashboard.kpi.nextMeeting,
+      value: `${daysToMeeting}`,
+      sub: d.dashboard.kpi.daysUnit,
+      note: nextMeeting ? fmtDate(nextMeeting.date, lang, { weekday: "long", day: "numeric", month: "long" }) : "",
+      tone: "blue",
+    },
+    openReserves: {
+      id: "openReserves",
+      icon: AlertTriangle,
+      label: d.dashboard.kpi.openReserves,
+      value: `${openReserves.length}`,
+      note: d.dashboard.kpi.toHandle,
+      tone: openReserves.length > 0 ? "safety" : "ok",
+    },
+    marketInvoiced: {
+      id: "marketInvoiced",
+      icon: Euro,
+      label: d.dashboard.kpi.marketInvoiced,
+      value: fmtEuro(project.budgetSpent, lang, true),
+      sub: `/ ${fmtEuro(project.budgetTotal, lang, true)}`,
+      bar: budgetPct,
+      barLabel: `${budgetPct}% ${d.dashboard.kpi.ofMarkets}`,
+      tone: "blue",
+    },
+  };
 
-  // Le terrain voit l'équipe d'abord, la direction voit le budget d'abord.
-  const orderedKpis = isTerrain ? [kpis[3], kpis[1], kpis[2], kpis[0]] : kpis;
+  const orderedKpis = roleKpis[persona.role].map((k) => kpiCatalog[k]);
+  const sections = roleSections[persona.role];
 
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-2.5">
           <h1 className="sr-only">{d.dashboard.title}</h1>
-          <DemoTip text={d.tips.dashboard.kpi} />
+          <StatusPill tone="blue" dot={false}>
+            {t(`roles.${persona.role}`)} · {d.dashboard.kpi.roleScope}
+          </StatusPill>
+          <DemoTip text={d.tips.roleScope.main} />
         </div>
         {isTerrain && (
           <div className="flex flex-wrap gap-2">
@@ -165,7 +323,10 @@ export default function DashboardPage() {
                   "flex h-8.5 w-8.5 items-center justify-center rounded-[10px]",
                   k.tone === "blue" && "bg-blue-soft text-blue-deep",
                   k.tone === "ok" && "bg-ok-soft text-ok-deep",
-                  k.tone === "safety" && "bg-safety-soft text-safety-deep"
+                  k.tone === "safety" && "bg-safety-soft text-safety-deep",
+                  k.tone === "danger" && "bg-danger-soft text-danger",
+                  k.tone === "viz" && "bg-viz-soft text-viz",
+                  k.tone === "neutral" && "bg-line-soft text-ink-soft"
                 )}
               >
                 <k.icon className="h-4.5 w-4.5" />
@@ -192,7 +353,9 @@ export default function DashboardPage() {
       </div>
 
       {/* Courbe + alertes */}
-      <div className="grid gap-4 xl:grid-cols-[1fr_400px]">
+      {(sections.includes("curve") || sections.includes("alerts")) && (
+      <div className={cn("grid gap-4", sections.includes("curve") && sections.includes("alerts") && "xl:grid-cols-[1fr_400px]")}>
+        {sections.includes("curve") && (
         <SectionCard title={d.dashboard.curve.title} tip={d.tips.dashboard.curve} actions={
           <div className="flex items-center gap-3 text-[11.5px] font-semibold text-ink-soft">
             <span className="flex items-center gap-1.5"><span className="h-0.75 w-4 rounded-full" style={{ background: BLUE }} /> {d.dashboard.curve.planned}</span>
@@ -223,7 +386,9 @@ export default function DashboardPage() {
             </ResponsiveContainer>
           </div>
         </SectionCard>
+        )}
 
+        {sections.includes("alerts") && (
         <SectionCard
           title={d.dashboard.alerts.title}
           tip={d.tips.dashboard.alerts}
@@ -272,10 +437,121 @@ export default function DashboardPage() {
             </div>
           ))}
         </SectionCard>
+        )}
       </div>
+      )}
+
+      {/* Rubriques de coordination : visas, avis, réunion */}
+      {(sections.includes("visas") || sections.includes("avis") || sections.includes("meeting")) && (
+        <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+          {sections.includes("visas") && (
+            <SectionCard
+              title={d.dashboard.visas.title}
+              tip={d.tips.visas.blocking}
+              actions={
+                <Link href="/visas" className="text-[12px] font-bold text-blue hover:text-blue-deep">
+                  {d.dashboard.visas.seeAll}
+                </Link>
+              }
+              bodyClassName="space-y-2.5"
+            >
+              {pendingVisas.length === 0 && (
+                <p className="rounded-xl bg-ok-soft px-4 py-6 text-center text-[12.5px] text-ok-deep">{d.dashboard.visas.empty}</p>
+              )}
+              {pendingVisas.slice(0, 4).map((s) => {
+                const late = s.dueAt && s.dueAt < inDays(0);
+                return (
+                  <Link
+                    key={s.id}
+                    href="/visas"
+                    className={cn(
+                      "block rounded-xl border p-3",
+                      late ? "border-danger/30 bg-danger-soft/60" : "border-line bg-line-soft/40"
+                    )}
+                  >
+                    <p className="flex items-center gap-2">
+                      <span className="font-mono text-[11px] font-bold text-blue-deep">{s.id}</span>
+                      <span className="min-w-0 flex-1 truncate text-[12.5px] font-semibold text-ink">{s.name}</span>
+                    </p>
+                    <p className="mt-1 flex flex-wrap items-center gap-x-3 text-[11px] text-ink-soft">
+                      <span>{companyById(s.submittedBy)?.name}</span>
+                      <span className="font-mono">{s.version}</span>
+                      {s.dueAt && (
+                        <span className={cn("font-semibold", late ? "text-danger" : "text-safety-deep")}>
+                          {late ? d.visas.overdue : `${d.visas.due} ${fmtDate(s.dueAt, lang)}`}
+                        </span>
+                      )}
+                    </p>
+                  </Link>
+                );
+              })}
+            </SectionCard>
+          )}
+
+          {sections.includes("avis") && (
+            <SectionCard
+              title={d.dashboard.avis.title}
+              tip={d.tips.reunions.avis}
+              actions={
+                <Link href="/reunions" className="text-[12px] font-bold text-blue hover:text-blue-deep">
+                  {d.common.seeAll}
+                </Link>
+              }
+              bodyClassName="space-y-2.5"
+            >
+              {projectAvis.length === 0 && <p className="text-[12.5px] text-ink-soft">{d.dashboard.avis.empty}</p>}
+              {(myAvis.length > 0 ? myAvis : projectAvis).slice(0, 4).map((a) => (
+                <Link key={a.id} href="/reunions" className="block rounded-xl border border-line bg-line-soft/40 p-3">
+                  <p className="flex items-start gap-2">
+                    <Gavel className="mt-0.5 h-3.5 w-3.5 shrink-0 text-blue" />
+                    <span className="min-w-0">
+                      <span className="block text-[12.5px] leading-snug font-semibold text-ink">{a.subject}</span>
+                      <span className="mt-0.5 block text-[11px] text-ink-soft">{a.author}</span>
+                    </span>
+                    <StatusPill tone={a.nature === "reglementaire" ? "danger" : "neutral"} dot={false} className="ml-auto shrink-0">
+                      {a.nature === "reglementaire" ? d.reunions.regulatory : d.reunions.observation}
+                    </StatusPill>
+                  </p>
+                </Link>
+              ))}
+            </SectionCard>
+          )}
+
+          {sections.includes("meeting") && (
+            <SectionCard title={d.dashboard.meeting.title} tip={d.tips.reunions.main}>
+              {nextMeeting && (
+                <>
+                  <p className="text-[11px] font-bold tracking-wider text-ink-faint uppercase">{d.dashboard.meeting.next}</p>
+                  <p className="mt-1 font-mono text-[17px] font-bold text-blue-deep">
+                    {fmtDate(nextMeeting.date, lang, { weekday: "long", day: "numeric", month: "long" })}
+                  </p>
+                  <p className="mt-1 text-[12px] text-ink-soft">
+                    {nextMeeting.attendees.length} {d.dashboard.meeting.attendees}
+                  </p>
+                </>
+              )}
+              {draftMeeting && (
+                <div className="mt-3 rounded-xl bg-safety-soft px-3.5 py-3">
+                  <p className="flex items-center gap-2 text-[12.5px] font-bold text-safety-deep">
+                    <CalendarClock className="h-4 w-4" /> {d.dashboard.meeting.draft}
+                  </p>
+                  <p className="mt-1 text-[11.5px] text-safety-deep">
+                    {d.reunions.meetingN}
+                    {draftMeeting.number} · {draftMeeting.avisIds.length} {d.reunions.avisSection.toLowerCase()}
+                  </p>
+                </div>
+              )}
+              <Link href="/reunions" className="mt-3 inline-block text-[12px] font-bold text-blue hover:text-blue-deep">
+                {d.dashboard.meeting.open} →
+              </Link>
+            </SectionCard>
+          )}
+        </div>
+      )}
 
       {/* Présence / échéances / budget */}
       <div className="grid gap-4 lg:grid-cols-2 xl:grid-cols-3">
+        {sections.includes("presence") && (
         <SectionCard
           title={d.dashboard.presence.title}
           tip={d.tips.dashboard.presence}
@@ -298,11 +574,15 @@ export default function DashboardPage() {
               </div>
             );
           })}
-          <Link href="/pointage" className="inline-block pt-1 text-[12px] font-bold text-blue hover:text-blue-deep">
-            {d.dashboard.presence.detail} →
-          </Link>
+          {canSee(persona.role, "pointage") && (
+            <Link href="/pointage" className="inline-block pt-1 text-[12px] font-bold text-blue hover:text-blue-deep">
+              {d.dashboard.presence.detail} →
+            </Link>
+          )}
         </SectionCard>
+        )}
 
+        {sections.includes("deadlines") && (
         <SectionCard
           title={d.dashboard.deadlines.title}
           actions={
@@ -330,7 +610,9 @@ export default function DashboardPage() {
             </Link>
           ))}
         </SectionCard>
+        )}
 
+        {sections.includes("budget") && (
         <SectionCard title={d.dashboard.budget.title} className="lg:col-span-2 xl:col-span-1">
           <div className="flex items-center gap-2">
             <div className="relative h-44 w-44 shrink-0">
@@ -359,6 +641,7 @@ export default function DashboardPage() {
             </ul>
           </div>
         </SectionCard>
+        )}
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-2 px-1 text-[11.5px] text-ink-faint">

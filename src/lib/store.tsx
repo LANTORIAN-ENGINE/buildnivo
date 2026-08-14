@@ -3,30 +3,39 @@
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import type {
   AiAlert,
+  AiDocDraft,
   AiReminder,
+  Avis,
   ChatMessage,
   ClockMethod,
   Conversation,
   JournalEntry,
   Persona,
+  PlanSubmission,
   PurchaseOrder,
   Reserve,
   ReserveStatus,
+  SiteMeeting,
   SitePhoto,
   SiteTask,
   SupportTicket,
   TaskStatus,
   TimeEntry,
+  VisaStatus,
 } from "@/types";
 import {
   aiAlerts,
+  aiDocDrafts,
   aiReminders,
+  avisList,
   conversations as seedConversations,
   inDays,
   journalEntries,
   personas,
+  planSubmissions,
   purchaseOrders,
   reserves,
+  siteMeetings,
   sitePhotos,
   siteTasks,
   supportTickets,
@@ -56,6 +65,10 @@ interface DemoState {
   orders: PurchaseOrder[];
   convs: Conversation[];
   tickets: SupportTicket[];
+  submissions: PlanSubmission[];
+  avis: Avis[];
+  meetings: SiteMeeting[];
+  drafts: AiDocDraft[];
 
   toasts: Toast[];
   toast: (message: string) => void;
@@ -74,6 +87,16 @@ interface DemoState {
   receiveReply: (convId: string) => void;
   markConversationRead: (convId: string) => void;
   addTicket: (ticket: SupportTicket) => void;
+  /** Visa du maître d'œuvre d'exécution sur un plan d'exécution déposé. */
+  setVisa: (submissionId: string, status: VisaStatus, observations?: string[]) => void;
+  /** Contre-visa du contrôleur technique. */
+  setCtVisa: (submissionId: string, status: VisaStatus, note?: string) => void;
+  addSubmission: (submission: PlanSubmission) => void;
+  addAvis: (avis: Avis) => void;
+  /** Le maître d'ouvrage masque un avis non réglementaire du compte rendu diffusé. */
+  toggleAvisHidden: (avisId: string) => void;
+  diffuseMeeting: (meetingId: string) => void;
+  validateDraft: (draftId: string) => void;
   resetDemo: () => void;
 }
 
@@ -104,6 +127,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [orders, setOrders] = useState<PurchaseOrder[]>(() => clone(purchaseOrders));
   const [convs, setConvs] = useState<Conversation[]>(() => cloneConvs(seedConversations));
   const [tickets, setTickets] = useState<SupportTicket[]>(() => clone(supportTickets));
+  const [submissions, setSubmissions] = useState<PlanSubmission[]>(() => clone(planSubmissions));
+  const [avis, setAvis] = useState<Avis[]>(() => clone(avisList));
+  const [meetings, setMeetings] = useState<SiteMeeting[]>(() => clone(siteMeetings));
+  const [drafts, setDrafts] = useState<AiDocDraft[]>(() => clone(aiDocDrafts));
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastId = useRef(0);
@@ -195,7 +222,12 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
         if (c.id !== convId) return c;
         const [next, ...rest] = c.replies;
         const text = next ?? "Bien reçu 👍 Je reviens vers vous rapidement.";
-        const from = c.kind === "direct" ? (c.memberId ?? "BN-0003") : (c.id === "cv-sunset" ? "BN-0110" : "BN-0142");
+        const channelSpeaker: Record<string, string> = {
+          "cv-sunset": "BN-0110",
+          "cv-moe": "EXT-9002",
+          "cv-albany": "BN-0141",
+        };
+        const from = c.kind === "direct" ? (c.memberId ?? "BN-0003") : (channelSpeaker[c.id] ?? "BN-0142");
         const reply: ChatMessage = {
           id: `msg-r-${Date.now()}`,
           from,
@@ -221,6 +253,42 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setTickets((prev) => [ticket, ...prev]);
   }, []);
 
+  const setVisa = useCallback((submissionId: string, status: VisaStatus, observations?: string[]) => {
+    setSubmissions((prev) =>
+      prev.map((s) =>
+        s.id === submissionId
+          ? { ...s, status, reviewedAt: inDays(0), observations: observations ?? s.observations }
+          : s
+      )
+    );
+  }, []);
+
+  const setCtVisa = useCallback((submissionId: string, status: VisaStatus, note?: string) => {
+    setSubmissions((prev) =>
+      prev.map((s) => (s.id === submissionId ? { ...s, ctStatus: status, ctNote: note ?? s.ctNote } : s))
+    );
+  }, []);
+
+  const addSubmission = useCallback((submission: PlanSubmission) => {
+    setSubmissions((prev) => [submission, ...prev]);
+  }, []);
+
+  const addAvis = useCallback((item: Avis) => {
+    setAvis((prev) => [item, ...prev]);
+  }, []);
+
+  const toggleAvisHidden = useCallback((avisId: string) => {
+    setAvis((prev) => prev.map((a) => (a.id === avisId ? { ...a, hidden: !a.hidden } : a)));
+  }, []);
+
+  const diffuseMeeting = useCallback((meetingId: string) => {
+    setMeetings((prev) => prev.map((m) => (m.id === meetingId ? { ...m, status: "diffuse" } : m)));
+  }, []);
+
+  const validateDraft = useCallback((draftId: string) => {
+    setDrafts((prev) => prev.map((dr) => (dr.id === draftId ? { ...dr, status: "valide" } : dr)));
+  }, []);
+
   const resetDemo = useCallback(() => {
     setEntries(clone(timeEntries));
     setTasks(clone(siteTasks));
@@ -231,6 +299,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setOrders(clone(purchaseOrders));
     setConvs(cloneConvs(seedConversations));
     setTickets(clone(supportTickets));
+    setSubmissions(clone(planSubmissions));
+    setAvis(clone(avisList));
+    setMeetings(clone(siteMeetings));
+    setDrafts(clone(aiDocDrafts));
   }, []);
 
   const value = useMemo<DemoState>(
@@ -251,6 +323,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       orders,
       convs,
       tickets,
+      submissions,
+      avis,
+      meetings,
+      drafts,
       toasts,
       toast,
       clockDemo,
@@ -267,6 +343,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       receiveReply,
       markConversationRead,
       addTicket,
+      setVisa,
+      setCtVisa,
+      addSubmission,
+      addAvis,
+      toggleAvisHidden,
+      diffuseMeeting,
+      validateDraft,
       resetDemo,
     }),
     [
@@ -283,6 +366,10 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       orders,
       convs,
       tickets,
+      submissions,
+      avis,
+      meetings,
+      drafts,
       toasts,
       toast,
       clockDemo,
@@ -299,6 +386,13 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       receiveReply,
       markConversationRead,
       addTicket,
+      setVisa,
+      setCtVisa,
+      addSubmission,
+      addAvis,
+      toggleAvisHidden,
+      diffuseMeeting,
+      validateDraft,
       resetDemo,
     ]
   );

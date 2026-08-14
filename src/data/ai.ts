@@ -68,6 +68,42 @@ export const aiAlerts: AiAlert[] = [
     date: inDays(0),
     handled: false,
   },
+  {
+    id: "al-07",
+    projectId: "p-sunset",
+    kind: "visa",
+    severity: "critique",
+    title: "Visa en attente : plans EXE courants forts",
+    detail:
+      "EXE-ELE-204 (Ohm Ingénierie) déposé il y a 2 jours, échéance de visa demain. Sans avis favorable, la fermeture des cloisons R+2 ne peut pas démarrer : +4 jours estimés sur le chemin critique.",
+    suggestedActionKey: "visa",
+    date: inDays(0),
+    handled: false,
+  },
+  {
+    id: "al-08",
+    projectId: "p-sunset",
+    kind: "visa",
+    severity: "elevee",
+    title: "Avis défavorable non levé — charpente Bât. B",
+    detail:
+      "EXE-CHA-042 refusé il y a 3 jours (surcharge cyclonique absente de la descente de charges). Redépôt attendu sous 5 jours ; la commande de charpente reste bloquée.",
+    suggestedActionKey: "visa",
+    date: daysAgo(1),
+    handled: false,
+  },
+  {
+    id: "al-09",
+    projectId: "p-sunset",
+    kind: "securite",
+    severity: "critique",
+    title: "Avis suspensif du contrôleur technique",
+    detail:
+      "Trémie ascenseur R+2 : protection collective déposée sans remplacement. Reprise des travaux de la zone conditionnée à la pose de la protection définitive (RAP-VT-2026-118).",
+    suggestedActionKey: "securite",
+    date: daysAgo(1),
+    handled: false,
+  },
 ];
 
 export const aiReminders: AiReminder[] = [
@@ -106,6 +142,33 @@ export const aiReminders: AiReminder[] = [
     subject: "Confirmation livraison rails cloisons (CMD-2026-118)",
     body: "Bonjour, merci de confirmer la livraison des rails et montants prévue dans 3 jours ; l'équipe plaquistes du Bât. B est à l'arrêt sur cette fourniture.",
     status: "envoyee",
+  },
+  {
+    id: "rem-06",
+    projectId: "p-sunset",
+    kind: "visa",
+    target: "Cap Sud MOE — Cédric Hoareau",
+    subject: "Visa attendu — EXE-ELE-204 (courants forts R+2/R+3)",
+    body: "Bonjour, les plans d'exécution courants forts sont déposés depuis 2 jours et l'échéance de visa est fixée à demain. La fermeture des cloisons R+2 est conditionnée à votre avis : merci de viser ou de nous transmettre vos observations.",
+    status: "aValider",
+  },
+  {
+    id: "rem-07",
+    projectId: "p-sunset",
+    kind: "visa",
+    target: "Trame Bois Ingénierie — Olivier Bénard",
+    subject: "Redépôt attendu — EXE-CHA-042 indice B",
+    body: "Bonjour, l'avis défavorable du 3 dernier jour porte sur l'absence de surcharge cyclonique dans la descente de charges et sur les fixations non cotées des files 4 à 7. Merci de redéposer l'indice B sous 5 jours : la commande de charpente est bloquée.",
+    status: "aValider",
+  },
+  {
+    id: "rem-08",
+    projectId: "p-sunset",
+    kind: "document",
+    target: "Bâtir Océan Indien — Marc Dorseuil",
+    subject: "Pièces demandées par Veritas — essais béton dalle R+2",
+    body: "Bonjour, le contrôleur technique demande les PV d'essais à 7 jours des éprouvettes de la dalle haute R+2 (BL-88412) et le PV de réception des supports d'étanchéité. Les documents peuvent être déposés directement dans l'espace partagé du chantier.",
+    status: "aValider",
   },
   {
     id: "rem-05",
@@ -165,6 +228,18 @@ export const copilotAnswers: CopilotAnswer[] = [
       { docId: "d-06" },
       { docId: "d-05", page: 7 },
     ],
+  },
+  {
+    matchers: ["visa", "viser", "plan d'exécution", "exe", "approval", "defavorable", "défavorable"],
+    answer:
+      "Deux dépôts appellent une action : EXE-ELE-204 (courants forts R+2/R+3, Ohm Ingénierie, ind. B) est en attente de visa avec échéance demain — il conditionne la fermeture des cloisons R+2 ; EXE-CHA-042 (charpente Bât. B) a reçu un avis défavorable il y a 3 jours pour absence de surcharge cyclonique dans la descente de charges, redépôt attendu en indice B. Les visas favorables les plus récents (EXE-STR-090, EXE-FLU-118) ont tous reçu leur contre-visa du contrôleur technique.",
+    sources: [{ docId: "d-13" }, { docId: "d-14" }, { docId: "d-15" }],
+  },
+  {
+    matchers: ["avis", "contrôleur", "controleur", "veritas", "sécurité", "securite", "sps"],
+    answer:
+      "Trois avis réglementaires sont ouverts sur la Résidence SUNSET : avis suspensif de Veritas sur la trémie ascenseur R+2 (protection collective déposée, rapport RAP-VT-2026-118), mise à jour du PPSPS demandée par le coordonnateur SPS avant lundi du fait de la co-activité sur la grue n°1, et avis défavorable de la maîtrise d'œuvre sur la charpente Bât. B. Ces avis sont repris automatiquement dans le compte rendu n°35 et ne peuvent pas en être retirés.",
+    sources: [{ docId: "d-17" }, { docId: "d-18" }, { docId: "d-08", page: 3 }],
   },
 ];
 

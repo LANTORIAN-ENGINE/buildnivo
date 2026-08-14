@@ -88,6 +88,8 @@ export default function CopilotePage() {
     d.copilote.suggestions.delaiPlombier,
     d.copilote.suggestions.planApplicable,
     d.copilote.suggestions.docsManquants,
+    d.copilote.suggestions.visas,
+    d.copilote.suggestions.avis,
   ];
 
   return (

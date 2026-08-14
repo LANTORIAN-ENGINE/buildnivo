@@ -2,6 +2,7 @@
 
 import {
   Bot,
+  Calculator,
   ChevronDown,
   CloudDownload,
   FileArchive,
@@ -10,7 +11,10 @@ import {
   FileText,
   FolderOpen,
   Map,
+  PenTool,
+  Ruler,
   Search,
+  Stamp,
   Truck,
   Upload,
 } from "lucide-react";
@@ -29,6 +33,10 @@ const catIcons: Record<DocCategory, React.ComponentType<{ className?: string }>>
   administratif: FileArchive,
   livraison: Truck,
   compteRendu: FileClock,
+  planExe: Ruler,
+  noteCalcul: Calculator,
+  esquisse: PenTool,
+  avis: Stamp,
 };
 
 export default function DocumentsPage() {
@@ -49,7 +57,19 @@ export default function DocumentsPage() {
     [activeProjectId, cat, query]
   );
 
-  const cats: (DocCategory | "all")[] = ["all", "plan", "cctp", "contrat", "administratif", "livraison", "compteRendu"];
+  const cats: (DocCategory | "all")[] = [
+    "all",
+    "plan",
+    "planExe",
+    "noteCalcul",
+    "esquisse",
+    "cctp",
+    "contrat",
+    "avis",
+    "administratif",
+    "livraison",
+    "compteRendu",
+  ];
 
   return (
     <div className="space-y-4">

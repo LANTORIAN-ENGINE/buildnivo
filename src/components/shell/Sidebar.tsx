@@ -13,6 +13,7 @@ import {
   Euro,
   FileBarChart2,
   FolderOpen,
+  History,
   LayoutDashboard,
   LifeBuoy,
   ListChecks,
@@ -20,16 +21,19 @@ import {
   NotebookPen,
   Settings,
   ShoppingCart,
+  Stamp,
   Users,
+  Users2,
 } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
+import { canSee, type ModuleKey } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
 import { cn, LogoMark } from "@/components/ui";
 
 interface NavItem {
   href: string;
-  labelKey: string;
+  labelKey: ModuleKey;
   icon: React.ComponentType<{ className?: string }>;
 }
 
@@ -53,6 +57,14 @@ const groups: NavGroup[] = [
       { href: "/taches", labelKey: "taches", icon: ListChecks },
       { href: "/journal", labelKey: "journal", icon: NotebookPen },
       { href: "/photos", labelKey: "photos", icon: Camera },
+    ],
+  },
+  {
+    labelKey: "coordination",
+    items: [
+      { href: "/visas", labelKey: "visas", icon: Stamp },
+      { href: "/reunions", labelKey: "reunions", icon: Users2 },
+      { href: "/reprise", labelKey: "reprise", icon: History },
     ],
   },
   {
@@ -90,9 +102,14 @@ const groups: NavGroup[] = [
 export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
   const { d, t } = useI18n();
-  const { convs } = useDemo();
+  const { convs, persona } = useDemo();
   const [collapsed, setCollapsed] = useState(false);
   const unreadTotal = convs.reduce((s, c) => s + c.unread, 0);
+
+  // Chaque profil ne voit que les modules de son périmètre.
+  const visibleGroups = groups
+    .map((g) => ({ ...g, items: g.items.filter((it) => canSee(persona.role, it.labelKey)) }))
+    .filter((g) => g.items.length > 0);
 
   return (
     <nav
@@ -108,7 +125,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
       </Link>
 
       <div className="flex-1 overflow-y-auto px-3 pb-4">
-        {groups.map((g) => (
+        {visibleGroups.map((g) => (
           <div key={g.labelKey} className="mt-3 first:mt-1">
             {!collapsed && (
               <p className="px-2.5 pb-1.5 text-[10px] font-bold tracking-[0.14em] text-white/45 uppercase">

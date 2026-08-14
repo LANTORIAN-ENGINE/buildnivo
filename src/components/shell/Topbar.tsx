@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { personas, projectById, projects } from "@/data";
 import { useI18n } from "@/lib/i18n";
+import { isExternal } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
 import { Avatar, cn, LanguageSelect, StatusPill, Tooltip } from "@/components/ui";
 
@@ -164,30 +165,41 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
               <ChevronDown className="h-3.5 w-3.5 text-ink-faint" />
             </button>
             {personaOpen && (
-              <div className="rise-in absolute right-0 z-50 mt-2 w-72 rounded-xl border border-line bg-card p-1.5 shadow-(--shadow-pop)">
+              <div className="rise-in absolute right-0 z-50 mt-2 max-h-[70vh] w-72 overflow-y-auto rounded-xl border border-line bg-card p-1.5 shadow-(--shadow-pop)">
                 <p className="px-3 pt-2 pb-1.5 text-[10.5px] font-bold tracking-wider text-ink-faint uppercase">{d.topbar.switchPersona}</p>
-                {personas.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => {
-                      setPersona(p);
-                      setPersonaOpen(false);
-                    }}
-                    className={cn(
-                      "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-line-soft/70",
-                      p.id === persona.id && "bg-blue-soft/70"
-                    )}
-                  >
-                    <Avatar name={`${p.firstName} ${p.lastName}`} size="sm" />
-                    <span className="min-w-0">
-                      <span className="block truncate text-[12.5px] font-semibold text-ink">
-                        {p.firstName} {p.lastName}
-                      </span>
-                      <span className="block text-[11px] text-ink-soft">
-                        {t(`roles.${p.role}`)} · {p.company}
-                      </span>
-                    </span>
-                  </button>
+                {/* Entreprise de travaux puis intervenants de l'opération. */}
+                {(
+                  [
+                    { label: d.login.internalTitle, list: personas.filter((p) => !isExternal(p.role)) },
+                    { label: d.login.externalTitle, list: personas.filter((p) => isExternal(p.role)) },
+                  ] as const
+                ).map((group) => (
+                  <div key={group.label}>
+                    <p className="px-3 pt-2 pb-1 text-[10px] font-bold tracking-wider text-blue-deep uppercase">{group.label}</p>
+                    {group.list.map((p) => (
+                      <button
+                        key={p.id}
+                        onClick={() => {
+                          setPersona(p);
+                          setPersonaOpen(false);
+                        }}
+                        className={cn(
+                          "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-line-soft/70",
+                          p.id === persona.id && "bg-blue-soft/70"
+                        )}
+                      >
+                        <Avatar name={`${p.firstName} ${p.lastName}`} size="sm" />
+                        <span className="min-w-0">
+                          <span className="block truncate text-[12.5px] font-semibold text-ink">
+                            {p.firstName} {p.lastName}
+                          </span>
+                          <span className="block truncate text-[11px] text-ink-soft">
+                            {t(`roles.${p.role}`)} · {p.company}
+                          </span>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 ))}
                 <div className="mt-1 border-t border-line pt-1">
                   <Link

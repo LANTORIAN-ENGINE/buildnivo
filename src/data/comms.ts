@@ -54,6 +54,45 @@ export const conversations: Conversation[] = [
     ],
   },
   {
+    id: "cv-moe",
+    kind: "channel",
+    title: "SUNSET · Maîtrise d'œuvre & bureaux d'études",
+    projectId: "p-sunset",
+    members: 9,
+    pinned: true,
+    unread: 2,
+    replies: [
+      "Cédric Hoareau (MOE exé) : Je vise les courants forts ce soir, avec deux observations sur les réservations du logement 23.",
+      "Rémi Lauret (Ohm Ingénierie) : Reçu, je prépare l'indice C dès réception du visa.",
+      "Jean-Marc Perrin (Veritas) : Je passe jeudi matin pour le contrôle avant fermeture des cloisons.",
+    ],
+    messages: [
+      { id: "m-mo1", from: "EXT-9002", kind: "text", text: "Bonjour à tous. Rappel : le compte rendu n°35 est en cours de rédaction, merci de déposer vos avis avant 17h sur la plateforme plutôt que par mail.", date: yesterday, time: "09:15" },
+      { id: "m-mo2", from: "EXT-9004", kind: "text", text: "Les plans EXE courants forts R+2/R+3 sont déposés (EXE-ELE-204, ind. B). En attente de votre visa pour lancer la fermeture des cloisons.", date: yesterday, time: "11:32" },
+      { id: "m-mo3", from: "system", kind: "system", text: "Dépôt enregistré : EXE-ELE-204 (ind. B) — visa attendu sous 3 jours", date: yesterday, time: "11:32" },
+      { id: "m-mo4", from: "EXT-9008", kind: "text", text: "Concernant la charpente Bât. B, j'ai bien noté l'avis défavorable. Je reprends la descente de charges avec la surcharge cyclonique et je redépose en indice B.", date: today, time: "08:05" },
+      { id: "m-mo5", from: "EXT-9009", kind: "text", text: "De mon côté, avis suspensif sur la trémie ascenseur R+2 tant que la protection collective n'est pas reposée. Rapport RAP-VT-2026-118 déposé.", date: today, time: "09:24" },
+      { id: "m-mo6", from: "system", kind: "system", text: "L'avis du contrôleur technique a été repris automatiquement dans le compte rendu n°35", date: today, time: "09:25" },
+      { id: "m-mo7", from: "EXT-9003", kind: "text", text: "L'échantillon d'enduit du hall tire vers le gris : la teinte contractuelle reste « Blanc Corail ». Merci de reprendre avant généralisation.", date: today, time: "10:40" },
+    ],
+  },
+  {
+    id: "cv-moex",
+    kind: "direct",
+    memberId: "EXT-9002", // Cédric Hoareau, maître d'œuvre d'exécution
+    online: true,
+    unread: 1,
+    replies: [
+      "Je valide la situation n°8 aujourd'hui, elle passe au maître d'ouvrage demain.",
+      "Parfait. On garde la réunion n°36 lundi 9h, ordre du jour déjà proposé par la plateforme.",
+    ],
+    messages: [
+      { id: "m-mx1", from: "EXT-9002", kind: "text", text: "Bonjour Marc, la situation n°8 (214 500 € HT) attend mon visa depuis 5 jours, j'ai besoin du récapitulatif des quantités du R+2.", date: yesterday, time: "15:10" },
+      { id: "m-mx2", from: "me", kind: "text", text: "Bonjour Cédric, je te dépose le métré dans les documents du chantier ce soir. Peux-tu viser les courants forts en parallèle ? La fermeture des cloisons en dépend.", date: yesterday, time: "15:44", read: true },
+      { id: "m-mx3", from: "EXT-9002", kind: "text", text: "C'est prévu. Je te confirme aussi que le compte rendu n°35 intègre l'avis de Veritas sur la trémie : il faut la protection reposée avant jeudi.", date: today, time: "08:12" },
+    ],
+  },
+  {
     id: "cv-bruno",
     kind: "direct",
     memberId: "ST-2001", // Bruno Dijoux, PLOMB'ÉO
