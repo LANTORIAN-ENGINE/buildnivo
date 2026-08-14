@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildNivo — Charte du logo</title>
+<style>
+  :root{
+    --paper:#f5f7f9;   --card:#fcfdff;
+    --ink:#1c222b;     --ink-soft:#5c646f;  --ink-faint:#8a9099;
+    --line:#dfe3e8;    --line-soft:#eaedf1;
+    --blue:#2759d6;    --blue-deep:#1541b6; --blue-soft:#e3edff; --blue-ink:#f8fafe;
+    --safety:#e87f25;  --ok:#2e9052;        --danger:#c9302d;    --viz:#7c54cd;
+    --sans:"Archivo Variable","Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --mono:"JetBrains Mono Variable","JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--paper);color:var(--ink);font-family:var(--sans);
+    font-size:14px;line-height:1.65;-webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1060px;margin:0 auto;padding:0 28px 120px}
+  .mono{font-family:var(--mono)}
+
+  /* ---------- en-tête ---------- */
+  header.hero{
+    background:
+      linear-gradient(rgba(255,255,255,.07) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(255,255,255,.07) 1px,transparent 1px),
+      linear-gradient(160deg,var(--blue),var(--blue-deep));
+    background-size:22px 22px,22px 22px,100% 100%;
+    color:#fff;padding:64px 0 58px;margin-bottom:56px;
+  }
+  header.hero .wrap{padding-bottom:0}
+  .hero-lockup{display:flex;align-items:center;gap:14px}
+  .hero-lockup .word{font-size:26px;font-weight:700;letter-spacing:-.02em;line-height:1}
+  .hero h1{font-size:26px;font-weight:700;letter-spacing:-.015em;margin:30px 0 8px}
+  .hero p{margin:0;max-width:62ch;color:rgba(255,255,255,.78);font-size:15px}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:26px}
+  .hero-meta span{
+    font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;padding:5px 10px;border-radius:999px;
+    background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  }
+
+  /* ---------- structure ---------- */
+  section{margin-bottom:56px;scroll-margin-top:20px}
+  h2{
+    display:flex;align-items:baseline;gap:12px;margin:0 0 6px;
+    font-size:19px;font-weight:700;letter-spacing:-.01em;
+  }
+  h2 .num{
+    font-family:var(--mono);font-size:12px;font-weight:600;color:var(--blue);
+    background:var(--blue-soft);border-radius:6px;padding:3px 8px;letter-spacing:0;
+  }
+  .lead{margin:0 0 22px;color:var(--ink-soft);max-width:76ch;font-size:14.5px}
+  h3{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-soft);margin:0 0 12px}
+
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .pad{padding:24px}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:860px){.g3,.g4{grid-template-columns:repeat(2,1fr)}.g2{grid-template-columns:1fr}}
+  @media(max-width:560px){.g3,.g4,.g2{grid-template-columns:1fr}}
+
+  .caption{font-size:12.5px;color:var(--ink-soft);margin:10px 0 0}
+  .caption b{color:var(--ink);font-weight:600}
+  .stage{
+    display:flex;align-items:center;justify-content:center;min-height:150px;
+    border-radius:14px;border:1px solid var(--line);background:var(--card);padding:24px;
+  }
+
+  /* ---------- marque ---------- */
+  .mark{display:block}
+  .lockup{display:inline-flex;align-items:center;gap:.357em;line-height:1}
+  .lockup .mark{height:1em;width:auto}
+  .lockup .word{font-size:.643em;font-weight:700;letter-spacing:-.02em}
+  .stacked{display:inline-flex;flex-direction:column;align-items:center;gap:.28em;line-height:1}
+  .stacked .mark{height:1em;width:auto}
+  .stacked .word{font-size:.5em;font-weight:700;letter-spacing:-.01em}
+
+  /* ---------- couleurs ---------- */
+  .swatch{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+  .swatch .chip{height:72px}
+  .swatch .meta{padding:11px 13px}
+  .swatch .name{font-size:13px;font-weight:600}
+  .swatch .val{font-family:var(--mono);font-size:11px;color:var(--ink-soft);display:block}
+
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line-soft)}
+  th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);font-weight:600}
+  td.k{font-family:var(--mono);font-size:12px;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+
+  /* ---------- interdits ---------- */
+  .dont{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:22px 16px 14px;text-align:center;overflow:hidden}
+  .dont .box{height:74px;display:flex;align-items:center;justify-content:center}
+  .dont p{margin:8px 0 0;font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+  .dont .tag{
+    position:absolute;top:9px;right:9px;width:19px;height:19px;border-radius:999px;background:var(--danger);
+    color:#fff;font-size:13px;font-weight:700;line-height:19px;text-align:center
+  }
+  .do .tag{background:var(--ok)}
+
+  .rule{display:flex;gap:11px;align-items:flex-start;font-size:13.5px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+  .rule:last-child{border-bottom:0}
+  .rule .b{flex:none;width:17px;height:17px;border-radius:5px;margin-top:2px;display:grid;place-items:center;color:#fff;font-size:11px;font-weight:700}
+  .rule.yes .b{background:var(--ok)}
+  .rule.no .b{background:var(--danger)}
+
+  pre{
+    margin:0;padding:16px 18px;border-radius:12px;background:#131922;color:#dde3ec;
+    font-family:var(--mono);font-size:12px;line-height:1.7;overflow-x:auto;
+  }
+  pre .t{color:#7fa6ff}
+  pre .a{color:#8ad6a6}
+  pre .v{color:#e3b778}
+  pre .c{color:#6f7b8c}
+
+  footer{border-top:1px solid var(--line);padding-top:20px;color:var(--ink-faint);font-size:12.5px;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+
+  @media print{
+    body{background:#fff}
+    header.hero{padding:34px 0}
+    section{break-inside:avoid}
+    .card,.stage,.dont,.swatch{box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- symbole réutilisable : géométrie exacte du composant LogoMark de l'application -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 34 38">
+    <polygon points="0,17 10,12 10,33 0,38"/>
+    <polygon points="12,5 22,0 22,33 12,38"/>
+    <polygon points="24,13 34,8 34,33 24,38"/>
+  </symbol>
+</svg>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-lockup">
+      <svg class="mark" viewBox="0 0 34 38" style="height:40px;width:auto;fill:#fff"><use href="#mark"/></svg>
+      <span class="word">BuildNivo</span>
+    </div>
+    <h1>Charte du logo</h1>
+    <p>Règles d'usage de la marque BuildNivo — plateforme de pilotage de chantier.
+       Ce document isole le logo tel qu'il est implémenté dans l'application et fixe sa
+       construction, ses déclinaisons et ses limites, pour l'écran comme pour le chantier.</p>
+    <div class="hero-meta">
+      <span>Version 1.0</span>
+      <span>Août 2026</span>
+      <span>Secteur : BTP / construction</span>
+      <span>Source : composant LogoMark</span>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- 01 ------------------------------------------------------------------ -->
+  <section id="marque">
+    <h2><span class="num">01</span> La marque</h2>
+    <p class="lead">Trois montants pleins, coupés en biais à la même pente. La coupe oblique est une
+      <b>ligne de niveau</b> — le « Nivo » du nom, l'instrument du géomètre et du maçon. Le rythme
+      court / haut / moyen se lit comme un avancement de chantier : des ouvrages qui montent, pas
+      un histogramme décoratif. Aucune icône de casque, de grue ou de brique : la marque tient dans
+      la géométrie du bâti.</p>
+
+    <div class="grid g3">
+      <div>
+        <div class="stage"><svg class="mark" viewBox="0 0 34 38" style="height:76px;width:auto;fill:var(--blue)"><use href="#mark"/></svg></div>
+        <p class="caption"><b>Le symbole.</b> Seul, pour les formats carrés et réduits :
+          favicon, icône d'application, cartouche, badge.</p>
+      </div>
+      <div>
+        <div class="stage">
+          <span class="lockup" style="font-size:56px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--blue)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Le logo horizontal.</b> Version principale : en-têtes, documents,
+          signatures, écran de connexion. C'est celle qui est utilisée par défaut.</p>
+      </div>
+      <div>
+        <div class="stage">
+          <span class="stacked" style="font-size:64px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--blue)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Le logo empilé.</b> Déclinaison autorisée, construite sur la même
+          grille, réservée aux supports étroits ou très verticaux : panneau de chantier, bâche,
+          bandeau de gilet.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 ------------------------------------------------------------------ -->
+  <section id="construction">
+    <h2><span class="num">02</span> Construction</h2>
+    <p class="lead">Le symbole est tracé sur une grille de <b class="mono">34 × 38 u</b>. Trois barres
+      de <b class="mono">10 u</b> de large, séparées par un intervalle de <b class="mono">2 u</b>.
+      Tous les bords horizontaux suivent la même pente, <b class="mono">5 u de montée pour 10 u</b>
+      (1:2, soit 26,57°) ; les côtés restent strictement verticaux. Les hauteurs mesurées à la
+      verticale sont <b class="mono">21 / 33 / 25 u</b>. Ces valeurs ne se redessinent pas à vue :
+      le tracé se copie.</p>
+
+    <div class="grid g2">
+      <div class="card pad">
+        <svg viewBox="-8 -8 50 54" style="width:100%;height:auto;display:block" role="img" aria-label="Grille de construction du symbole">
+          <defs>
+            <pattern id="g2u" width="2" height="2" patternUnits="userSpaceOnUse">
+              <path d="M2 0H0V2" fill="none" stroke="#dfe3e8" stroke-width=".16"/>
+            </pattern>
+          </defs>
+          <rect x="-8" y="-8" width="50" height="54" fill="url(#g2u)"/>
+          <rect x="0" y="0" width="34" height="38" fill="none" stroke="#8a9099" stroke-width=".25" stroke-dasharray="1 1"/>
+          <g fill="#2759d6" fill-opacity=".14" stroke="#2759d6" stroke-width=".45" stroke-linejoin="round">
+            <polygon points="0,17 10,12 10,33 0,38"/>
+            <polygon points="12,5 22,0 22,33 12,38"/>
+            <polygon points="24,13 34,8 34,33 24,38"/>
+          </g>
+          <!-- pente -->
+          <path d="M24,13 L34,13 L34,8" fill="none" stroke="#e87f25" stroke-width=".35"/>
+          <text x="35.4" y="11.6" font-family="ui-monospace,monospace" font-size="2.3" fill="#e87f25">5</text>
+          <text x="28" y="15.6" font-family="ui-monospace,monospace" font-size="2.3" fill="#e87f25">10</text>
+          <!-- cotes largeur -->
+          <g stroke="#5c646f" stroke-width=".2">
+            <path d="M0,41.5 H10 M12,41.5 H22 M24,41.5 H34"/>
+            <path d="M0,40.7 V42.3 M10,40.7 V42.3 M12,40.7 V42.3 M22,40.7 V42.3 M24,40.7 V42.3 M34,40.7 V42.3"/>
+          </g>
+          <g font-family="ui-monospace,monospace" font-size="2.4" fill="#5c646f" text-anchor="middle">
+            <text x="5" y="44.6">10u</text><text x="17" y="44.6">10u</text><text x="29" y="44.6">10u</text>
+            <text x="11" y="39.2" font-size="2">2u</text><text x="23" y="39.2" font-size="2">2u</text>
+          </g>
+          <!-- cotes hauteur -->
+          <g stroke="#5c646f" stroke-width=".2">
+            <path d="M-3.2,17 V38 M-4,17 H-2.4 M-4,38 H-2.4"/>
+          </g>
+          <text x="-4" y="28.5" font-family="ui-monospace,monospace" font-size="2.4" fill="#5c646f" text-anchor="end">21u</text>
+          <text x="17" y="-2.4" font-family="ui-monospace,monospace" font-size="2.4" fill="#5c646f" text-anchor="middle">34 u de large · 38 u de haut</text>
+        </svg>
+      </div>
+
+      <div class="card pad">
+        <h3>Zone de protection</h3>
+        <svg viewBox="-16 -16 66 70" style="width:100%;height:auto;display:block" role="img" aria-label="Zone de protection">
+          <rect x="-10" y="-10" width="54" height="58" fill="#e3edff"/>
+          <rect x="-10" y="-10" width="54" height="58" fill="none" stroke="#2759d6" stroke-width=".3" stroke-dasharray="1.6 1.2"/>
+          <g fill="#2759d6">
+            <polygon points="0,17 10,12 10,33 0,38"/>
+            <polygon points="12,5 22,0 22,33 12,38"/>
+            <polygon points="24,13 34,8 34,33 24,38"/>
+          </g>
+          <g stroke="#1541b6" stroke-width=".25">
+            <path d="M17,-10 V0 M16.2,-10 H17.8 M16.2,0 H17.8"/>
+            <path d="M-10,27 H0 M-10,26.2 V27.8 M0,26.2 V27.8"/>
+            <path d="M17,38.6 V48 M16.2,38.6 H17.8 M16.2,48 H17.8"/>
+            <path d="M34,27 H44 M34,26.2 V27.8 M44,26.2 V27.8"/>
+          </g>
+          <g font-family="ui-monospace,monospace" font-size="3.2" fill="#1541b6" font-weight="600">
+            <text x="18.6" y="-4">e</text>
+            <text x="-5" y="25.4" text-anchor="middle">e</text>
+            <text x="18.6" y="44.4">e</text>
+            <text x="39" y="25.4" text-anchor="middle">e</text>
+          </g>
+        </svg>
+        <p class="caption" style="margin-top:14px">Aucun texte, filet, image ni bord de support n'entre
+          dans la zone <b>e</b> — la largeur d'une barre — mesurée autour du bloc complet (symbole seul
+          ou logo entier). Sur un panneau de chantier ou une portière, cette zone se double.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 ------------------------------------------------------------------ -->
+  <section id="tailles">
+    <h2><span class="num">03</span> Tailles minimales</h2>
+    <p class="lead">En dessous de ces seuils, la coupe oblique se ferme et les trois barres se
+      confondent. Sur chantier, la lecture se fait souvent à contre-jour, sous poussière ou à
+      plusieurs mètres : les minima d'impression sont des planchers, pas des cibles.</p>
+
+    <div class="grid g4">
+      <div class="card pad" style="text-align:center">
+        <div style="height:60px;display:flex;align-items:flex-end;justify-content:center">
+          <svg class="mark" viewBox="0 0 34 38" style="height:16px;width:auto;fill:var(--blue)"><use href="#mark"/></svg>
+        </div>
+        <p class="caption"><b>16 px</b><br>Symbole seul, écran (favicon)</p>
+      </div>
+      <div class="card pad" style="text-align:center">
+        <div style="height:60px;display:flex;align-items:flex-end;justify-content:center">
+          <svg class="mark" viewBox="0 0 34 38" style="height:28px;width:auto;fill:var(--blue)"><use href="#mark"/></svg>
+        </div>
+        <p class="caption"><b>28 px</b><br>Symbole en barre de navigation (usage courant)</p>
+      </div>
+      <div class="card pad" style="text-align:center">
+        <div style="height:60px;display:flex;align-items:flex-end;justify-content:center">
+          <span class="lockup" style="font-size:24px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--blue)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>104 px de large</b><br>Logo horizontal, écran (minimum)</p>
+      </div>
+      <div class="card pad" style="text-align:center">
+        <div style="height:60px;display:flex;align-items:flex-end;justify-content:center">
+          <span class="lockup" style="font-size:34px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--blue)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>26 mm de large</b><br>Logo horizontal, impression (minimum)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 ------------------------------------------------------------------ -->
+  <section id="declinaisons">
+    <h2><span class="num">04</span> Déclinaisons</h2>
+    <p class="lead">Le logo est monochrome dans toutes ses versions : jamais deux couleurs dans un
+      même tracé. Le choix se fait au contraste du fond, jamais au goût du support.</p>
+
+    <div class="grid g4">
+      <div>
+        <div class="stage" style="background:var(--card)">
+          <span class="lockup" style="font-size:34px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--blue)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Positive.</b> Symbole bleu, mot en encre. Fonds clairs (papier, carte).
+          Version de référence.</p>
+      </div>
+      <div>
+        <div class="stage" style="background:linear-gradient(160deg,var(--blue),var(--blue-deep));border-color:transparent">
+          <span class="lockup" style="font-size:34px;color:#fff">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:#fff"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Sur bleu de marque.</b> Tout blanc. C'est la version portée par la
+          barre latérale de l'application.</p>
+      </div>
+      <div>
+        <div class="stage" style="background:var(--ink);border-color:transparent">
+          <span class="lockup" style="font-size:34px;color:#fff">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:#fff"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Négative.</b> Tout blanc sur fond sombre, photo de chantier ou vidéo,
+          si le contraste est suffisant.</p>
+      </div>
+      <div>
+        <div class="stage">
+          <span class="lockup" style="font-size:34px;color:var(--ink)">
+            <svg class="mark" viewBox="0 0 34 38" style="fill:var(--ink)"><use href="#mark"/></svg><span class="word">BuildNivo</span>
+          </span>
+        </div>
+        <p class="caption"><b>Monochrome encre.</b> Fax, tampon, gravure, marquage une couleur,
+          documents contractuels en noir et blanc.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05 ------------------------------------------------------------------ -->
+  <section id="couleurs">
+    <h2><span class="num">05</span> Couleurs</h2>
+    <p class="lead">Le logo n'utilise que trois valeurs : le bleu de marque, le blanc cassé et
+      l'encre. Les couleurs de signalétique — ambre, vert, rouge, violet — appartiennent aux états
+      de l'application (alerte, validé, incident, données) et <b>ne colorent jamais la marque</b>.</p>
+
+    <div class="grid g4" style="margin-bottom:18px">
+      <div class="swatch"><div class="chip" style="background:var(--blue)"></div>
+        <div class="meta"><span class="name">Bleu BuildNivo</span>
+          <span class="val">#2759D6</span><span class="val">oklch(.51 .2 264)</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-deep)"></div>
+        <div class="meta"><span class="name">Bleu profond</span>
+          <span class="val">#1541B6</span><span class="val">oklch(.43 .19 264)</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--blue-ink)"></div>
+        <div class="meta"><span class="name">Blanc cassé</span>
+          <span class="val">#F8FAFE</span><span class="val">oklch(.985 .005 262)</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ink)"></div>
+        <div class="meta"><span class="name">Encre</span>
+          <span class="val">#1C222B</span><span class="val">oklch(.25 .02 260)</span></div></div>
+    </div>
+
+    <div class="card pad">
+      <table>
+        <thead><tr><th>Emploi</th><th>Symbole</th><th>Mot « BuildNivo »</th><th>Fond</th></tr></thead>
+        <tbody>
+          <tr><td>Application, fond clair</td><td class="k">Bleu #2759D6</td><td class="k">Encre #1C222B</td><td class="k">Papier #F5F7F9</td></tr>
+          <tr><td>Barre latérale / aplat de marque</td><td class="k">Blanc #FFFFFF</td><td class="k">Blanc #FFFFFF</td><td class="k">#2759D6 → #1541B6</td></tr>
+          <tr><td>Photo, vidéo, fond sombre</td><td class="k">Blanc #FFFFFF</td><td class="k">Blanc #FFFFFF</td><td class="k">Sombre, contraste ≥ 4,5:1</td></tr>
+          <tr><td>Une couleur (gravure, tampon)</td><td class="k">Encre 100 %</td><td class="k">Encre 100 %</td><td class="k">Support</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid g4" style="margin-top:16px">
+      <div class="swatch"><div class="chip" style="background:var(--safety)"></div>
+        <div class="meta"><span class="name">Ambre — alerte</span><span class="val">État, jamais le logo</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--ok)"></div>
+        <div class="meta"><span class="name">Vert — validé</span><span class="val">État, jamais le logo</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--danger)"></div>
+        <div class="meta"><span class="name">Rouge — incident</span><span class="val">État, jamais le logo</span></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--viz)"></div>
+        <div class="meta"><span class="name">Violet — données / IA</span><span class="val">État, jamais le logo</span></div></div>
+    </div>
+  </section>
+
+  <!-- 06 ------------------------------------------------------------------ -->
+  <section id="typo">
+    <h2><span class="num">06</span> Typographie du logotype</h2>
+    <p class="lead">Le mot « BuildNivo » se compose en <b>Archivo</b>, graisse 700, approche
+      resserrée à <b class="mono">-0,02 em</b>. Deux capitales, <b>B</b> et <b>N</b>, jamais
+      d'espace ni de trait d'union. Le mot n'est pas vectorisé dans l'application : il est
+      composé, ce qui impose de garder la police disponible sur tout support numérique.</p>
+
+    <div class="grid g2">
+      <div class="card pad">
+        <h3>Verrouillage horizontal</h3>
+        <svg viewBox="0 0 340 90" style="width:100%;height:auto;display:block">
+          <g fill="#2759d6" transform="translate(20,20) scale(1.32)">
+            <polygon points="0,17 10,12 10,33 0,38"/>
+            <polygon points="12,5 22,0 22,33 12,38"/>
+            <polygon points="24,13 34,8 34,33 24,38"/>
+          </g>
+          <text x="83" y="57" font-family="Archivo,system-ui,sans-serif" font-size="32" font-weight="700"
+                letter-spacing="-.64" fill="#1c222b">BuildNivo</text>
+          <g stroke="#8a9099" stroke-width="1" stroke-dasharray="3 3">
+            <path d="M20 12 V78 M65 12 V78 M83 12 V78"/>
+          </g>
+          <path d="M65 74 H83" stroke="#e87f25" stroke-width="1.4"/>
+          <text x="74" y="86" font-family="ui-monospace,monospace" font-size="10" fill="#e87f25" text-anchor="middle">0,36 h</text>
+          <text x="20" y="12" font-family="ui-monospace,monospace" font-size="10" fill="#8a9099">h = hauteur du symbole</text>
+        </svg>
+        <p class="caption">Écart symbole / mot : <b>0,36 × la hauteur du symbole</b> (10 px pour un
+          symbole de 28 px). Corps du mot : <b>0,64 × cette même hauteur</b> (18 px pour 28 px).
+          Alignement sur l'axe optique vertical, jamais sur la ligne de base du texte.</p>
+      </div>
+      <div class="card pad">
+        <h3>Familles associées</h3>
+        <p style="font-family:Archivo,system-ui,sans-serif;font-weight:700;font-size:30px;letter-spacing:-.02em;margin:0 0 2px">Archivo Bold</p>
+        <p class="caption" style="margin:0 0 18px">Logotype, titres, interface. Une seule famille pour
+          tout ce qui se lit.</p>
+        <p class="mono" style="font-size:26px;font-weight:600;margin:0 0 2px">JetBrains Mono</p>
+        <p class="caption" style="margin:0 0 18px">Données de terrain uniquement : heures pointées,
+          matricules, montants, indices de plan, références (<span class="mono">SAV-2026-041</span>).
+          Jamais dans le logo.</p>
+        <div class="rule yes"><span class="b">✓</span><span>« BuildNivo » en un seul mot, deux capitales internes.</span></div>
+        <div class="rule no"><span class="b">✕</span><span>« BUILDNIVO », « Buildnivo », « Build Nivo », « BuildNivo® » dans la marque.</span></div>
+        <div class="rule no"><span class="b">✕</span><span>Baseline ou nom de produit accolé sans respecter la zone de protection.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07 ------------------------------------------------------------------ -->
+  <section id="interdits">
+    <h2><span class="num">07</span> Usages interdits</h2>
+    <p class="lead">Le tracé se place et se met à l'échelle. Il ne se retouche pas.</p>
+
+    <div class="grid g4">
+      <div class="dont do"><span class="tag">✓</span>
+        <div class="box"><svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue)"><use href="#mark"/></svg></div>
+        <p>Tracé d'origine, une seule couleur, à l'échelle proportionnelle.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box"><svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue);transform:scaleX(1.6)"><use href="#mark"/></svg></div>
+        <p>Ne pas étirer ni compresser : les côtés verticaux et la pente 1:2 sont fixes.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box"><svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue);transform:rotate(-14deg)"><use href="#mark"/></svg></div>
+        <p>Ne pas incliner ni faire pivoter. L'oblique du tracé est déjà la ligne de niveau.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box">
+          <svg viewBox="0 0 34 38" style="height:52px;width:auto">
+            <polygon points="0,17 10,12 10,33 0,38" fill="#e87f25"/>
+            <polygon points="12,5 22,0 22,33 12,38" fill="#2e9052"/>
+            <polygon points="24,13 34,8 34,33 24,38" fill="#c9302d"/>
+          </svg>
+        </div>
+        <p>Ne pas colorer les barres séparément, ni avec les couleurs d'état.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box"><svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue);filter:drop-shadow(3px 5px 3px rgba(0,0,0,.45))"><use href="#mark"/></svg></div>
+        <p>Ni ombre portée, ni relief, ni dégradé, ni effet de matière.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box">
+          <svg viewBox="0 0 34 38" style="height:52px;width:auto;fill:none;stroke:#2759d6;stroke-width:1.6">
+            <polygon points="0,17 10,12 10,33 0,38"/><polygon points="12,5 22,0 22,33 12,38"/><polygon points="24,13 34,8 34,33 24,38"/>
+          </svg>
+        </div>
+        <p>Pas de version en contour : les barres sont pleines.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box" style="background:#7f8ea8;border-radius:8px">
+          <svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue)"><use href="#mark"/></svg>
+        </div>
+        <p>Pas de bleu sur fond moyen ou sur photo chargée : contraste insuffisant, passer en blanc.</p></div>
+
+      <div class="dont"><span class="tag">✕</span>
+        <div class="box">
+          <span style="display:inline-flex;align-items:center;gap:1px">
+            <svg class="mark" viewBox="0 0 34 38" style="height:52px;width:auto;fill:var(--blue)"><use href="#mark"/></svg>
+            <span style="font-weight:700;font-size:20px;letter-spacing:-.02em">BuildNivo</span>
+          </span>
+        </div>
+        <p>Ne pas coller le mot au symbole ni recomposer le verrouillage à la main.</p></div>
+    </div>
+  </section>
+
+  <!-- 08 ------------------------------------------------------------------ -->
+  <section id="applications">
+    <h2><span class="num">08</span> Applications chantier</h2>
+    <p class="lead">Sur le terrain, la marque est vue de loin, salie, mouillée, à contre-jour. On y
+      réduit le logo au symbole seul dès que la distance de lecture dépasse quelques mètres, et on
+      privilégie le blanc sur aplat bleu — le contraste le plus robuste sous lumière tropicale.</p>
+
+    <div class="grid g4">
+      <!-- icône d'application -->
+      <div>
+        <div class="stage" style="background:var(--line-soft)">
+          <svg viewBox="0 0 120 120" style="width:104px;height:104px">
+            <rect width="120" height="120" rx="26" fill="url(#appg)"/>
+            <defs><linearGradient id="appg" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#2759d6"/><stop offset="1" stop-color="#1541b6"/>
+            </linearGradient></defs>
+            <g fill="#fff" transform="translate(31,25) scale(1.72)">
+              <polygon points="0,17 10,12 10,33 0,38"/>
+              <polygon points="12,5 22,0 22,33 12,38"/>
+              <polygon points="24,13 34,8 34,33 24,38"/>
+            </g>
+          </svg>
+        </div>
+        <p class="caption"><b>Icône d'application.</b> Symbole blanc centré optiquement sur l'aplat
+          bleu, zone de protection <b>e</b> conservée. Rayon 22 % du côté.</p>
+      </div>
+
+      <!-- casque -->
+      <div>
+        <div class="stage" style="background:var(--line-soft)">
+          <svg viewBox="0 0 150 110" style="width:100%;max-width:170px;height:auto">
+            <path d="M18 76 C18 44 40 22 75 22 C110 22 132 44 132 76 Z" fill="#e87f25"/>
+            <path d="M75 22 C64 22 60 36 60 52 L90 52 C90 36 86 22 75 22 Z" fill="#d06f18"/>
+            <rect x="10" y="76" width="130" height="12" rx="6" fill="#c96a15"/>
+            <g fill="#fff" transform="translate(64.5,50) scale(.62)">
+              <polygon points="0,17 10,12 10,33 0,38"/>
+              <polygon points="12,5 22,0 22,33 12,38"/>
+              <polygon points="24,13 34,8 34,33 24,38"/>
+            </g>
+          </svg>
+        </div>
+        <p class="caption"><b>Casque et EPI.</b> Symbole seul, blanc, sur la face avant. L'orange du
+          casque est la couleur de l'objet, pas de la marque : la marque reste blanche.</p>
+      </div>
+
+      <!-- panneau de chantier -->
+      <div>
+        <div class="stage" style="background:var(--line-soft)">
+          <svg viewBox="0 0 150 120" style="width:100%;max-width:170px;height:auto">
+            <rect x="20" y="10" width="110" height="76" rx="4" fill="#2759d6"/>
+            <g fill="#fff" transform="translate(62,20) scale(.72)">
+              <polygon points="0,17 10,12 10,33 0,38"/>
+              <polygon points="12,5 22,0 22,33 12,38"/>
+              <polygon points="24,13 34,8 34,33 24,38"/>
+            </g>
+            <text x="75" y="62" font-family="Archivo,system-ui,sans-serif" font-size="12" font-weight="700"
+                  letter-spacing="-.3" fill="#fff" text-anchor="middle">BuildNivo</text>
+            <rect x="42" y="68" width="66" height="1.4" fill="rgba(255,255,255,.35)"/>
+            <text x="75" y="79" font-family="ui-monospace,monospace" font-size="6.5" fill="rgba(255,255,255,.8)"
+                  text-anchor="middle">CHANTIER SUIVI EN TEMPS RÉEL</text>
+            <rect x="42" y="86" width="8" height="30" fill="#8a9099"/>
+            <rect x="100" y="86" width="8" height="30" fill="#8a9099"/>
+          </svg>
+        </div>
+        <p class="caption"><b>Panneau de chantier.</b> Logo empilé, blanc sur aplat bleu, zone de
+          protection doublée. Lisible à 15 m pour un panneau de 1 m.</p>
+      </div>
+
+      <!-- cartouche de plan -->
+      <div>
+        <div class="stage" style="background:var(--line-soft)">
+          <svg viewBox="0 0 160 110" style="width:100%;max-width:180px;height:auto">
+            <rect x="8" y="8" width="144" height="94" fill="#fcfdff" stroke="#dfe3e8"/>
+            <g stroke="#e3edff" stroke-width="1">
+              <path d="M8 30H152M8 52H152M8 74H152M40 8V102M80 8V102M116 8V102"/>
+            </g>
+            <rect x="86" y="62" width="66" height="40" fill="#fff" stroke="#1c222b" stroke-width="1"/>
+            <g fill="#2759d6" transform="translate(91,67) scale(.4)">
+              <polygon points="0,17 10,12 10,33 0,38"/>
+              <polygon points="12,5 22,0 22,33 12,38"/>
+              <polygon points="24,13 34,8 34,33 24,38"/>
+            </g>
+            <text x="107" y="76" font-family="Archivo,system-ui,sans-serif" font-size="7" font-weight="700" fill="#1c222b">BuildNivo</text>
+            <g font-family="ui-monospace,monospace" font-size="5" fill="#5c646f">
+              <text x="91" y="88">PLN-A-201</text><text x="91" y="96">Ind. C · 1:50</text>
+            </g>
+            <path d="M86 82H152" stroke="#dfe3e8"/>
+          </svg>
+        </div>
+        <p class="caption"><b>Cartouche de plan et documents.</b> Logo horizontal en positive, en haut
+          à gauche du cartouche ; les références restent en JetBrains Mono.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 09 ------------------------------------------------------------------ -->
+  <section id="fichiers">
+    <h2><span class="num">09</span> Le tracé de référence</h2>
+    <p class="lead">Source unique de vérité : ce SVG. Toute reproduction — impression, marquage,
+      broderie, signalétique — part de ce fichier, jamais d'une capture d'écran ni d'un redessin.</p>
+
+    <div class="grid g2">
+      <div>
+        <h3>SVG</h3>
+<pre><span class="c">&lt;!-- symbole seul, 34 × 38 --&gt;</span>
+<span class="t">&lt;svg</span> <span class="a">xmlns</span>=<span class="v">"http://www.w3.org/2000/svg"</span>
+     <span class="a">viewBox</span>=<span class="v">"0 0 34 38"</span> <span class="a">fill</span>=<span class="v">"currentColor"</span><span class="t">&gt;</span>
+  <span class="t">&lt;polygon</span> <span class="a">points</span>=<span class="v">"0,17 10,12 10,33 0,38"</span><span class="t">/&gt;</span>
+  <span class="t">&lt;polygon</span> <span class="a">points</span>=<span class="v">"12,5 22,0 22,33 12,38"</span><span class="t">/&gt;</span>
+  <span class="t">&lt;polygon</span> <span class="a">points</span>=<span class="v">"24,13 34,8 34,33 24,38"</span><span class="t">/&gt;</span>
+<span class="t">&lt;/svg&gt;</span></pre>
+        <p class="caption">Le remplissage suit <span class="mono">currentColor</span> : la couleur se
+          pilote par le contexte, ce qui interdit techniquement les tracés bicolores.</p>
+      </div>
+      <div>
+        <h3>Dans l'application</h3>
+<pre><span class="c">// src/components/ui.tsx</span>
+<span class="t">&lt;LogoMark</span> <span class="a">className</span>=<span class="v">"h-7 w-7 text-blue"</span> <span class="t">/&gt;</span>
+<span class="t">&lt;LogoMark</span> <span class="a">className</span>=<span class="v">"h-7 w-7 text-white"</span> <span class="t">/&gt;</span>
+
+<span class="c">// verrouillage complet (symbole + mot)</span>
+<span class="t">&lt;Logo</span> <span class="t">/&gt;</span>          <span class="c">// fond clair</span>
+<span class="t">&lt;Logo</span> <span class="a">dark</span> <span class="t">/&gt;</span>     <span class="c">// aplat bleu / fond sombre</span></pre>
+        <p class="caption">Ne jamais recopier le tracé dans un composant tiers : importer
+          <span class="mono">LogoMark</span> ou <span class="mono">Logo</span> depuis le kit UI, pour
+          que toute correction du dessin se propage partout.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 ------------------------------------------------------------------ -->
+  <section id="memo">
+    <h2><span class="num">10</span> Mémo</h2>
+    <div class="card pad">
+      <div class="rule yes"><span class="b">✓</span><span>Une seule couleur par tracé : bleu, blanc ou encre.</span></div>
+      <div class="rule yes"><span class="b">✓</span><span>Zone de protection <b>e</b> (largeur d'une barre) libre de tout élément, doublée en signalétique.</span></div>
+      <div class="rule yes"><span class="b">✓</span><span>Symbole seul dès que le format est carré, réduit ou vu de loin.</span></div>
+      <div class="rule yes"><span class="b">✓</span><span>Blanc sur bleu de marque pour tout ce qui est extérieur ou en plein soleil.</span></div>
+      <div class="rule no"><span class="b">✕</span><span>Déformer, incliner, contourner, ombrer, dégrader ou recolorer le tracé.</span></div>
+      <div class="rule no"><span class="b">✕</span><span>Utiliser l'ambre, le vert, le rouge ou le violet — ils portent les états, pas la marque.</span></div>
+      <div class="rule no"><span class="b">✕</span><span>Recomposer le verrouillage, modifier l'écart ou l'orthographe « BuildNivo ».</span></div>
+      <div class="rule no"><span class="b">✕</span><span>Descendre sous 16 px (symbole) ou 104 px de large (logo horizontal).</span></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>BuildNivo — Charte du logo · v1.0 · août 2026</span>
+    <span class="mono">Tracé de référence : src/components/ui.tsx → LogoMark</span>
+  </footer>
+</div>
+</body>
+</html>

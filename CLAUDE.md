@@ -28,9 +28,12 @@ date-fns · clsx · polices auto-hébergées `@fontsource-variable/archivo` + `j
 ```
 src/
   app/
-    page.tsx                  # Connexion par persona (5 profils), fond blueprint-grid
     layout.tsx                # Racine : fonts + I18nProvider + DemoProvider
     globals.css               # TOUS les tokens design (@theme inline, OKLCH) + keyframes
+    connexion/page.tsx        # Connexion par persona (11 profils), fond blueprint-grid
+    (site)/                   # Vitrine publique : SiteHeader + SiteFooter
+      page.tsx                # Accueil (hero animé, 12 sections issues du doc de référence)
+      produit/ studios/ tarifs/ ia/ securite/ supply/ comparatif/ contact/
     (app)/                    # Groupe authentifié : AppLayout (sidebar + topbar + Toaster)
       layout.tsx
       dashboard/  chantiers/  chantiers/[id]/  pointage/  taches/  journal/  photos/
@@ -40,6 +43,12 @@ src/
     ui.tsx                    # Kit UI unique : cn, Logo, Button, StatusPill, Badge, ProgressBar,
                               # Avatar, Tabs, Tooltip, DemoTip, Modal, SectionCard, EmptyState,
                               # PhotoScene (photo chantier SVG), FlagFR/FlagEN, LanguageSelect, Toaster
+    site/                     # Vitrine : SiteHeader/SiteFooter, kit.tsx (SiteSection,
+                              # SectionHeading, Eyebrow, CtaLink, PageHero, FinalCta),
+                              # motion.tsx (Reveal, Stagger, CountUp, Marquee, useInView…),
+                              # figures/ (ToolConvergence, LevelStack, NetworkEffect,
+                              # TrialTimeline, DictationDemo, BarrierMatrix, SupplyFlow,
+                              # CompareGrid, PricingCards, ModuleGrid, StudioCards, FAQ)
     shell/Sidebar.tsx         # Nav bleue groupée (badge non-lus sur Messages) — config `groups[]`
     shell/Topbar.tsx          # Chantier actif, recherche, mode découverte, langue, notifs, persona
   lib/
@@ -54,6 +63,8 @@ src/
     gestion.ts                # documents, reserves, purchaseOrders, financeRows
     ai.ts                     # aiAlerts, aiReminders, dictée Copilote + Q&A scriptée, rapports générés
     comms.ts                  # conversations messagerie, supportTickets, faqItems
+    marketing.ts              # vitrine : offres, studios, matrices RBAC, concurrents,
+                              # Supply, chiffres clés — structure pure, libellés dans `site.*`
     index.ts                  # ré-exporte tout : importer depuis "@/data"
   types/index.ts              # Modèle de domaine complet (Project, TimeEntry, SiteTask, Conversation…)
 ```

@@ -78,8 +78,43 @@ validation humaine (CDC §6.1). Rappelée par les alertes IA du tableau de bord 
 
 ## Motion
 
-150–220 ms, ease-out exponentiel. Changements d'état uniquement. `prefers-reduced-motion`
-respecté. Pas de séquence de chargement orchestrée.
+**Dans l'application** : 150–220 ms, ease-out exponentiel. Changements d'état uniquement.
+`prefers-reduced-motion` respecté. Pas de séquence de chargement orchestrée.
+
+**Sur la vitrine** (`/` et rubriques), le registre change : le mouvement y explique le
+produit. Il reste tenu par trois règles.
+
+1. *Une animation = une idée.* Les outils qui convergent disent la tagline ; les nœuds qui
+   apparaissent disent l'effet réseau ; le volet qui coulisse dit la barrière de
+   confidentialité. Rien ne bouge pour décorer.
+2. *Les révélations passent par des transitions*, jamais par des animations : quand
+   `prefers-reduced-motion` écrase les durées, l'état final est quand même atteint (une
+   animation `both` cachée resterait invisible sur certains moteurs).
+3. *Une seule séquence orchestrée par page* : le hero. Le reste se déclenche à l'entrée
+   dans le viewport (`useInView`), avec des cascades de 40–120 ms.
+
+Boîte à outils : `components/site/motion.tsx` (`Reveal`, `Stagger`, `CountUp`, `Marquee`,
+`useInView`, `useScrollProgress`, `useTypewriter`, `useReducedMotion`) et les keyframes
+`tool-drift`, `marquee`, `draw-stroke`, `dash-flow`, `node-ring`, `pop-in`, `sheen`,
+`wave-bar`, `soft-glow`, `scroll-hint` dans `globals.css`.
+
+## Vitrine : direction visuelle
+
+Même palette, même typographie, même kit — le site public ne doit pas ressembler à un autre
+produit que l'application.
+
+- **Alternance bleu/papier** : chaque page ouvre sur un aplat `site-drench` (trame blanche
+  + halos radiaux sur le bleu de marque, prolongement du panneau de connexion), puis
+  alterne sections `paper` et `card`. Les moments forts (IA, appel à l'action, pied de
+  page) reviennent au bleu drenché.
+- **Repère de niveau** (`LevelMark` + `Eyebrow`) : un filet et un triangle, comme la cote
+  d'altitude d'un plan d'architecte — et les sections de l'accueil sont numérotées
+  `N+00 … N+11`. La marque est elle-même faite de trois barres montantes, et l'offre
+  s'empile en trois niveaux : le vocabulaire est cohérent de bout en bout.
+- **Signature** : le mur d'outils du hero qui se rassemble en une plateforme unique.
+  C'est le seul endroit où l'on dépense de l'effet ; tout le reste est discipliné.
+- **Données en mono** : prix, délais, indices, compteurs, cotes de niveau — même règle que
+  dans l'application.
 
 ## Composants
 

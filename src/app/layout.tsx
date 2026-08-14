@@ -6,9 +6,12 @@ import { DemoProvider } from "@/lib/store";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "BuildNivo — Pilotage intelligent du chantier",
+  title: {
+    default: "BuildNivo — Le BTP a des millions d'outils. Il ne vous en faut qu'un.",
+    template: "%s",
+  },
   description:
-    "Plateforme SaaS de pilotage pour la construction : pointage, tâches, journal de chantier, documents et IA. Démo commerciale (données factices).",
+    "Plateforme collaborative intelligente pour la construction : pointage, tâches, journal de chantier, documents, achats, finances et IA, autour d'une source unique de vérité. Démo commerciale (données factices).",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

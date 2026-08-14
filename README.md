@@ -14,6 +14,29 @@ npm run dev        # http://localhost:3000
 npm run build && npm start
 ```
 
+## Vitrine commerciale (avant connexion)
+
+Le site public occupe `/` ; la démo applicative démarre sur `/connexion` (choix du persona).
+Contenu issu du **document de référence produit** (`documentation/BuildNivo_Document_Reference_Produit.pdf`,
+Blue Valoris FZCO v2.0), entièrement bilingue FR/EN.
+
+| Page | Contenu |
+|---|---|
+| **`/` Accueil** | Hero « les outils du chantier se rassemblent », coût de la dispersion, vision et marché, les 18 modules, empilement Project/Company/Studios, effet réseau et essai 30 jours, dictée IA, cloisonnement par rôle, Supply, comparatif, tarifs, mises en situation, FAQ |
+| **`/produit`** | Les deux produits, frontière Project ↔ Company cas par cas, mécanique d'acquisition, essai 30 jours, trois états d'une entreprise, continuité de service en cas d'impayé (J0 / J15), noyau MVP et principes techniques |
+| **`/studios`** | Les quatre Studios métier (Promoteur, Architecte, Maîtrise d'œuvre, Entreprise Travaux) et leur dépendance à Company |
+| **`/tarifs`** | Project 790 €, Company Essential 99 € / Business 299 €, Studios 99 €, opération supplémentaire, socle gratuit permanent détaillé |
+| **`/ia`** | Dictée terrain → actions structurées, six capacités, gouvernance (périmètre, validation humaine, sources, audit), architecture |
+| **`/securite`** | Explorateur interactif des trois barrières (nominative, commerciale, documentaire), tableaux complets par rôle, bris de glace tracé, alertes incident manuelles |
+| **`/supply`** | Du quantitatif à la demande de prix, scénarios d'approvisionnement comparés, rôle de BlueFulfill, neutralité de la plateforme |
+| **`/comparatif`** | Procore, Autodesk, CMiC, solutions françaises, outils terrain — matrice de couverture, angle mort, leviers de différenciation |
+| **`/contact`** | Demande de démonstration (formulaire simulé), canaux, déroulé de l'accompagnement |
+
+Animations : convergence des outils au chargement, révélations au défilement, compteurs,
+bandeau défilant, croissance du réseau d'entreprises invitées, curseur temporel de l'essai
+Company, dictée transcrite en direct, volets des barrières RBAC, flux Supply auto-joué.
+`prefers-reduced-motion` est respecté partout (les états finaux restent atteints).
+
 ## Ce que couvre la démo (noyau opérationnel du CDC)
 
 | Module | Contenu |
@@ -60,9 +83,13 @@ Direction visuelle alignée sur `reference.png` : sidebar bleu Buildnivo, conten
 
 ```
 src/
-  app/              # routes (login + groupe (app) avec les 14 écrans)
+  app/
+    (site)/         # vitrine publique : accueil + 8 rubriques (en-tête/pied de page communs)
+    connexion/      # choix du persona (entrée de la démo)
+    (app)/          # les écrans applicatifs
   components/
     ui.tsx          # kit UI (Button, StatusPill, DemoTip, Modal, PhotoScene…)
+    site/           # shell vitrine, kit de sections, boîte à outils motion, figures animées
     shell/          # Sidebar bleue + Topbar (chantier actif, langue, persona)
   data/             # données mock ancrées à La Réunion (marché pilote du CDC)
   lib/

@@ -249,6 +249,229 @@ body {
   animation: rise-in 0.22s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* ========================================================================== */
+/* Site vitrine (landing + rubriques)                                          */
+/* ========================================================================== */
+
+/* Bandeau bleu « drenché » : même trame que le panneau de connexion, plus deux
+   halos radiaux qui donnent la profondeur du hero. */
+.site-drench {
+  background-color: var(--color-blue-deep);
+  background-image:
+    radial-gradient(100% 80% at 78% 4%, oklch(0.62 0.19 264 / 0.55), transparent 62%),
+    radial-gradient(80% 90% at 6% 100%, oklch(0.3 0.13 264 / 0.75), transparent 60%),
+    linear-gradient(oklch(1 0 0 / 0.055) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.055) 1px, transparent 1px),
+    linear-gradient(oklch(1 0 0 / 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(1 0 0 / 0.028) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-blue), oklch(0.32 0.14 264));
+  background-size:
+    cover,
+    cover,
+    96px 96px,
+    96px 96px,
+    16px 16px,
+    16px 16px,
+    cover;
+}
+
+/* Révélation au défilement : transition (et non animation) pour que l'état final
+   reste atteint même quand prefers-reduced-motion écrase les durées. */
+.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-left {
+  transform: translateX(-18px);
+}
+
+.reveal-right {
+  transform: translateX(18px);
+}
+
+.reveal-scale {
+  transform: scale(0.965);
+}
+
+.reveal.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* Outils dispersés du hero : flottement continu, amplitude propre à chaque puce. */
+@keyframes tool-drift {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -9px, 0) rotate(calc(var(--tilt, 0deg) * -1));
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotate(var(--tilt, 0deg));
+  }
+}
+
+.tool-drift {
+  animation: tool-drift var(--dur, 7s) ease-in-out var(--delay, 0s) infinite;
+}
+
+/* Bandeau défilant des outils remplacés */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.marquee-track {
+  animation: marquee var(--dur, 42s) linear infinite;
+}
+
+.marquee-mask {
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Tracé de trait technique (flux Supply, liaisons du schéma réseau) */
+@keyframes draw-stroke {
+  from {
+    stroke-dashoffset: var(--len, 400);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.draw-stroke {
+  stroke-dasharray: var(--len, 400);
+  animation: draw-stroke 1.4s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+/* Pointillé qui circule : la donnée qui remonte du chantier */
+@keyframes dash-flow {
+  to {
+    stroke-dashoffset: -160;
+  }
+}
+
+.dash-flow {
+  stroke-dasharray: 5 9;
+  animation: dash-flow 5s linear infinite;
+}
+
+/* Onde d'un nœud du réseau (une entreprise invitée qui rejoint la plateforme) */
+@keyframes node-ring {
+  0% {
+    transform: scale(0.6);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(2.1);
+    opacity: 0;
+  }
+}
+
+.node-ring {
+  animation: node-ring 2.8s ease-out var(--delay, 0s) infinite;
+}
+
+/* Apparition d'une carte produite par l'IA */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.pop-in {
+  animation: pop-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) var(--delay, 0s) both;
+}
+
+/* Onde vocale de la dictée terrain */
+@keyframes wave-bar {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.wave-bar {
+  animation: wave-bar var(--dur, 0.9s) ease-in-out var(--delay, 0s) infinite;
+  transform-origin: center;
+}
+
+/* Reflet qui balaie le bouton principal au survol */
+@keyframes sheen {
+  from {
+    transform: translateX(-120%) skewX(-18deg);
+  }
+  to {
+    transform: translateX(320%) skewX(-18deg);
+  }
+}
+
+.sheen-host:hover .sheen,
+.sheen-host:focus-visible .sheen {
+  animation: sheen 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Halo lent derrière les niveaux de l'empilement */
+@keyframes soft-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.soft-glow {
+  animation: soft-glow 6s ease-in-out infinite;
+}
+
+/* Indicateur de défilement du hero */
+@keyframes scroll-hint {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(9px);
+    opacity: 0;
+  }
+}
+
+.scroll-hint {
+  animation: scroll-hint 1.9s ease-in-out infinite;
+}
+
+/* Grille technique claire des sections « papier » */
+.paper-grid {
+  background-image:
+    linear-gradient(oklch(0.51 0.2 264 / 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, oklch(0.51 0.2 264 / 0.05) 1px, transparent 1px);
+  background-size:
+    28px 28px,
+    28px 28px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

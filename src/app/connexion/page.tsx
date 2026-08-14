@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import {
+  ArrowLeft,
   ArrowRight,
   Bot,
   Building,
@@ -103,13 +105,18 @@ export default function LoginPage() {
 
       {/* Choix de profil */}
       <main className="blueprint-grid order-1 flex flex-1 flex-col lg:order-2">
-        <header className="flex items-center px-6 py-5 lg:px-12">
-          <span className="lg:hidden">
+        <header className="flex items-center gap-4 px-6 py-5 lg:px-12">
+          <Link href="/" className="lg:hidden">
             <Logo />
-          </span>
-          <span className="ml-auto">
-            <LanguageSelect />
-          </span>
+          </Link>
+          <Link
+            href="/"
+            className="ml-auto inline-flex items-center gap-1.5 rounded-[10px] border border-line bg-card px-3 py-2 text-[12.5px] font-semibold text-ink-soft transition-colors duration-150 hover:border-blue/40 hover:text-blue-deep"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            {d.site.nav.backToSite}
+          </Link>
+          <LanguageSelect />
         </header>
 
         <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col justify-center px-6 pb-12 lg:px-12 xl:max-w-5xl 2xl:max-w-6xl">

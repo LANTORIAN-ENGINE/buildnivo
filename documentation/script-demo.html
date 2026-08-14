@@ -1,0 +1,1456 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildNivo — Script de démonstration commerciale</title>
+<style>
+  :root{
+    --paper:oklch(0.975 0.004 255);
+    --card:oklch(1 0 0);
+    --ink:oklch(0.25 0.02 260);
+    --ink-soft:oklch(0.50 0.02 258);
+    --ink-faint:oklch(0.62 0.015 258);
+    --line:oklch(0.915 0.008 255);
+    --line-soft:oklch(0.955 0.005 255);
+    --blue:oklch(0.51 0.20 264);
+    --blue-deep:oklch(0.43 0.19 264);
+    --blue-soft:oklch(0.945 0.028 262);
+    --safety:oklch(0.70 0.16 55);
+    --safety-deep:oklch(0.48 0.12 55);
+    --safety-soft:oklch(0.965 0.030 70);
+    --ok:oklch(0.58 0.13 152);
+    --ok-deep:oklch(0.42 0.11 152);
+    --ok-soft:oklch(0.962 0.032 152);
+    --danger:oklch(0.55 0.19 27);
+    --danger-soft:oklch(0.960 0.026 27);
+    --viz:oklch(0.55 0.18 295);
+    --viz-soft:oklch(0.958 0.028 295);
+    --sans:"Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--paper);color:var(--ink);
+    font-family:var(--sans);font-size:15px;line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .layout{display:grid;grid-template-columns:272px minmax(0,1fr);gap:0;max-width:1560px;margin:0 auto}
+
+  /* ---------------- Sidebar ---------------- */
+  aside{
+    position:sticky;top:0;align-self:start;height:100dvh;overflow-y:auto;
+    background:linear-gradient(178deg,var(--blue) 0%,var(--blue-deep) 100%);
+    color:oklch(0.985 0.005 262);padding:26px 20px 40px;
+  }
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+  .brand svg{width:26px;height:29px;flex:none}
+  .brand b{font-size:19px;font-weight:800;letter-spacing:-0.02em}
+  .brand-sub{font-size:11.5px;opacity:.72;margin:0 0 26px;line-height:1.5}
+  .toc-group{font-size:10px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;opacity:.58;margin:22px 0 8px}
+  aside a{
+    display:flex;gap:9px;align-items:baseline;
+    color:inherit;text-decoration:none;font-size:13.2px;font-weight:500;
+    padding:6px 10px;border-radius:9px;transition:background .15s;
+  }
+  aside a:hover{background:oklch(1 0 0 / .13)}
+  aside a .n{font-family:var(--mono);font-size:10.5px;opacity:.6;flex:none;width:16px}
+  .aside-foot{margin-top:28px;padding-top:18px;border-top:1px solid oklch(1 0 0 / .18);font-size:11px;opacity:.68;line-height:1.6}
+
+  /* ---------------- Main ---------------- */
+  main{padding:0 46px 120px;min-width:0}
+  header.hero{padding:52px 0 34px;border-bottom:1px solid var(--line);margin-bottom:8px}
+  .kicker{display:inline-flex;align-items:center;gap:7px;background:var(--blue-soft);color:var(--blue-deep);
+    font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 11px;border-radius:999px}
+  h1{font-size:38px;line-height:1.15;letter-spacing:-0.025em;font-weight:800;margin:18px 0 0}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:70ch;margin:14px 0 0;line-height:1.7}
+  .hero-meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+  .metaChip{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:12.5px;font-weight:600}
+  .metaChip span{font-family:var(--mono);color:var(--blue-deep)}
+
+  section.module{padding:44px 0 8px;border-bottom:1px solid var(--line);scroll-margin-top:24px}
+  section.module:last-of-type{border-bottom:0}
+  .mod-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:14px;justify-content:space-between}
+  .mod-num{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--blue);letter-spacing:.06em}
+  h2{font-size:27px;line-height:1.2;letter-spacing:-0.02em;font-weight:800;margin:4px 0 0}
+  h2 small{display:block;font-size:13.5px;font-weight:600;color:var(--ink-faint);letter-spacing:0;margin-top:5px}
+  .badges{display:flex;flex-wrap:wrap;gap:7px;flex:none}
+  .b{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;white-space:nowrap}
+  .b-time{background:var(--blue-soft);color:var(--blue-deep)}
+  .b-role{background:var(--viz-soft);color:var(--viz)}
+  .b-star{background:var(--safety-soft);color:var(--safety-deep)}
+
+  .goal{margin:20px 0 0;padding:14px 18px;background:var(--card);border:1px solid var(--line);
+    border-left:3px solid var(--blue);border-radius:10px;font-size:14px}
+  .goal b{font-weight:800}
+
+  h3{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-faint);
+    margin:30px 0 12px;display:flex;align-items:center;gap:9px}
+  h3::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* Script parlé */
+  .say{
+    background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px 26px;font-size:15.5px;line-height:1.82;
+  }
+  .say p{margin:0 0 14px}
+  .say p:last-child{margin-bottom:0}
+  .say em{font-style:normal;background:var(--blue-soft);color:var(--blue-deep);padding:1px 5px;border-radius:5px;font-weight:600}
+  .say strong{font-weight:700}
+  .pause{display:inline-block;color:var(--blue);font-weight:800;font-family:var(--mono);font-size:11px;
+    letter-spacing:.06em;background:var(--blue-soft);border-radius:5px;padding:1px 6px;margin:0 3px;vertical-align:1px}
+  .stage{color:var(--ink-faint);font-size:13.5px;font-style:italic}
+
+  /* Punchline */
+  .punch{
+    margin:20px 0 0;padding:20px 24px;border-radius:var(--radius);
+    background:linear-gradient(170deg,var(--blue) 0%,var(--blue-deep) 100%);
+    color:oklch(0.99 0.004 262);font-size:17px;font-weight:700;line-height:1.55;letter-spacing:-0.01em;
+  }
+  .punch .lbl{display:block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.68;font-weight:800;margin-bottom:7px}
+
+  /* Clics */
+  ol.clicks{margin:0;padding:0;list-style:none;counter-reset:c}
+  ol.clicks li{
+    counter-increment:c;position:relative;padding:9px 0 9px 40px;
+    border-bottom:1px dashed var(--line);font-size:14px;line-height:1.6;
+  }
+  ol.clicks li:last-child{border-bottom:0}
+  ol.clicks li::before{
+    content:counter(c);position:absolute;left:0;top:9px;
+    width:24px;height:24px;border-radius:7px;background:var(--blue-soft);color:var(--blue-deep);
+    font-family:var(--mono);font-size:11.5px;font-weight:800;display:grid;place-items:center;
+  }
+  ol.clicks kbd{
+    font-family:var(--sans);font-size:12.5px;font-weight:700;background:var(--line-soft);
+    border:1px solid var(--line);border-radius:6px;padding:1px 7px;white-space:nowrap;
+  }
+  ol.clicks li .tip{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px}
+
+  /* Chiffres */
+  .figs{display:grid;grid-template-columns:repeat(auto-fill,minmax(178px,1fr));gap:10px}
+  .fig{background:var(--card);border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .fig .v{font-family:var(--mono);font-size:19px;font-weight:700;letter-spacing:-0.02em;display:block;line-height:1.25}
+  .fig .k{font-size:11.5px;color:var(--ink-soft);font-weight:600;display:block;margin-top:4px;line-height:1.45}
+  .fig.warn .v{color:var(--safety-deep)}
+  .fig.bad .v{color:var(--danger)}
+  .fig.good .v{color:var(--ok-deep)}
+
+  /* Objections */
+  .obj{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:0;overflow:hidden}
+  .obj-row{padding:16px 20px;border-bottom:1px solid var(--line-soft)}
+  .obj-row:last-child{border-bottom:0}
+  .obj-q{font-size:14px;font-weight:700;margin:0 0 7px;display:flex;gap:9px}
+  .obj-q::before{content:"«";color:var(--safety);font-size:22px;line-height:1;font-weight:800;flex:none}
+  .obj-a{margin:0;font-size:14px;color:var(--ink-soft);line-height:1.72;padding-left:22px}
+  .obj-a b{color:var(--ink);font-weight:700}
+
+  /* Notes / warnings */
+  .note{display:flex;gap:12px;padding:14px 18px;border-radius:11px;font-size:13.5px;line-height:1.65;margin-top:18px}
+  .note b{font-weight:800}
+  .note.tip{background:var(--ok-soft);color:var(--ok-deep)}
+  .note.care{background:var(--safety-soft);color:var(--safety-deep)}
+  .note.stop{background:var(--danger-soft);color:var(--danger)}
+  .note .ic{font-size:15px;flex:none;line-height:1.5}
+
+  /* Prep page blocks */
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+  .box{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px}
+  .box h4{margin:0 0 12px;font-size:14.5px;font-weight:800;letter-spacing:-0.01em}
+  .box ul{margin:0;padding-left:19px;font-size:14px;line-height:1.75;color:var(--ink-soft)}
+  .box ul li{margin-bottom:6px}
+  .box ul li b{color:var(--ink)}
+  .box ul li:last-child{margin-bottom:0}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--card);
+    border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  th{text-align:left;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);
+    font-weight:800;padding:11px 14px;border-bottom:1px solid var(--line);background:var(--line-soft)}
+  td{padding:11px 14px;border-bottom:1px solid var(--line-soft);vertical-align:top;line-height:1.6}
+  tr:last-child td{border-bottom:0}
+  td b{font-weight:700}
+  td .mono,.mono{font-family:var(--mono);font-size:12.5px}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .scroll table{min-width:640px}
+
+  footer{padding:44px 0 0;color:var(--ink-faint);font-size:12.5px;line-height:1.7}
+
+  /* Responsive */
+  @media (max-width:1080px){
+    .layout{grid-template-columns:1fr}
+    aside{position:static;height:auto;padding:22px 24px 28px}
+    aside nav{columns:2;column-gap:26px}
+    main{padding:0 24px 90px}
+    h1{font-size:30px}
+    h2{font-size:23px}
+  }
+  @media (max-width:560px){
+    aside nav{columns:1}
+    main{padding:0 18px 70px}
+    .say{padding:18px}
+  }
+
+  /* Dark */
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:oklch(0.19 0.015 262);--card:oklch(0.235 0.017 262);
+      --ink:oklch(0.96 0.005 262);--ink-soft:oklch(0.76 0.012 262);--ink-faint:oklch(0.63 0.015 262);
+      --line:oklch(0.32 0.02 262);--line-soft:oklch(0.27 0.018 262);
+      --blue:oklch(0.68 0.16 264);--blue-deep:oklch(0.80 0.12 264);--blue-soft:oklch(0.31 0.06 264);
+      --safety-deep:oklch(0.84 0.13 70);--safety-soft:oklch(0.32 0.055 70);
+      --ok-deep:oklch(0.80 0.13 152);--ok-soft:oklch(0.29 0.05 152);
+      --danger:oklch(0.76 0.15 27);--danger-soft:oklch(0.31 0.06 27);
+      --viz:oklch(0.78 0.13 295);--viz-soft:oklch(0.31 0.06 295);
+    }
+    :root:not([data-theme="light"]) aside{background:linear-gradient(178deg,oklch(0.34 0.13 264),oklch(0.26 0.10 264))}
+    :root:not([data-theme="light"]) .punch{background:linear-gradient(170deg,oklch(0.40 0.15 264),oklch(0.31 0.12 264))}
+  }
+  :root[data-theme="dark"]{
+    --paper:oklch(0.19 0.015 262);--card:oklch(0.235 0.017 262);
+    --ink:oklch(0.96 0.005 262);--ink-soft:oklch(0.76 0.012 262);--ink-faint:oklch(0.63 0.015 262);
+    --line:oklch(0.32 0.02 262);--line-soft:oklch(0.27 0.018 262);
+    --blue:oklch(0.68 0.16 264);--blue-deep:oklch(0.80 0.12 264);--blue-soft:oklch(0.31 0.06 264);
+    --safety-deep:oklch(0.84 0.13 70);--safety-soft:oklch(0.32 0.055 70);
+    --ok-deep:oklch(0.80 0.13 152);--ok-soft:oklch(0.29 0.05 152);
+    --danger:oklch(0.76 0.15 27);--danger-soft:oklch(0.31 0.06 27);
+    --viz:oklch(0.78 0.13 295);--viz-soft:oklch(0.31 0.06 295);
+  }
+  :root[data-theme="dark"] aside{background:linear-gradient(178deg,oklch(0.34 0.13 264),oklch(0.26 0.10 264))}
+  :root[data-theme="dark"] .punch{background:linear-gradient(170deg,oklch(0.40 0.15 264),oklch(0.31 0.12 264))}
+
+  /* Print */
+  @media print{
+    :root{--paper:#fff;--card:#fff}
+    aside{display:none}
+    .layout{display:block;max-width:none}
+    main{padding:0}
+    section.module{page-break-inside:avoid;padding:22px 0}
+    .punch{background:#f2f4fd!important;color:#20205a!important;border:1px solid #ccd}
+    body{font-size:11.5pt}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside>
+  <div class="brand">
+    <svg viewBox="0 0 34 38" fill="currentColor" aria-hidden="true">
+      <path d="M0 38 L0 22 L10 17 L10 38 Z"/>
+      <path d="M12 38 L12 10 L22 5 L22 38 Z"/>
+      <path d="M24 38 L24 18 L34 13 L34 38 Z"/>
+    </svg>
+    <b>BuildNivo</b>
+  </div>
+  <p class="brand-sub">Script de démonstration commerciale — parcours complet, écran par écran.</p>
+
+  <nav>
+    <p class="toc-group">Préparation</p>
+    <a href="#prep"><span class="n">00</span> Avant d'entrer</a>
+    <a href="#arc"><span class="n">—</span> L'arc du rendez-vous</a>
+
+    <p class="toc-group">Le parcours</p>
+    <a href="#login"><span class="n">01</span> Connexion / personas</a>
+    <a href="#dashboard"><span class="n">02</span> Vue d'ensemble</a>
+    <a href="#pointage"><span class="n">03</span> Pointage</a>
+    <a href="#taches"><span class="n">04</span> Tâches</a>
+    <a href="#journal"><span class="n">05</span> Journal de chantier</a>
+    <a href="#photos"><span class="n">06</span> Photos &amp; problèmes</a>
+    <a href="#copilote"><span class="n">07</span> Copilote IA</a>
+    <a href="#rapports"><span class="n">08</span> Rapports IA</a>
+    <a href="#reserves"><span class="n">09</span> Réserves</a>
+    <a href="#achats"><span class="n">10</span> Achats &amp; livraisons</a>
+    <a href="#finances"><span class="n">11</span> Finances</a>
+    <a href="#documents"><span class="n">12</span> Documents</a>
+    <a href="#messages"><span class="n">13</span> Messages</a>
+    <a href="#chantiers"><span class="n">14</span> Chantiers</a>
+    <a href="#equipes"><span class="n">15</span> Équipes &amp; sociétés</a>
+    <a href="#support"><span class="n">16</span> Support &amp; aide</a>
+    <a href="#parametres"><span class="n">17</span> Paramètres</a>
+
+    <p class="toc-group">Conclure</p>
+    <a href="#closing"><span class="n">18</span> Le closing</a>
+    <a href="#objections"><span class="n">19</span> Objections difficiles</a>
+    <a href="#variantes"><span class="n">20</span> Démos courtes</a>
+  </nav>
+
+  <p class="aside-foot">Données de démonstration. Entreprise, chantiers et personnes sont fictifs — à présenter comme tels.</p>
+</aside>
+
+<main>
+
+<header class="hero">
+  <span class="kicker">Script oral · Rendez-vous commercial</span>
+  <h1>Vendre BuildNivo en 30 minutes,<br>écran par écran.</h1>
+  <p class="lede">Ce document est votre script parlé. Pour chaque page de la démo : ce que vous cherchez à prouver, ce que vous dites mot pour mot, ce que vous cliquez, les chiffres exacts affichés à l'écran, et la réponse aux objections que vous allez recevoir. Le fil rouge est déjà dans les données : un plombier absent, une grue en panne, des rails qui manquent. Racontez cette journée-là, elle est vraie pour tous vos prospects.</p>
+  <div class="hero-meta">
+    <span class="metaChip">Durée cible <span>28–32 min</span></span>
+    <span class="metaChip">Écrans <span>17</span></span>
+    <span class="metaChip">Moment clé <span>Copilote IA</span></span>
+    <span class="metaChip">Cible <span>PME BTP 20–300 salariés</span></span>
+  </div>
+</header>
+
+<!-- ================= PREP ================= -->
+<section class="module" id="prep">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">00</span>
+      <h2>Avant d'entrer dans la salle<small>Cinq minutes de préparation qui changent tout le rendez-vous.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">5 min</span></div>
+  </div>
+
+  <div class="goal"><b>La règle du rendez-vous :</b> vous ne présentez pas un logiciel, vous racontez la journée d'hier sur leur chantier. Chaque écran répond à une question qu'ils se posent déjà. Si un écran ne répond à aucune de leurs questions, sautez-le.</div>
+
+  <h3>Réglages techniques</h3>
+  <ol class="clicks">
+    <li><kbd>npm run dev</kbd> lancé, onglet ouvert sur <kbd>localhost:3000</kbd>, <b>en plein écran</b>, zoom navigateur à 100 % (110 % si l'écran est petit et que vous projetez).
+      <span class="tip">Vérifiez qu'aucun autre onglet, notification ou Slack ne peut apparaître : vous allez montrer des données confidentielles fictives, l'illusion doit tenir.</span></li>
+    <li>Vérifiez que le <b>mode découverte</b> est actif (icône dans la barre du haut). Les repères bleus vous servent d'aide-mémoire visuelle — si votre prospect les trouve envahissants, coupez-les d'un clic devant lui : c'est déjà une démonstration de souplesse.</li>
+    <li>Chantier actif : <b>Résidence SUNSET</b>. C'est le chantier le plus riche en données ; toute la narration s'appuie dessus.</li>
+    <li>Si vous avez déjà fait une démo aujourd'hui : <kbd>Paramètres → Réinitialiser la démo</kbd>. Sinon vos alertes seront déjà traitées et l'écran d'accueil paraîtra vide.</li>
+    <li>Sur un rendez-vous anglophone ou avec un investisseur international : basculez <kbd>FR / EN</kbd> une fois en début de démo, puis revenez. Trois secondes, effet immédiat.</li>
+  </ol>
+
+  <h3>Les deux phrases à ne jamais oublier</h3>
+  <div class="say">
+    <p><strong>Au début :</strong> « Ce que vous allez voir est une maquette fonctionnelle avec des données fictives — j'ai reconstitué une entreprise réunionnaise type, quatre chantiers, une journée de travail. Rien n'est réel, mais tout est réaliste. Dites-moi à chaque écran si ça ressemble à chez vous, ou pas du tout. »</p>
+    <p><strong>À la fin :</strong> « Sur les dix-sept écrans qu'on vient de parcourir, lesquels vous feraient gagner du temps dès le mois prochain ? »</p>
+  </div>
+  <div class="note tip"><span class="ic">✓</span><span><b>Pourquoi annoncer le fictif ?</b> Parce qu'un prospect BTP repère un faux chantier en dix secondes, et que s'il vous prend en flagrant délit d'exagération, vous perdez la confiance sur tout le reste. En l'annonçant, vous transformez une faiblesse en preuve d'honnêteté — et vous gagnez le droit d'être précis.</span></div>
+
+  <h3>Qualifier en trois questions, avant même d'ouvrir l'écran</h3>
+  <div class="grid2">
+    <div class="box">
+      <h4>1. « Comment vos heures arrivent-elles à la paie aujourd'hui ? »</h4>
+      <ul>
+        <li>Réponse « des feuilles papier » ou « le chef m'envoie un WhatsApp le vendredi » → <b>attaquez par le Pointage</b>. Vous avez une douleur mesurable en euros.</li>
+        <li>Réponse « on a déjà une pointeuse » → attaquez par la <b>Vue d'ensemble</b> et le <b>Copilote</b>. Votre valeur n'est pas de pointer, c'est de relier la présence au planning.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>2. « Qui écrit le rapport de chantier, et quand ? »</h4>
+      <ul>
+        <li>« Personne, on n'a pas le temps » → c'est votre meilleure entrée : <b>Journal + Rapports IA</b>.</li>
+        <li>« Le conducteur, le soir chez lui » → vous vendez du temps de vie. Insistez sur l'auto-composition.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>3. « Combien de sous-traitants sur votre plus gros chantier ? »</h4>
+      <ul>
+        <li>Au-delà de cinq, la <b>gratuité des accès sous-traitants</b> devient l'argument central. Gardez-le pour le closing, c'est une carte forte.</li>
+        <li>Notez le chiffre : vous le réutiliserez dans le calcul de retour sur investissement.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ARC ================= -->
+<section class="module" id="arc">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">—</span>
+      <h2>L'arc du rendez-vous<small>Pourquoi cet ordre-là, et pas l'ordre du menu.</small></h2>
+    </div>
+  </div>
+
+  <p class="lede" style="font-size:15px;max-width:80ch">La barre de navigation est rangée par logique produit. Une démo, elle, se raconte par logique émotionnelle : on part du terrain concret, on monte vers l'intelligence, on redescend sur l'argent. Voici la courbe.</p>
+
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:60px">#</th><th>Écran</th><th>Rôle dans le récit</th><th style="width:88px">Durée</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">01</td><td><b>Connexion</b></td><td>Poser le décor : cinq métiers, une plateforme. Le prospect se reconnaît.</td><td class="mono">2 min</td></tr>
+      <tr><td class="mono">02</td><td><b>Vue d'ensemble</b></td><td>Montrer la promesse en un écran : « voilà votre chantier maintenant ».</td><td class="mono">4 min</td></tr>
+      <tr><td class="mono">03</td><td><b>Pointage</b></td><td>Premier gain chiffrable. C'est ici qu'on achète, souvent.</td><td class="mono">4 min</td></tr>
+      <tr><td class="mono">04–06</td><td><b>Tâches · Journal · Photos</b></td><td>La saisie terrain devient quasi nulle. Montée en crédibilité.</td><td class="mono">6 min</td></tr>
+      <tr><td class="mono">07</td><td><b>Copilote IA</b></td><td><b>Le sommet.</b> Une phrase dictée devient cinq actions. C'est le moment dont ils parleront.</td><td class="mono">5 min</td></tr>
+      <tr><td class="mono">08</td><td><b>Rapports IA</b></td><td>Redescente utile : l'IA a travaillé, l'humain valide. Rassurance.</td><td class="mono">3 min</td></tr>
+      <tr><td class="mono">09–12</td><td><b>Réserves · Achats · Finances · Documents</b></td><td>Le sérieux gestionnaire. C'est pour le dirigeant et le comptable.</td><td class="mono">6 min</td></tr>
+      <tr><td class="mono">13–17</td><td><b>Messages · Chantiers · Équipes · Support · Paramètres</b></td><td>Lever les dernières objections avant de conclure.</td><td class="mono">5 min</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note care"><span class="ic">!</span><span><b>Si vous n'avez que quinze minutes</b> (le cas le plus fréquent) : Connexion → Vue d'ensemble → Pointage → Copilote → Rapports → closing. Rien d'autre. Voir la section <a href="#variantes" style="color:inherit;font-weight:800">Démos courtes</a>.</span></div>
+</section>
+
+<!-- ================= 01 LOGIN ================= -->
+<section class="module" id="login">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">01</span>
+      <h2>Connexion — le choix du profil<small>Une plateforme, cinq métiers qui n'ont pas les mêmes besoins.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2 min</span><span class="b b-role">Tous</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> BuildNivo n'est pas un outil de bureau qu'on impose au terrain, ni une appli terrain que la direction ne regarde jamais. C'est le même produit qui change de visage selon qui le tient dans les mains.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p><span class="stage">(Écran de connexion affiché, ne cliquez pas tout de suite. Laissez-les lire deux secondes.)</span></p>
+    <p>« Alors, première chose que vous voyez : on ne vous demande pas un identifiant. <span class="pause">·</span> On vous demande <strong>qui vous êtes sur le chantier</strong>. »</p>
+    <p>« Parce que le problème des logiciels BTP, vous le connaissez mieux que moi : on achète un outil pour la direction, et six mois plus tard le chef de chantier continue de tout noter sur son carnet. <span class="pause">·</span> Ou l'inverse : on achète une appli terrain géniale, et le patron n'a toujours aucune visibilité. »</p>
+    <p>« Là, il y a cinq profils. <em>Nathalie</em>, la directrice — elle veut des synthèses et des coûts. <em>Marc</em>, conducteur de travaux — il veut ses tâches et ses risques planning. <em>Sofia</em>, chef de chantier — elle veut saisir en trois gestes sous le soleil. <em>Jimmy</em>, maçon coffreur — il veut pointer et partir travailler. Et <em>Éric</em>, gérant de Charpentes Payet — c'est un sous-traitant, il n'est pas de la maison. »</p>
+    <p>« Et je vous le dis tout de suite parce que c'est un point important du modèle : <strong>l'accès d'Éric est gratuit.</strong> <span class="pause">·</span> On ne vous fait pas payer une licence pour chaque entreprise qui pose une fenêtre chez vous. »</p>
+    <p><span class="stage">(Montrez le panneau bleu à gauche, qui déroule les modes de connexion.)</span></p>
+    <p>« À gauche, c'est un aperçu animé des modes de connexion. Mot de passe classique, Face ID, empreinte, badge NFC. <span class="pause">·</span> En production, vous activez ce que vos équipements permettent et ce que votre politique de sécurité autorise. Ici c'est une simulation, je ne vous fais pas croire que je scanne votre doigt. »</p>
+    <p>« Je prends le profil de Marc, le conducteur de travaux. C'est lui qui a le plus à perdre dans une journée mal pilotée. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Laissez la page se charger, le panneau d'authentification s'animer une fois. <span class="tip">Ne parlez pas pendant les deux premières secondes : laissez l'animation faire son travail.</span></li>
+    <li>Survolez les cinq cartes de profil en les nommant. <kbd>Ne cliquez pas encore.</kbd></li>
+    <li>Pointez l'encadré bleu en pointillés à droite : les quatre piliers du produit (pointage fiable, journal automatique, IA qui agit, sous-traitants gratuits). <span class="tip">C'est votre plan de démo affiché à l'écran. Dites-le : « ces quatre lignes, c'est exactement ce qu'on va voir ».</span></li>
+    <li>Cliquez sur <kbd>Marc Dorseuil — Conducteur de travaux</kbd>.</li>
+  </ol>
+
+  <h3>Chiffres et éléments à citer</h3>
+  <div class="figs">
+    <div class="fig"><span class="v">5</span><span class="k">profils métier, une seule plateforme</span></div>
+    <div class="fig good"><span class="v">0 €</span><span class="k">licence sous-traitant</span></div>
+    <div class="fig"><span class="v">FR / EN</span><span class="k">interface complète, bascule immédiate</span></div>
+    <div class="fig"><span class="v">4</span><span class="k">modes de connexion selon vos équipements</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">Phrase de transition</span>« Le même outil pour le patron et pour le maçon. Ça a l'air évident dit comme ça — c'est pourtant la raison numéro un pour laquelle les logiciels de chantier finissent au placard. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Mes ouvriers n'ont pas de smartphone.</p>
+      <p class="obj-a">« Alors on ne passe pas par le smartphone pour eux. Le pointage se fait au <b>badge NFC</b> sur une tablette posée au bungalow, ou par <b>QR code affiché</b> que le chef scanne pour l'équipe. Je vous montre l'écran dans deux minutes, vous me direz si ça tient sur votre chantier. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Pourquoi cinq profils ? On va se perdre.</p>
+      <p class="obj-a">« C'est l'inverse : chacun ne voit que ce qui le concerne. Jimmy le maçon, quand il ouvre l'appli, il voit son pointage et ses heures — pas le budget du chantier. <b>Il y a un tableau de permissions détaillé</b> que je vous montrerai à la fin, et c'est vous qui le réglez. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 DASHBOARD ================= -->
+<section class="module" id="dashboard">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">02</span>
+      <h2>Vue d'ensemble<small>L'écran qui remplace la réunion du lundi matin.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">4 min</span><span class="b b-role">Direction · Conducteur</span><span class="b b-star">Écran clé</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> l'information monte seule du terrain. Ce n'est pas un tableau de bord qu'on remplit — c'est un tableau de bord qui se remplit. Et l'IA ne décore pas : elle a déjà repéré six dérives que personne n'avait vues.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Voilà. <span class="pause">·</span> Nous sommes Bâtir Océan Indien, entreprise générale à Saint-Denis, et là on regarde la <strong>Résidence SUNSET</strong> — quarante-huit logements, sept millions quatre. »</p>
+    <p>« Quatre chiffres en haut. Budget consommé : <em>5,55 millions sur 7,4</em>. Avancement : <em>68 %</em>. Et juste en dessous, la petite mention qui fait mal — <em>75 % planifié</em>. <span class="pause">·</span> Retard prévisionnel : <em>12 jours</em>. Équipe aujourd'hui : <em>42 personnes</em>, et le point vert clignote parce que c'est du temps réel, pas une saisie d'hier soir. »</p>
+    <p>« Ces quatre chiffres, aujourd'hui, chez vous, vous les avez quand ? <span class="pause">·</span> <span class="stage">(Laissez-les répondre. La réponse est presque toujours : « le lundi », ou « quand je demande ».)</span> »</p>
+    <p>« Là, ils sont calculés en continu. Le 68 % ne vient pas d'un conducteur qui estime au doigt mouillé : il vient des <strong>tâches validées sur le terrain</strong>, avec photos. Le 42 vient du pointage de ce matin. Personne n'a rien ressaisi. »</p>
+    <p><span class="stage">(Passez à la colonne de droite — les alertes.)</span></p>
+    <p>« Et maintenant la partie qui intéresse vraiment un conducteur de travaux. <strong>Les alertes.</strong> Ce ne sont pas des notifications, c'est de l'analyse croisée. »</p>
+    <p>« Première alerte, en rouge : <em>grue n°2 indisponible</em>, en panne depuis deux jours. Jusque-là, c'est une info, votre chef vous l'a dit au téléphone. Mais lisez la suite : <em>« le coulage de la dalle R+2 consomme la capacité de la grue n°1 : risque sur les approvisionnements du bâtiment B »</em>. <span class="pause">·</span> Ça, c'est du raisonnement. Le système a relié une panne machine, une tâche en cours et un planning d'approvisionnement. »</p>
+    <p>« Deuxième : <em>trois plaquistes présents sur six prévus</em>. Et la conclusion : <em>au rythme actuel, les cloisons du bâtiment B prennent trois jours de retard</em>. <span class="pause">·</span> C'est le pointage qui parle au planning. Aujourd'hui, dans la plupart des entreprises, ces deux informations vivent dans deux mondes séparés — et on découvre le retard trois semaines plus tard. »</p>
+    <p>« Troisième : <em>PLOMB'ÉO est totalement absent aujourd'hui</em>. Personne n'a appelé pour prévenir. Le système l'a vu à sept heures vingt, parce que zéro pointage sur le lot plomberie. »</p>
+    <p>« Et là, celle-là, je vous la garde pour la fin : <em>facture supérieure à la commande</em>. Lot plomberie, <em>engagé 511 000 € pour un budget de 480 000 €</em>. La facture PLOMB'ÉO dépasse la commande de <em>6,4 %</em>. <span class="pause">·</span> Trente et un mille euros. Sur un seul lot. Détecté automatiquement. »</p>
+    <p><span class="stage">(Faites une vraie pause ici. C'est le premier moment où le dirigeant calcule.)</span></p>
+    <p>« En bas à gauche, la présence par corps d'état : gros œuvre 18 sur 20, second œuvre 12 sur 13… et <em>plomberie, zéro sur deux, en rouge</em>. En une seconde vous savez qui manque. Au milieu, les prochaines échéances, triées, avec les tâches bloquées en rouge. Et à droite la répartition budgétaire — 42 % de gros œuvre sur ce chantier. »</p>
+    <p>« Un dernier détail qui compte : le sélecteur de chantier, en haut. <span class="pause">·</span> Je change de chantier, tout l'écran suit. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Balayez les quatre indicateurs du haut de gauche à droite avec le curseur, en les nommant. <span class="tip">Ne les commentez pas tous en détail : c'est le contraste 68 % / 75 % qui porte le message.</span></li>
+    <li>Survolez la courbe planifié / réalisé : l'infobulle affiche les valeurs, le repère pointillé marque « Aujourd'hui ». <span class="tip">Dites : « la ligne verte s'arrête à aujourd'hui, elle ne prédit rien qu'elle ne sait pas ». La honnêteté du graphe est un argument.</span></li>
+    <li>Lisez <b>à voix haute le détail</b> de deux alertes — la grue et les plaquistes. <span class="tip">Lisez vraiment le texte affiché. C'est là que le prospect comprend qu'il y a du raisonnement derrière, pas un seuil d'alerte bête.</span></li>
+    <li>Cliquez <kbd>Traiter</kbd> sur une alerte : elle disparaît, un message de confirmation s'affiche en bas. <span class="tip">« Elle est tracée, elle n'est pas perdue. Vous savez qui a traité quoi. »</span></li>
+    <li>Descendez sur <b>Présence chantier</b>, pointez la ligne <kbd>Plomberie 0/2</kbd> en rouge.</li>
+    <li>En haut, changez le chantier actif pour <kbd>ZAC Cœur de Ville — Îlot 3</kbd> : avancement 41 % contre 40 % planifié, zéro jour de retard. <span class="tip">Message : « l'outil ne sert pas qu'à annoncer des catastrophes. Ce chantier-là va bien, et vous le savez aussi vite. » Revenez ensuite sur SUNSET.</span></li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig"><span class="v">5,55 M€</span><span class="k">consommé sur 7,4 M€</span></div>
+    <div class="fig warn"><span class="v">68 %</span><span class="k">réalisé vs 75 % planifié</span></div>
+    <div class="fig warn"><span class="v">12 j</span><span class="k">retard prévisionnel</span></div>
+    <div class="fig"><span class="v">42 / 48</span><span class="k">personnes présentes aujourd'hui</span></div>
+    <div class="fig bad"><span class="v">0 / 2</span><span class="k">plomberie présente — PLOMB'ÉO absent</span></div>
+    <div class="fig bad"><span class="v">+31 000 €</span><span class="k">dépassement lot plomberie détecté</span></div>
+    <div class="fig warn"><span class="v">6</span><span class="k">alertes IA actives sur SUNSET</span></div>
+    <div class="fig"><span class="v">214 500 €</span><span class="k">situation n°8 en attente MOE depuis 5 j</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Vous ne payez pas pour un tableau de bord. Vous payez pour ne plus découvrir un retard de trois jours au bout de trois semaines. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">C'est joli, mais qui va remplir tout ça ?</p>
+      <p class="obj-a"><b>C'est LA question, et elle est bonne.</b> Répondez : « Personne. Et c'est tout le sujet. Le 42, c'est le pointage du matin. Le 68 %, ce sont les tâches validées avec photo. Les 12 jours de retard, c'est le calcul entre les deux. La seule saisie humaine dans cet écran, c'est un chef de chantier qui valide une tâche en un clic quand elle est finie. <b>Je vous montre exactement ça dans trois écrans</b> — et si vous n'êtes pas convaincu à ce moment-là, dites-le-moi. » <i>Puis tenez la promesse : le Journal et le Copilote sont votre preuve.</i></p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Mon conducteur ne regardera jamais ça.</p>
+      <p class="obj-a">« Probablement pas dix fois par jour, non. Mais il le regardera à sept heures du matin, avec son café, avant de monter dans la camionnette. Trente secondes pour savoir qui manque et ce qui bloque. <b>Aujourd'hui, ces trente secondes lui coûtent quatre coups de téléphone.</b> »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Vos alertes vont me spammer.</p>
+      <p class="obj-a">« Il y en a six ici, sur un chantier de quarante-huit logements avec douze entreprises. Elles sont classées : critique, élevée, info. Et une fois traitée, une alerte disparaît — <b>elle ne revient pas vous harceler</b>. L'idée n'est pas de vous alerter beaucoup, c'est de vous alerter juste. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 03 POINTAGE ================= -->
+<section class="module" id="pointage">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">03</span>
+      <h2>Pointage<small>Le module qui se rembourse tout seul le premier mois.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">4 min</span><span class="b b-role">Chef · Ouvrier · Paie</span><span class="b b-star">Écran clé</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> deux gestes pour l'ouvrier, une donnée fiable pour la paie, et la fin du vendredi après-midi passé à recopier des feuilles d'heures. C'est l'écran où le retour sur investissement se calcule à voix haute, devant eux.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« On descend sur le terrain. <span class="pause">·</span> <strong>Pointage.</strong> »</p>
+    <p>« Quatorze personnes pointées aujourd'hui sur SUNSET — douze présentes en ce moment, une partie, une absente. Avec l'heure d'arrivée, la méthode utilisée, l'état. Regardez la colonne des méthodes : <em>badge NFC</em>, <em>QR dynamique</em>, <em>géolocalisation</em>. Trois façons de pointer, parce qu'un chantier n'est pas un bureau. »</p>
+    <p><span class="stage">(Cliquez sur « Badger (NFC) » dans le simulateur, à gauche.)</span></p>
+    <p>« Voilà. L'ouvrier passe son badge sur la tablette du bungalow, il est pointé, il monte travailler. <span class="pause">·</span> Deux secondes. »</p>
+    <p>« Le QR code, à côté : il est <strong>dynamique</strong>. Regardez, il change à chaque pointage. <span class="pause">·</span> Ce n'est pas un gadget : un QR fixe imprimé et scotché sur la porte, il finit en photo dans le téléphone de tout le monde, et on pointe depuis la plage. Celui-là, non. »</p>
+    <p>« Et le GPS : <em>position vérifiée sur chantier, moins vingt virgule huit huit deux, cinquante-cinq virgule quatre cinq un</em>. On sait que la personne était bien sur le site. »</p>
+    <p><span class="stage">(Ouvrez l'onglet « Anomalies ».)</span></p>
+    <p>« Maintenant la partie que je préfère, et je pense que vous allez comprendre pourquoi tout de suite. <strong>Les anomalies.</strong> »</p>
+    <p>« Quatre, ce matin. <em>Kevin Boyer, arrivée après l'horaire planifié</em> — sept heures cinquante-deux au lieu de sept heures. <em>Samuel Clain, départ non pointé hier</em> — il a oublié de badger en partant. <em>Teddy Maillot, pointé sur deux chantiers le même jour</em>. Et <em>Priya Ramaye, pointage hors zone de géofence</em>. »</p>
+    <p>« Ces quatre lignes, aujourd'hui, chez vous, elles se règlent comment ? <span class="pause">·</span> <span class="stage">(Laissez le silence. La réponse est : « on ne les voit pas ».)</span> »</p>
+    <p>« Voilà : on ne les voit pas. Elles finissent en heures approximatives sur la fiche de paie, dans un sens ou dans l'autre. <span class="pause">·</span> Là, le responsable clique sur <em>Corriger et valider</em> — <span class="stage">(cliquez)</span> — l'heure retenue est tracée, et <strong>seule l'heure validée part vers la paie</strong>. Aucune anomalie ne peut être exportée sans qu'un humain soit passé dessus. »</p>
+    <p><span class="stage">(Ouvrez l'onglet « Export paie ».)</span></p>
+    <p>« Le vendredi. <em>571,5 heures cette semaine, 14 salariés, zéro anomalie en attente.</em> Un clic, et ça part au format <strong>Silae, Sage Paie ou Quadratus</strong>. <span class="pause">·</span> Combien de temps ça vous prend aujourd'hui, ce transfert ? »</p>
+    <p><span class="stage">(Revenez en haut, cliquez sur « Liste d'évacuation ».)</span></p>
+    <p>« Et une dernière chose, celle dont on ne parle jamais en démo mais qui fait signer les dirigeants prudents. <span class="pause">·</span> Alarme incendie. Vous devez savoir <strong>qui est sur le site, maintenant</strong>. Salariés et sous-traitants confondus. »</p>
+    <p>« Un clic. La liste horodatée, nominative, avec l'entreprise et l'heure d'arrivée. Imprimable. <span class="pause">·</span> Avec des feuilles de pointage papier au bungalow, cette liste-là, vous ne l'avez pas. Et en cas de contrôle après incident, c'est un vrai problème. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Onglet <kbd>Temps réel</kbd>. Parcourez la liste : noms, matricules en mono, méthode, heure, état (Présent / En pause / Parti / Absent).</li>
+    <li>Dans le simulateur : <kbd>Badger (NFC)</kbd>. Une ligne apparaît en haut de liste, une confirmation s'affiche. <span class="tip">Cliquez ensuite <kbd>Scanner le QR</kbd> et faites-leur remarquer que le motif du QR a changé. Ce détail impressionne systématiquement.</span></li>
+    <li>Pointez la ligne verte <kbd>Position vérifiée sur chantier · GPS −20.882, 55.451</kbd>.</li>
+    <li>Onglet <kbd>Feuille de pointage</kbd> : la vue tableau, arrivée / pause / départ / total / méthode / statut, avec le total en pied de tableau. <span class="tip">« C'est la feuille que votre comptable connaît déjà. Elle se remplit toute seule. »</span></li>
+    <li>Onglet <kbd>Anomalies</kbd> : lisez les quatre à voix haute, puis <kbd>Corriger et valider</kbd> sur une seule. <span class="tip">N'en corrigez qu'une : gardez les autres à l'écran comme preuve visuelle qu'il y en a d'autres.</span></li>
+    <li>Onglet <kbd>Export paie</kbd> : le graphe des heures de la semaine, puis <kbd>Exporter vers la paie</kbd>. <span class="tip">Le message affiché cite un volume précis. Lisez-le.</span></li>
+    <li><kbd>Liste d'évacuation</kbd> en haut à droite, puis fermez la fenêtre. <span class="tip">Ne cliquez pas « Imprimer » : la boîte de dialogue système casserait le rythme.</span></li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig good"><span class="v">12</span><span class="k">présents maintenant (point vert temps réel)</span></div>
+    <div class="fig warn"><span class="v">4</span><span class="k">anomalies détectées automatiquement</span></div>
+    <div class="fig"><span class="v">571,5 h</span><span class="k">semaine, prêtes pour l'export</span></div>
+    <div class="fig"><span class="v">3</span><span class="k">méthodes : NFC · QR dynamique · GPS</span></div>
+    <div class="fig"><span class="v">96 → 124 h</span><span class="k">amplitude jour creux / jour plein</span></div>
+    <div class="fig"><span class="v">Silae · Sage · Quadratus</span><span class="k">formats d'export paie</span></div>
+  </div>
+
+  <div class="note tip"><span class="ic">€</span><span><b>Le calcul de retour sur investissement, à faire à voix haute ici.</b> « Vous avez combien de salariés sur chantier ? Mettons quarante. Une anomalie de pointage non détectée, c'est facilement une demi-heure par personne et par mois — dans un sens ou dans l'autre. À vingt-cinq euros chargés l'heure, ça fait <b>cinq cents euros par mois</b> qui partent en approximation. Plus le temps de votre assistante le vendredi. Vous voulez qu'on fasse le calcul avec vos chiffres réels ? » <i>Adaptez avec leurs vrais effectifs — le calcul doit être le leur, pas le vôtre.</i></span></div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Les syndicats / les gars vont refuser d'être géolocalisés.</p>
+      <p class="obj-a"><b>Ne minimisez jamais cette objection.</b> « Vous avez raison de la poser. Trois choses. Un : la géolocalisation est <b>une méthode parmi trois</b> — vous pouvez ne l'activer pour personne et rester sur badge NFC uniquement. Deux : quand elle est activée, elle vérifie une <b>présence sur zone au moment du pointage</b>, ce n'est pas un suivi de déplacement dans la journée. Trois : il n'y a <b>aucune biométrie</b> dans le pointage. Et honnêtement — c'est un sujet de dialogue social, pas un sujet logiciel. Ce qui aide, c'est que les gars y gagnent aussi : leurs heures sont justes, leurs oublis rattrapés, et ils voient leurs propres compteurs. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Ça ne marchera pas, il n'y a pas de réseau sur mon chantier.</p>
+      <p class="obj-a">« Le pointage fonctionne <b>hors ligne</b> : NFC, QR et GPS sont enregistrés sur l'appareil et se synchronisent quand le réseau revient. Et la <b>liste d'évacuation reste consultable hors ligne</b> — c'est justement le moment où on n'a pas de réseau. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">On a déjà une pointeuse.</p>
+      <p class="obj-a">« Très bien, gardez-la si elle vous convient. Mais posez-vous cette question : est-ce que votre pointeuse est capable de vous dire <b>« trois plaquistes sur six, donc les cloisons du bâtiment B prennent trois jours »</b> ? <b>C'est ça</b> que vous achetez ici. Une pointeuse compte des heures. BuildNivo relie ces heures au planning, aux tâches et au budget. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Et si quelqu'un badge pour un collègue absent ?</p>
+      <p class="obj-a">« Le QR dynamique règle une grande partie du problème — il change à chaque pointage, on ne peut pas le photographier une fois pour toutes. Le contrôle GPS ajoute la vérification de zone. Et surtout : le système <b>croise</b>. Teddy, là, est signalé « pointé sur deux chantiers le même jour ». <b>Aucune pointeuse papier ne voit ça.</b> »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 04 TACHES ================= -->
+<section class="module" id="taches">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">04</span>
+      <h2>Tâches<small>Localisées au logement près, affectées, validées avec photo.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2,5 min</span><span class="b b-role">Conducteur · Chef</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> une tâche de chantier n'est pas une ligne de to-do. Elle a un lieu précis, un corps d'état, un responsable qui peut être une entreprise extérieure, et un circuit de validation. Et c'est ce qui alimente l'avancement du tableau de bord.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Le tableau des tâches. Cinq colonnes : <em>à faire</em>, <em>en cours</em>, <em>à valider</em>, <em>terminée</em>, <em>bloquée</em>. »</p>
+    <p>« Prenez la première : <em>Coulage dalle haute R+2, bâtiment A</em>. Ce n'est pas « couler une dalle » — c'est <strong>localisé</strong> : bâtiment A, R+2. Corps d'état gros œuvre. Affectée à Jimmy Hoarau. Échéance dans deux jours. Quatre photos. Et deux commentaires du terrain : <em>« banches posées, ferraillage contrôlé ce matin »</em>, <em>« toupies confirmées pour 7h30 »</em>. »</p>
+    <p>« Regardez celle-ci : <em>Cloisons placo R+2, logements 21 à 26</em>, colonne <strong>à valider</strong>. Le commentaire de Sofia : <em>« terminé d'après l'équipe, à contrôler avant validation »</em>. <span class="pause">·</span> C'est important : l'équipe déclare, le responsable contrôle. Personne ne s'auto-valide. Et six photos à l'appui. »</p>
+    <p><span class="stage">(Pointez la colonne « Bloquée ».)</span></p>
+    <p>« Et là, les deux tâches bloquées. C'est le cœur du sujet. »</p>
+    <p>« <em>Pose rails cloisons, bâtiment B</em>. Bloquée. Et le commentaire n'est pas d'un humain — regardez la signature : <strong>Copilote IA</strong>. <em>« Blocage détecté : rails non livrés, commande CMD-2026-118 »</em>. <span class="pause">·</span> Le système a relié une tâche qui devait démarrer et une commande qui n'est pas arrivée. Personne n'a saisi ce blocage. »</p>
+    <p>« Deuxième : <em>Raccordements EU/EV logements R+1</em>, affectée à PLOMB'ÉO, échéance demain. Bloquée. <em>« Entreprise absente aujourd'hui (pointage). Relance préparée. »</em> <span class="pause">·</span> Le pointage a parlé aux tâches, et la relance est déjà écrite, elle m'attend. »</p>
+    <p>« Sur ce tableau, ces petites étiquettes bleues — <em>créée par l'IA depuis le terrain</em> — vous disent lesquelles n'ont demandé aucune saisie. Il y en a quatre. »</p>
+    <p><span class="stage">(Cliquez « Valider la réalisation » sur les cloisons R+2.)</span></p>
+    <p>« Et je valide les cloisons. <span class="pause">·</span> « Le journal et l'avancement sont mis à jour. » Voilà comment le 68 % du tableau de bord se fabrique : un clic, ici, par un responsable qui a vérifié. Pas une estimation. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Vue <kbd>Tableau</kbd> par défaut. Parcourez les colonnes de gauche à droite.</li>
+    <li>Ouvrez la tâche <kbd>Coulage dalle haute R+2</kbd> pour montrer localisation, affectation, photos et commentaires datés.</li>
+    <li>Montrez les deux tâches <kbd>Bloquée</kbd> et <b>lisez les commentaires signés « Copilote IA »</b>. <span class="tip">C'est le vrai argument de cet écran. Ne le survolez pas.</span></li>
+    <li>Pointez deux ou trois étiquettes <kbd>Créée par l'IA depuis le terrain</kbd>.</li>
+    <li><kbd>Valider la réalisation</kbd> sur les cloisons R+2 : la carte change de colonne, un message confirme la mise à jour du journal et de l'avancement.</li>
+    <li>Ouvrez <kbd>Nouvelle tâche</kbd> : montrez les champs (intitulé, localisation dans le bâtiment, corps d'état, entreprise, échéance, priorité) puis <b>fermez sans créer</b>. <span class="tip">« Trente secondes pour créer une tâche affectée à une entreprise extérieure, qui la reçoit immédiatement. »</span></li>
+    <li>Basculez en vue <kbd>Liste</kbd> deux secondes. <span class="tip">« Certains conducteurs détestent les tableaux kanban. Même donnée, autre vue. »</span></li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig"><span class="v">13</span><span class="k">tâches sur les 4 chantiers</span></div>
+    <div class="fig bad"><span class="v">2</span><span class="k">bloquées, causes identifiées par l'IA</span></div>
+    <div class="fig"><span class="v">4</span><span class="k">tâches créées par l'IA, zéro saisie</span></div>
+    <div class="fig"><span class="v">5</span><span class="k">colonnes de suivi, dont « à valider »</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Une tâche bloquée dont personne ne connaît la cause, c'est une semaine perdue. Ici, la cause est écrite dans la tâche, et la relance est déjà rédigée. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Mes chefs ne mettront jamais les tâches à jour.</p>
+      <p class="obj-a">« Ils n'ont pas à les créer : elles viennent du planning, et quatre d'entre elles ont été créées par l'IA. Ce qu'on leur demande, c'est <b>un clic quand c'est fini</b> — et encore, dans l'écran suivant je vous montre qu'ils peuvent même le faire à la voix. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">On a déjà un planning sous Excel / MS Project.</p>
+      <p class="obj-a">« Gardez-le pour l'ordonnancement, c'est son métier. Ce que votre planning ne fait pas, c'est <b>savoir que la tâche de demain est bloquée parce que l'entreprise n'est pas venue ce matin</b>. Le planning dit ce qui devrait arriver ; BuildNivo dit ce qui arrive vraiment. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 JOURNAL ================= -->
+<section class="module" id="journal">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">05</span>
+      <h2>Journal de chantier<small>Il s'écrit tout seul. Le chef ne fait que compléter, à la voix.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">3 min</span><span class="b b-role">Chef · Conducteur</span><span class="b b-star">Écran clé</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> le journal de chantier — l'obligation que personne ne tient à jour — se compose automatiquement à partir de ce qui se passe déjà. Et c'est la promesse « zéro saisie » que vous avez faite au tableau de bord : vous la tenez ici.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Le journal de chantier. <span class="pause">·</span> Soyons honnêtes deux secondes : chez vous, il est à jour ? <span class="stage">(Sourire. La réponse est non, toujours.)</span> »</p>
+    <p>« Personne ne le tient, parce que le remplir le soir après dix heures de chantier, c'est impossible. Et pourtant c'est le document qui vous sauve en cas de litige. »</p>
+    <p>« Regardez la journée d'aujourd'hui, heure par heure. <span class="pause">·</span> <em>6h30, météo : ensoleillé, 26 degrés, vent 20 km/h.</em> Signé <strong>Auto</strong>. <em>7h20, présences : 42 personnes sur 48 prévues, 12 entreprises, PLOMB'ÉO absent.</em> Auto. <em>7h35, livraison : béton C25/30, trois toupies, bon BL-88412 classé.</em> Auto. <em>10h42 : cloisons R+2 déclarées terminées, en attente de contrôle.</em> Auto — c'est la tâche qu'on vient de voir. »</p>
+    <p>« Quatre entrées. Zéro saisie. <span class="pause">·</span> La météo, la présence, la livraison, l'avancement : tout ça, l'entreprise le sait déjà quelque part. Ici, c'est simplement écrit au bon endroit, horodaté. »</p>
+    <p><span class="stage">(Pointez l'entrée de 8h10 avec l'icône micro.)</span></p>
+    <p>« Et celle-là est différente. <em>8h10, incident : grue n°2 toujours indisponible, variateur. Intervention SAV en cours, levage réorganisé sur la grue n°1.</em> Signée <strong>Sofia Bègue</strong>, avec une petite icône micro. <span class="pause">·</span> Sofia n'a rien tapé. Elle a parlé. »</p>
+    <p><span class="stage">(Cliquez « Dicter une note ». Laissez tourner l'écoute — deux secondes — sans parler par-dessus.)</span></p>
+    <p>« Je simule. <span class="pause">·</span> Voilà ce qu'elle dit, en marchant sur le chantier, entre deux étages : »</p>
+    <p><strong>« Le plombier n'est pas venu. Les cloisons du deuxième étage sont terminées. Il manque les rails pour commencer le bâtiment B. »</strong></p>
+    <p>« Une phrase. Du langage de chantier, pas du langage de logiciel. <span class="pause">·</span> Et le système répond : <em>note transcrite et classée, trois actions proposées par le Copilote</em>. »</p>
+    <p>« Ces actions, on va aller les voir — c'est le moment le plus intéressant de la démonstration. <span class="pause">·</span> Mais avant, un bouton. »</p>
+    <p><span class="stage">(Cliquez « Générer le rapport du jour ».)</span></p>
+    <p>« Le rapport journalier. Synthèse, présences, avancement, photos, incidents. <span class="pause">·</span> Ça, c'est ce que votre conducteur écrit le soir chez lui. Ou n'écrit pas. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Parcourez la timeline du jour de haut en bas et <b>nommez la signature de chaque entrée</b> : Auto, Auto, Auto, Sofia Bègue. <span class="tip">Le contraste automatique / humain est tout le message de l'écran.</span></li>
+    <li>Montrez les filtres par type : présences, tâches, livraison, incident, photo, météo, note.</li>
+    <li>Pointez l'entrée <kbd>8h10 — Grue n°2</kbd> et son icône micro, puis <kbd>14h20 hier — Coupure d'eau réseau 45 min, sans impact planning</kbd>. <span class="tip">« Celle-là, c'est votre défense en cas de réclamation de délai. Horodatée, signée, le jour même. »</span></li>
+    <li><kbd>Dicter une note</kbd>. <b>Laissez l'animation d'écoute se dérouler en silence.</b> <span class="tip">Le silence de deux secondes fait plus d'effet que n'importe quel commentaire.</span></li>
+    <li>Lisez la phrase transcrite <b>à voix haute, avec l'accent du terrain</b>. Puis lisez le résultat : trois actions proposées.</li>
+    <li><kbd>Générer le rapport du jour</kbd> et lisez la confirmation.</li>
+    <li>Annoncez le Copilote : « on va voir ce que ces trois actions deviennent ». <span class="tip">Ne cliquez pas encore sur « Voir les actions dans le Copilote » — vous y allez volontairement, comme une promesse tenue.</span></li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig good"><span class="v">4 / 6</span><span class="k">entrées du jour signées « Auto »</span></div>
+    <div class="fig"><span class="v">7 types</span><span class="k">présence, tâche, livraison, incident, photo, météo, note</span></div>
+    <div class="fig"><span class="v">1 phrase</span><span class="k">dictée → 3 actions proposées</span></div>
+    <div class="fig"><span class="v">BL-88412</span><span class="k">bon de livraison classé automatiquement</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Le journal de chantier, ce n'est pas une contrainte administrative : c'est votre mémoire en cas de litige. Le problème, c'est que personne n'a le temps de l'écrire. Alors on l'écrit pour vous. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">La reconnaissance vocale, ça ne marche jamais sur un chantier. Il y a du bruit, et on parle créole.</p>
+      <p class="obj-a"><b>Objection légitime, surtout à La Réunion. Ne bluffez pas.</b> « Deux choses. La transcription est optimisée pour le français et gère les tournures locales courantes du chantier — mais elle ne sera pas parfaite, et c'est pour ça que <b>le texte transcrit reste modifiable avant validation</b>. Sofia relit, corrige un mot si besoin, et valide. Ce n'est pas « l'IA écrit à votre place sans contrôle » : c'est « vous dictez au lieu de taper, et vous relisez ». Et sur cette démo, c'est une simulation — je préfère vous le dire plutôt que de vous faire croire à une magie que vous découvririez le premier jour. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Un journal automatique n'a aucune valeur juridique.</p>
+      <p class="obj-a">« Chaque entrée est <b>horodatée et attribuée</b> — soit au système, avec sa source (le pointage, le bon de livraison), soit à une personne nommée. Une entrée vocale est signée par son auteur. C'est plus traçable qu'un cahier manuscrit rempli de mémoire le vendredi pour toute la semaine. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 PHOTOS ================= -->
+<section class="module" id="photos">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">06</span>
+      <h2>Photos &amp; problèmes<small>La fin des photos perdues dans WhatsApp.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2,5 min</span><span class="b b-role">Chef · Conducteur</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> une photo de chantier ne sert à rien si elle dort dans une galerie. Ici, en trois clics, elle devient un problème affecté, une tâche datée ou une réserve notifiée — avec l'entreprise responsable et l'échéance.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Les photos. <span class="pause">·</span> Question simple : combien de photos de chantier votre entreprise a prises cette semaine ? <span class="stage">(Ils ne savent pas.)</span> Et combien vous en retrouverez dans six mois, quand il faudra prouver quelque chose ? »</p>
+    <p>« Elles sont dans WhatsApp. Dans un groupe de trente personnes, entre un mème et une commande de sandwichs. <span class="pause">·</span> Elles sont perdues. »</p>
+    <p>« Là, dix photos, filtrables par type et par zone. <em>Avancement</em>, <em>problème</em>, <em>réserve</em>, <em>livraison</em>, <em>sécurité</em>. Chacune a un auteur, une heure, une zone du bâtiment. »</p>
+    <p>« Regardez celle-ci : <em>garde-corps provisoire manquant, trémie ascenseur</em>. Type <strong>sécurité</strong>. Prise par Marc à 8h55. <span class="pause">·</span> Le jour où l'inspection du travail passe, ou pire, le jour où quelqu'un tombe, cette photo horodatée avec l'action qui a suivi, elle vaut cher. »</p>
+    <p>« Celle-là : <em>réservation gaine technique mal positionnée</em>, et dans la légende — <em>plan PLN-A-201 indice C</em>. La photo est reliée au plan. Et elle est liée à une tâche. »</p>
+    <p><span class="stage">(Ouvrez la photo « Éclat carrelage hall d'entrée ».)</span></p>
+    <p>« Et maintenant ce qui se passe quand on clique. <span class="pause">·</span> Trois boutons : <strong>déclarer un problème</strong>, <strong>créer une tâche</strong>, <strong>créer une réserve</strong>. J'affecte l'entreprise responsable, je fixe une échéance. »</p>
+    <p><span class="stage">(Choisissez une entreprise, une échéance, cliquez « Créer une réserve ».)</span></p>
+    <p>« Voilà. <em>Réserve créée et notifiée à l'entreprise responsable.</em> <span class="pause">·</span> Sofia a mis quinze secondes, dans le hall, son téléphone à la main. L'entreprise est prévenue, l'échéance court, et la réserve apparaît dans le suivi. »</p>
+    <p>« Trois taps. Pas un email le soir. Pas un post-it. Pas un « je te l'avais dit ». »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Filtrez sur <kbd>Sécurité</kbd> puis <kbd>Problème</kbd>. <span class="tip">Montrez que le filtre par zone existe aussi : « toutes les photos du R+2, depuis le début du chantier ».</span></li>
+    <li>Ouvrez la photo <kbd>Garde-corps provisoire manquant — trémie ascenseur</kbd> et insistez sur la traçabilité sécurité.</li>
+    <li>Ouvrez <kbd>Réservation gaine technique mal positionnée</kbd> : montrez la référence au plan <b>PLN-A-201 ind. C</b> et la tâche liée.</li>
+    <li>Ouvrez <kbd>Éclat carrelage hall d'entrée</kbd> : sélectionnez une <b>entreprise responsable</b>, une <b>échéance</b>, puis <kbd>Créer une réserve</kbd>. <span class="tip">Faites les trois gestes lentement, en les comptant à voix haute : « un, deux, trois ». La démonstration du « trois taps » doit être visible.</span></li>
+    <li>Mentionnez que la photo alimente aussi le journal du jour. <span class="tip">« L'entrée de 11h05 du journal, « 6 photos ajoutées », c'est ça. »</span></li>
+  </ol>
+
+  <div class="note care"><span class="ic">i</span><span><b>Point d'honnêteté à assumer.</b> Les visuels de chantier de cette démo sont des illustrations générées, pas de vraies photos — c'est volontaire pour que la démo fonctionne sans connexion internet. Si on vous le demande : « ce sont des visuels de substitution, la démo tourne hors ligne. En production, ce sont les photos de vos équipes. » Dit simplement, ça ne coûte rien.</span></div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Une photo dans WhatsApp, c'est un souvenir. Une photo dans BuildNivo, c'est une entreprise notifiée avec une date. »</div>
+</section>
+
+<!-- ================= 07 COPILOTE ================= -->
+<section class="module" id="copilote">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">07</span>
+      <h2>Copilote IA<small>Le moment dont ils parleront en sortant. Ne le ratez pas.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">5 min</span><span class="b b-role">Tous</span><span class="b b-star">Sommet de la démo</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> ici l'IA n'est pas un chatbot posé à côté du produit. Elle lit les documents et cite ses sources ; elle écoute le terrain et crée des objets métier. Et elle ne fait rien partir sans validation humaine. C'est votre différenciateur, et il se démontre en deux gestes.</div>
+
+  <div class="note care"><span class="ic">★</span><span><b>Préparation mentale.</b> Ralentissez. Vous avez parlé vite pendant vingt minutes ; cet écran demande du silence et des pauses. Les deux démonstrations sont indépendantes : commencez par <b>la dictée</b> (spectaculaire), finissez par <b>les sources</b> (rassurant). Dans cet ordre.</span></div>
+
+  <h3>Le script — partie 1 : la dictée qui devient des actions</h3>
+  <div class="say">
+    <p>« On revient à la phrase de Sofia. <span class="pause">·</span> Rappelez-vous : <em>« le plombier n'est pas venu, les cloisons du deuxième étage sont terminées, il manque les rails pour commencer le bâtiment B »</em>. »</p>
+    <p>« Trois informations dites en dix secondes, en marchant. <span class="pause">·</span> Regardons ce que le système en fait. »</p>
+    <p><span class="stage">(Cliquez « Dicter (simulation) ». Puis TAISEZ-VOUS. Laissez la transcription apparaître, puis les cinq cartes d'action s'afficher une par une.)</span></p>
+    <p>« <span class="stage">(Après l'apparition complète, seulement.)</span> Cinq actions. Pour une phrase. »</p>
+    <p>« <strong>Un</strong> — <em>absence PLOMB'ÉO enregistrée</em>. Le pointage est mis à jour : entreprise absente ce jour, anomalie créée sur SUNSET. »</p>
+    <p>« <strong>Deux</strong> — <em>risque planning : raccordements R+1</em>. La tâche d'échéance demain est marquée bloquée par l'absence, retard estimé plus deux jours. <span class="pause">·</span> Sofia n'a jamais parlé de planning. Le système a fait le lien. »</p>
+    <p>« <strong>Trois</strong> — <em>cloisons R+2 bâtiment A, passées à « à valider »</em>. Et l'avancement de la zone R+2 est mis à jour à 71 %. <span class="pause">·</span> Le pourcentage du tableau de bord vient de bouger. Parce que quelqu'un a parlé. »</p>
+    <p>« <strong>Quatre</strong> — et celle-là, c'est ma préférée. <em>Demande d'achat : rails cloisons.</em> Mais lisez le détail : <em>« rapprochée de la commande CMD-2026-118, confirmée, livraison dans trois jours — pas de double commande »</em>. <span class="pause">·</span> Le système a vérifié que la commande existait déjà. Il ne vous a pas fait commander deux fois mille deux cents mètres de rails. »</p>
+    <p>« <strong>Cinq</strong> — <em>trois entrées ajoutées au journal</em>, horodatées et signées. »</p>
+    <p><span class="stage">(Pause. Vraie pause. Laissez-les regarder l'écran.)</span></p>
+    <p>« Dix secondes de parole. Cinq objets métier dans cinq modules différents. <span class="pause">·</span> Et maintenant le point le plus important de toute cette démonstration : <strong>rien ne s'est encore passé.</strong> »</p>
+    <p>« Regardez : chaque action a un bouton <em>Créer</em>. Le système <strong>propose</strong>. C'est moi qui décide. <span class="pause">·</span> Je peux tout valider — <span class="stage">(cliquez « Tout valider »)</span> — ou en refuser une, ou corriger. »</p>
+    <p>« C'est la ligne rouge du produit, et elle n'est pas négociable : <strong>l'IA prépare, l'humain décide.</strong> Aucune relance, aucune tâche, aucune anomalie ne part sans qu'un responsable ait cliqué. »</p>
+  </div>
+
+  <h3>Le script — partie 2 : les réponses qui citent leurs sources</h3>
+  <div class="say">
+    <p>« Deuxième usage, plus calme mais tout aussi utile au quotidien. <span class="pause">·</span> Le Copilote a lu tous les documents du chantier : les plans, les CCTP, les contrats, les comptes rendus. »</p>
+    <p><span class="stage">(Cliquez la suggestion « Quel matériau est prévu pour la façade du bâtiment A ? »)</span></p>
+    <p>« Question banale, celle qu'on pose douze fois par chantier. <span class="pause">·</span> Réponse : <em>« ITE en panneaux de laine de roche 120 mm, enduit mince taloché, teinte Blanc Corail, référence NCS S 0502-Y. Calepinage validé en réunion n°34, joints creux horizontaux tous les deux niveaux selon plan PLN-A-201 indice C. »</em> »</p>
+    <p>« Et sous la réponse — <strong>c'est ça qui compte</strong> — les <em>sources citées</em>. CCTP Lot 03 Façades, page 18. Le plan. Le compte rendu de réunion n°34, page 2. Avec les versions. »</p>
+    <p>« Vous ne croyez pas la machine sur parole : <span class="pause">·</span> vous cliquez sur la source et vous vérifiez. C'est la différence entre une IA qu'on peut utiliser sur un chantier et une IA qui invente. »</p>
+    <p><span class="stage">(Cliquez « Quel plan est actuellement applicable pour le R+2 ? »)</span></p>
+    <p>« Celle-là est encore plus concrète. <em>« Le plan applicable est le PLN-A-201 indice C, diffusé il y a trois jours. L'indice B est obsolète : la réservation de la gaine technique du logement 23 y était mal positionnée. »</em> Et la phrase qui tue : <em>« deux personnes ont consulté l'indice B cette semaine — une notification de mise à jour leur a été envoyée. »</em> »</p>
+    <p>« Combien vous coûte une reprise sur un mauvais indice de plan ? <span class="pause">·</span> Là, le système sait qui a regardé le mauvais plan, et il les a prévenus. »</p>
+    <p><span class="stage">(Montrez le bandeau vert en haut à droite.)</span></p>
+    <p>« Dernier point, en haut : <em>« le Copilote ne répond qu'à partir des données auxquelles votre rôle donne accès »</em>. <span class="pause">·</span> Si Éric, votre menuisier sous-traitant, pose une question sur le budget global, il n'aura pas de réponse. Les permissions s'appliquent aussi à l'IA. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li><kbd>Dicter (simulation)</kbd> dans le panneau de droite. <b>Silence complet</b> pendant l'animation. <span class="tip">C'est le seul moment de la démo où vous devez vous taire trois secondes d'affilée. Tenez-le.</span></li>
+    <li>Commentez les cinq actions <b>une par une</b>, en insistant sur la n°4 (le rapprochement de commande). <span class="tip">La n°4 est celle qui prouve l'intelligence : les autres pourraient être des règles simples, celle-là non.</span></li>
+    <li>Cliquez <kbd>Créer</kbd> sur <b>une seule</b> action, puis <kbd>Tout valider</kbd>. <span class="tip">Le geste en deux temps montre qu'on peut trier. Ne validez pas tout d'un coup.</span></li>
+    <li>Question suggérée <kbd>Quel matériau est prévu pour la façade du bâtiment A ?</kbd> — puis <b>pointez les sources avec le curseur</b>, en lisant les numéros de page.</li>
+    <li>Question suggérée <kbd>Quel plan est actuellement applicable pour le R+2 ?</kbd> — lisez la phrase sur les deux personnes notifiées.</li>
+    <li><b>Le geste de confiance :</b> tapez une question à vous, hors script, qui n'a pas de réponse. <span class="tip">Le Copilote répond honnêtement qu'il n'a pas trouvé de réponse fiable dans les documents accessibles. <b>Faites-le.</b> Un système qui sait dire « je ne sais pas » vaut dix systèmes qui répondent toujours. C'est contre-intuitif en démo, et c'est extrêmement convaincant.</span></li>
+    <li>Terminez sur le bandeau vert des permissions.</li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig good"><span class="v">1 → 5</span><span class="k">une phrase dictée, cinq actions métier</span></div>
+    <div class="fig"><span class="v">3</span><span class="k">sources citées avec page et version</span></div>
+    <div class="fig good"><span class="v">100 %</span><span class="k">des actions soumises à validation humaine</span></div>
+    <div class="fig"><span class="v">2</span><span class="k">personnes notifiées d'un plan obsolète</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase du rendez-vous</span>« Tout le monde vous vendra de l'IA cette année. La question n'est pas « est-ce qu'il y a de l'IA » — c'est « qu'est-ce qu'elle fabrique ». Ici, elle fabrique une anomalie de pointage, une tâche bloquée, une demande d'achat dédoublonnée et trois lignes de journal. Et elle attend votre feu vert. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">C'est du ChatGPT rebadgé.</p>
+      <p class="obj-a">« Posez la question à ChatGPT : « est-ce que les rails du bâtiment B sont commandés ? » <b>Il ne peut pas savoir.</b> Ce qui compte ici n'est pas le modèle de langage, c'est qu'il soit branché sur vos pointages, vos commandes, vos plans et vos tâches. Un assistant généraliste discute. Celui-là <b>crée des objets dans votre système</b>, et cite le document et la page d'où vient chaque affirmation. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Et si l'IA se trompe ?</p>
+      <p class="obj-a"><b>C'est la meilleure objection possible : elle vous offre votre plus fort argument.</b> « Elle se trompera. C'est exactement pour ça que <b>rien ne s'exécute sans validation</b>. Regardez : cinq propositions, cinq boutons « Créer ». Si l'action n°3 est fausse, vous ne la validez pas — et vous n'avez rien perdu, sinon deux secondes de lecture. Le coût d'une erreur de l'IA ici, c'est un clic non fait. Le coût d'un oubli humain sur un chantier, c'est trois jours de retard. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Mes documents sont confidentiels. Ils vont servir à entraîner votre IA ?</p>
+      <p class="obj-a">« Question essentielle, et je préfère vous répondre franchement : <b>sur ce point précis, je vous mets en relation avec notre responsable technique pour un engagement écrit</b>, parce que c'est un sujet contractuel, pas un sujet de démo. Ce que je peux vous dire du fonctionnement : le Copilote répond uniquement à partir des documents de vos chantiers, et il respecte les permissions de chaque rôle. La démonstration que vous voyez là ne fait sortir aucune donnée : elle tourne entièrement dans mon navigateur. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Vos réponses sont scriptées, c'est une démo truquée.</p>
+      <p class="obj-a"><b>Ne vous défendez pas — donnez-leur raison, ça désarme.</b> « Oui. Quatre questions préparées sur un jeu de douze documents fictifs : c'est une maquette, pas un environnement de production. Ce que la maquette vous montre honnêtement, c'est <b>la forme de la réponse</b> — sourcée, avec la page et la version. Si vous voulez juger le fond, la bonne étape suivante c'est un pilote sur un de vos chantiers avec vos vrais documents. Et je préfère vous vendre ça qu'un tour de magie. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 08 RAPPORTS ================= -->
+<section class="module" id="rapports">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">08</span>
+      <h2>Rapports IA<small>Le rapport est écrit. Les relances sont rédigées. Vous n'avez qu'à lire.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">3 min</span><span class="b b-role">Direction · Conducteur</span><span class="b b-star">Écran clé</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> le travail d'écriture — rapport journalier, synthèse hebdo, relances aux entreprises — est déjà fait. L'humain relit et diffuse. C'est le module qui parle directement au dirigeant : c'est son temps du dimanche soir que vous lui rendez.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Rapports. Trois onglets. On commence par le <strong>rapport journalier</strong>. »</p>
+    <p>« Et regardez la mention en haut : <em>« composé à partir des pointages, tâches, journal, livraisons et photos du jour »</em>. <span class="pause">·</span> Ce n'est pas un modèle vide qu'on remplit. C'est une rédaction. »</p>
+    <p>« <strong>Effectifs :</strong> <em>« 42 personnes présentes sur 48 prévues, 12 entreprises. Absence totale PLOMB'ÉO. 3 plaquistes sur 6 prévus côté bâtiment B. »</em> »</p>
+    <p>« <strong>Avancement :</strong> <em>« Coulage dalle haute R+2 en cours, trois toupies réceptionnées à 7h35. Cloisons R+2 terminées, en attente de contrôle. Étanchéité toiture : relevés posés, essai à l'eau jeudi. »</em> »</p>
+    <p>« <strong>Incidents :</strong> <em>« Grue n°2 indisponible, variateur, levage réorganisé. Garde-corps provisoire manquant trémie ascenseur : mis en sécurité à 9h10. Quatre anomalies de pointage, une corrigée. »</em> »</p>
+    <p>« Et <strong>actions attendues</strong> : quatre lignes, dont <em>« régulariser l'URSSAF d'ElecRun OI sous 48 heures »</em>. <span class="pause">·</span> Ce n'est pas un compte rendu, c'est un ordre du jour. »</p>
+    <p>« Ce texte, aujourd'hui, qui l'écrit chez vous ? Et à quelle heure ? <span class="pause">·</span> <span class="stage">(Attendez la réponse.)</span> »</p>
+    <p><span class="stage">(Onglet « Synthèse hebdo ».)</span></p>
+    <p>« Version direction, hebdomadaire. Plus froide, plus stratégique. <em>« Retard prévisionnel global : 12 jours, stable. Chemin critique : menuiseries R+1 puis cloisons bâtiment B. »</em> <em>« Taux de présence semaine : 91 %, moyenne 43,6 sur 48. Une absence entreprise non prévenue. Quatorze anomalies de pointage, douze corrigées. »</em> »</p>
+    <p>« Nathalie, la directrice, lit ça le lundi matin en huit minutes. <span class="pause">·</span> Sur ses quatre chantiers. »</p>
+    <p><span class="stage">(Onglet « Relances » — comptez le badge.)</span></p>
+    <p>« Et voilà l'onglet qui, à mon avis, fait la différence sur un rendez-vous comme celui-ci. <span class="pause">·</span> <strong>Quatre relances à valider.</strong> Déjà écrites. »</p>
+    <p>« Celle-ci, à PLOMB'ÉO : <em>« Bonjour, aucune présence de vos équipes n'a été enregistrée aujourd'hui sur la Résidence SUNSET alors que les raccordements EU/EV du R+1, échéance demain, sont sur le chemin critique. Merci de confirmer votre présence demain 7h ou de proposer un plan de rattrapage. »</em> »</p>
+    <p>« Le ton est professionnel. Les faits sont exacts. L'enjeu est nommé. <span class="pause">·</span> Et vous n'avez pas écrit une ligne. »</p>
+    <p>« Celle-ci, à ElecRun : <em>« votre attestation de vigilance URSSAF est expirée depuis dix jours. Sans document à jour sous 48 heures, nous serons contraints de suspendre l'accès chantier conformément au contrat de sous-traitance. »</em> <span class="pause">·</span> Là on parle de <strong>solidarité financière</strong>. Vous savez ce que ça coûte, un contrôle avec un sous-traitant non à jour. »</p>
+    <p>« Et à Charpentes Payet : <em>« la commande CMD-2026-114, 26 châssis alu, est attendue depuis six jours, la pose démarre dans quatre jours, merci de communiquer une date ferme sous 24 heures. »</em> »</p>
+    <p><span class="stage">(Cliquez « Valider l'envoi » sur une relance.)</span></p>
+    <p>« Je relis, j'ajuste si je veux, je valide. <span class="pause">·</span> Et rappelez-vous la ligne en bas de l'écran : <em>« chaque envoi requiert une validation humaine — l'IA prépare, vous décidez »</em>. »</p>
+    <p>« Ces quatre relances, franchement : dans une semaine chargée, combien vous en auriez envoyé ? <span class="pause">·</span> Une ? Aucune ? Et le retard, on le découvre quand ? »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Onglet <kbd>Rapport journalier</kbd> : lisez <b>deux sections en entier</b>, à voix haute. <span class="tip">Ne résumez pas, lisez. La qualité rédactionnelle est l'argument — un résumé la détruit.</span></li>
+    <li>Onglet <kbd>Synthèse hebdo</kbd> : citez le taux de présence 91 % et le chemin critique.</li>
+    <li>Onglet <kbd>Relances</kbd> : notez le badge de compteur, puis lisez <b>intégralement</b> la relance PLOMB'ÉO.</li>
+    <li>Montrez celle à ElecRun (URSSAF) et prononcez les mots <b>« solidarité financière »</b>. <span class="tip">C'est le sujet qui réveille les dirigeants : le risque juridique et financier, pas le confort.</span></li>
+    <li><kbd>Ajuster le texte</kbd> puis <kbd>Valider l'envoi</kbd> sur une relance : le statut passe à « Envoyée ». <span class="tip">Montrer le bouton « Ajuster » avant « Valider » prouve que vous gardez la main.</span></li>
+    <li><kbd>Valider et diffuser</kbd> sur le rapport journalier : la confirmation indique la diffusion au maître d'œuvre et à la direction.</li>
+  </ol>
+
+  <h3>Chiffres à l'écran</h3>
+  <div class="figs">
+    <div class="fig warn"><span class="v">4</span><span class="k">relances rédigées, en attente de validation</span></div>
+    <div class="fig"><span class="v">91 %</span><span class="k">taux de présence de la semaine</span></div>
+    <div class="fig"><span class="v">12 / 14</span><span class="k">anomalies de pointage corrigées</span></div>
+    <div class="fig warn"><span class="v">48 h</span><span class="k">délai de régularisation URSSAF exigé</span></div>
+    <div class="fig"><span class="v">5 sections</span><span class="k">effectifs, avancement, incidents, livraisons, actions</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Le rapport, ce n'est pas le sujet. Le sujet, c'est les quatre relances que vous n'avez pas envoyées cette semaine parce que vous n'avez pas eu le temps de les écrire. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Je ne laisserai jamais une machine écrire à mes sous-traitants.</p>
+      <p class="obj-a">« Et vous avez raison — c'est pour ça qu'<b>elle n'envoie rien</b>. Elle écrit un brouillon, comme le ferait une assistante. Vous le relisez, vous changez le ton si vous le trouvez trop sec, et vous validez. <b>Le bouton s'appelle « Valider l'envoi », pas « Envoyer ».</b> La nuance est dans le produit, pas dans mon discours. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Le texte va être générique et on va le voir tout de suite.</p>
+      <p class="obj-a">« Relisez celle-ci : elle cite le chantier, la tâche exacte, l'échéance, la position sur le chemin critique, et elle propose deux issues. <b>Un texte générique ne peut pas contenir « CMD-2026-114, 26 châssis alu, six jours de retard ».</b> C'est écrit à partir de vos données, pas à partir d'un modèle. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 09 RESERVES ================= -->
+<section class="module" id="reserves">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">09</span>
+      <h2>Réserves<small>De l'OPR à la livraison, sans qu'aucune ne s'oublie.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">1,5 min</span><span class="b b-role">Conducteur · Direction</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> les réserves sont suivies par entreprise, avec une échéance et un statut — y compris le statut « contestée », parce que la vraie vie du chantier ressemble à ça.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Les réserves. <span class="pause">·</span> Je bascule sur la <strong>Villa Horizon</strong>, qui est à 96 % et qu'on livre dans douze jours. C'est là que les réserves se jouent. »</p>
+    <p>« Quatre statuts : <em>ouverte</em>, <em>notifiée</em>, <em>levée</em>, <em>contestée</em>. Et chacune est rattachée à une entreprise, avec la date d'ouverture et la date limite de levée. »</p>
+    <p>« <em>Rayure baie vitrée séjour, quarante centimètres</em> — Charpentes Payet, notifiée, à lever dans cinq jours. Avec la photo. <em>Reprise peinture plafond chambre 2, auréole</em> — Kolor Péi, ouverte. <em>Mitigeur cuisine qui goutte au raccord</em> — PLOMB'ÉO, levée. »</p>
+    <p>« Et celle-là : <em>prise RJ45 bureau non raccordée</em>, ElecRun OI, <strong>contestée</strong>. <span class="pause">·</span> Ce statut, c'est celui qui manque dans tous les tableaux Excel. Parce que dans la vraie vie, l'entreprise répond « ce n'était pas dans mon lot ». Là, le désaccord est tracé, daté, avec la photo. Vous ne le règlerez pas dans un couloir six semaines plus tard. »</p>
+    <p><span class="stage">(Cliquez « Relancer l'entreprise » sur une réserve ouverte.)</span></p>
+    <p>« Et la relance : préparée par l'IA, à valider dans Rapports. <span class="pause">·</span> Même logique partout dans le produit. »</p>
+    <p>« La levée de réserves, chez vous, ça prend combien de temps après la livraison ? <span class="pause">·</span> Deux mois ? Trois ? Et c'est autant de retenue de garantie qui dort. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Filtrez sur <kbd>Villa Horizon</kbd>. <span class="tip">C'est le chantier en phase de livraison : les réserves y ont du sens narratif.</span></li>
+    <li>Montrez les quatre statuts et <b>insistez sur « Contestée »</b>.</li>
+    <li>Ouvrez la réserve avec photo (rayure baie vitrée) : le lien photo ↔ réserve ↔ entreprise ↔ échéance.</li>
+    <li><kbd>Relancer l'entreprise</kbd> sur une réserve ouverte, puis <kbd>Marquer levée</kbd> sur une autre. <span class="tip">Le message précise que le maître d'œuvre sera notifié.</span></li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig"><span class="v">7</span><span class="k">réserves suivies</span></div>
+    <div class="fig warn"><span class="v">1</span><span class="k">contestée — désaccord tracé et daté</span></div>
+    <div class="fig good"><span class="v">2</span><span class="k">levées</span></div>
+    <div class="fig"><span class="v">12 j</span><span class="k">avant livraison Villa Horizon</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Une réserve oubliée, c'est une retenue de garantie qui dort et un client qui se souvient. »</div>
+</section>
+
+<!-- ================= 10 ACHATS ================= -->
+<section class="module" id="achats">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">10</span>
+      <h2>Achats &amp; livraisons<small>Une commande en retard, c'est une tâche qui ne démarrera pas.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2 min</span><span class="b b-role">Conducteur · Direction</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> les commandes ne vivent pas à part. Elles sont rapprochées du planning, et c'est ce rapprochement qui a bloqué la tâche des rails et déclenché la relance à Charpentes Payet.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Les achats. Sept commandes suivies, avec leur statut : <em>brouillon</em>, <em>envoyée</em>, <em>confirmée</em>, <em>livraison partielle</em>, <em>livrée</em>, <em>en retard</em>. »</p>
+    <p>« Celle-ci en rouge : <strong>CMD-2026-114</strong>, menuiseries alu R+1, vingt-six châssis, <em>74 200 €</em>, attendue il y a six jours. <span class="pause">·</span> Vous la reconnaissez : c'est elle qui a déclenché l'alerte du tableau de bord, la tâche « pose menuiseries » qui n'a pas de matière, et la relance à Éric Payet. »</p>
+    <p>« Une même information, trois modules, une seule saisie. <span class="pause">·</span> C'est ça, une plateforme, plutôt que quatre outils qui ne se parlent pas. »</p>
+    <p>« Et <strong>CMD-2026-118</strong>, les rails de cloisons — <em>1 200 mètres linéaires, 6 890 €</em>, confirmée, livraison dans trois jours. <span class="pause">·</span> C'est celle que le Copilote a retrouvée quand Sofia a dit « il manque les rails ». Sans ça, vous commandiez deux fois. »</p>
+    <p><span class="stage">(Cliquez « Confirmer la réception » sur la commande de béton.)</span></p>
+    <p>« Le béton livré ce matin : je confirme la réception. <span class="pause">·</span> <em>« Bon de livraison classé automatiquement. »</em> Le BL-88412 part dans les documents du chantier, sans que personne ne le scanne le soir. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Pointez <kbd>CMD-2026-114 — En retard</kbd> et rappelez explicitement les trois endroits où on l'a déjà croisée. <span class="tip">Ce rappel est votre meilleure preuve d'intégration. Faites-le.</span></li>
+    <li>Pointez <kbd>CMD-2026-118 — Confirmée</kbd> et le lien avec le dédoublonnage du Copilote.</li>
+    <li><kbd>Confirmer la réception</kbd> sur la commande de béton, et lisez le message de classement automatique.</li>
+    <li><kbd>Relancer le fournisseur</kbd> sur la commande en retard : la relance rejoint Rapports.</li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig bad"><span class="v">74 200 €</span><span class="k">CMD-2026-114, 6 jours de retard</span></div>
+    <div class="fig"><span class="v">1 200 ml</span><span class="k">rails cloisons, livraison à J+3</span></div>
+    <div class="fig"><span class="v">7</span><span class="k">commandes suivies, tous chantiers</span></div>
+    <div class="fig good"><span class="v">BL-88412</span><span class="k">bon classé sans aucune saisie</span></div>
+  </div>
+</section>
+
+<!-- ================= 11 FINANCES ================= -->
+<section class="module" id="finances">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">11</span>
+      <h2>Finances<small>Budget, engagé, facturé, payé — par lot. Et le dépassement qui saute aux yeux.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2,5 min</span><span class="b b-role">Direction</span><span class="b b-star">Écran dirigeant</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> le suivi financier se nourrit du terrain, pas d'un export comptable du mois dernier. Et l'écart entre engagé et budget est visible avant la facture, pas après.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Finances. <span class="pause">·</span> Et là je m'adresse surtout à vous <span class="stage">(regardez le dirigeant)</span>. »</p>
+    <p>« Huit lots, quatre colonnes : <strong>budget</strong>, <strong>engagé</strong>, <strong>facturé</strong>, <strong>payé</strong>. Le gros œuvre : 3,11 millions de budget, 2,46 engagés, 2,115 facturés, 1,98 payés. Tout est là, à jour. »</p>
+    <p>« Et maintenant regardez la ligne <strong>plomberie</strong>. <span class="pause">·</span> Budget : <em>480 000 €</em>. Engagé : <em>511 000 €</em>. »</p>
+    <p>« <strong>Dépassement détecté.</strong> Trente et un mille euros au-dessus du budget. Sur un lot. »</p>
+    <p>« La question honnête : aujourd'hui, ce dépassement, vous le découvrez quand ? <span class="pause">·</span> À la situation de fin de mois ? Au bilan du chantier ? <span class="stage">(Silence.)</span> Ici, il est signalé au moment où l'engagement est pris — donc quand vous pouvez encore négocier. »</p>
+    <p>« Et souvenez-vous de l'alerte du tableau de bord : <em>« facture PLOMB'ÉO n°F-2218 dépasse la commande de 6,4 % »</em>. <span class="pause">·</span> Le rapprochement facture / commande est automatique. C'est le genre d'écart qui passe inaperçu vingt fois par an dans une entreprise, et qui se paie. »</p>
+    <p>« Regardez aussi le lot <strong>peinture</strong> : 430 000 de budget, 146 000 engagés. Le chantier n'y est pas encore. <span class="pause">·</span> L'écran ne vous montre pas seulement les problèmes : il vous montre où vous en êtes. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Parcourez le tableau, puis <b>arrêtez-vous sur la ligne plomberie</b> et laissez le badge « Dépassement détecté » être lu par eux. <span class="tip">Ne le lisez pas à leur place. Laissez trois secondes de silence : ils le trouveront seuls, et l'effet sera bien plus fort.</span></li>
+    <li>Rappelez l'alerte du tableau de bord (facture &gt; commande, 6,4 %). <span class="tip">Boucler la boucle avec l'écran d'ouverture donne une impression de système cohérent.</span></li>
+    <li>Montrez la colonne <b>Reste à engager</b> et le pourcentage engagé par lot.</li>
+    <li>Mentionnez la situation n°8 (214 500 € HT) en attente MOE depuis 5 jours. <span class="tip">« De la trésorerie qui dort parce qu'un document attend une signature. »</span></li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig bad"><span class="v">511 000 €</span><span class="k">engagé plomberie / budget 480 000 €</span></div>
+    <div class="fig bad"><span class="v">+6,4 %</span><span class="k">facture F-2218 au-dessus de la commande</span></div>
+    <div class="fig"><span class="v">8</span><span class="k">lots suivis en 4 colonnes</span></div>
+    <div class="fig warn"><span class="v">214 500 €</span><span class="k">situation n°8 bloquée depuis 5 jours</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Un dépassement qu'on découvre au bilan, c'est une perte. Un dépassement qu'on voit à l'engagement, c'est une négociation. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">On a déjà un logiciel de compta / de gestion.</p>
+      <p class="obj-a">« Gardez-le, c'est lui qui tient vos comptes. Ce que votre compta ne sait pas faire, c'est vous dire « <b>le lot plomberie est dépassé de 31 000 € et cette entreprise n'est pas venue ce matin</b> ». Elle voit l'argent après coup ; ici vous voyez l'argent et le chantier en même temps. Et la version production s'interface avec vos outils de paie et de comptabilité. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Ces chiffres seront faux si personne ne les saisit.</p>
+      <p class="obj-a">« Ils viennent des commandes que vous passez déjà et des situations que vous validez déjà — c'est-à-dire de gestes que vous faites de toute façon. <b>La saisie n'est pas ajoutée, elle est déplacée</b> : au lieu de finir dans un tableur, elle alimente le suivi. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 12 DOCUMENTS ================= -->
+<section class="module" id="documents">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">12</span>
+      <h2>Documents<small>Le bon indice, pour tout le monde, même sans réseau.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2 min</span><span class="b b-role">Tous</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> le versionnement des plans est un sujet à cent mille euros. Ici l'historique des indices est visible, l'indice applicable est identifié, et le classement des documents entrants est automatique.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Documents. Douze documents sur ce chantier : plans, CCTP, contrats, administratif, bons de livraison, comptes rendus. »</p>
+    <p>« Le premier : <strong>PLN-A-201, plan étage courant bâtiment A, indice C</strong>, mis à jour il y a trois jours par l'architecte. <span class="pause">·</span> Je déroule l'historique : indice C il y a trois jours, indice B il y a vingt-quatre jours, indice A il y a soixante et un jours. »</p>
+    <p>« Trois indices en deux mois. C'est la vie normale d'un plan. <span class="pause">·</span> Et la seule question qui compte sur un chantier, c'est : <strong>est-ce que le gars qui coule est sur le bon indice ?</strong> »</p>
+    <p>« Souvenez-vous de ce que le Copilote nous a dit tout à l'heure : l'indice B était mauvais — réservation de gaine technique mal placée dans le logement 23 — et <em>deux personnes l'avaient encore consulté cette semaine</em>. Elles ont été notifiées. »</p>
+    <p>« Une reprise de réservation dans une dalle, c'est combien ? <span class="pause">·</span> Voilà. »</p>
+    <p><span class="stage">(Pointez les étiquettes « Classé automatiquement par l'IA ».)</span></p>
+    <p>« Ces étiquettes : <em>classé automatiquement par l'IA</em>. Le bon de livraison du béton de ce matin, le compte rendu de réunion, l'attestation URSSAF — personne ne les a rangés. <span class="pause">·</span> Vous déposez un vrac : photos, PDF, pièces jointes de mails. Le système reconnaît un devis, une facture, un plan, un bon de livraison, et il classe. »</p>
+    <p>« Et cette ligne-là, en rouge : <em>attestation URSSAF ElecRun OI — expirée</em>. <span class="pause">·</span> C'est le document qui a déclenché l'alerte, et la relance. Une chaîne complète, partie d'une date d'expiration. »</p>
+    <p>« Dernier point, essentiel sur le terrain : <em>disponible hors ligne sur mobile</em>. <span class="pause">·</span> Dans un sous-sol en cours de coulage, il n'y a pas de 4G. Le plan doit être là quand même. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Dépliez l'historique de <kbd>PLN-A-201</kbd> : les trois indices avec dates et auteur.</li>
+    <li>Utilisez la recherche : tapez <kbd>URSSAF</kbd>. <span class="tip">Le document expiré remonte immédiatement. « Trois secondes pour savoir si un sous-traitant est en règle. »</span></li>
+    <li>Filtrez par catégorie <kbd>Plans</kbd> puis <kbd>Contrats</kbd>.</li>
+    <li>Montrez deux étiquettes <kbd>Classé automatiquement par l'IA</kbd> et la mention <kbd>Disponible hors ligne sur mobile</kbd>.</li>
+    <li>Montrez <kbd>Interroger ce document avec le Copilote</kbd>. <span class="tip">Le lien vers le Copilote depuis un document boucle la démonstration.</span></li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig"><span class="v">ind. A → C</span><span class="k">3 versions du plan en 2 mois, historisées</span></div>
+    <div class="fig bad"><span class="v">expirée</span><span class="k">attestation URSSAF ElecRun OI</span></div>
+    <div class="fig good"><span class="v">8 / 12</span><span class="k">documents classés automatiquement</span></div>
+    <div class="fig"><span class="v">hors ligne</span><span class="k">plans consultables sans réseau</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Le problème n'a jamais été de stocker les plans. Le problème, c'est que le gars qui coule soit sur le bon indice. »</div>
+</section>
+
+<!-- ================= 13 MESSAGES ================= -->
+<section class="module" id="messages">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">13</span>
+      <h2>Messages<small>Là où meurt WhatsApp de chantier.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2,5 min</span><span class="b b-role">Tous</span><span class="b b-star">Argument d'adoption</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> l'échange informel est aussi rattaché au chantier. Les photos sont classées, un message devient une tâche, et les sous-traitants sont dedans gratuitement. C'est l'écran qui règle la vraie question de l'adoption : « pourquoi mes gars quitteraient WhatsApp ? »</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Messages. <span class="pause">·</span> Et je vais commencer par une question que vous vous posez sûrement depuis le début : pourquoi vos équipes quitteraient WhatsApp ? »</p>
+    <p>« Réponse : elles ne quitteront rien si vous leur donnez un truc moins pratique. Alors regardez — <strong>c'est exactement la même chose</strong>. Conversations directes, canaux de chantier, photos, documents, messages vocaux, accusés de lecture, indicateur de saisie, point vert de présence en ligne. »</p>
+    <p>« La différence est ailleurs. <span class="pause">·</span> Trois différences, précisément. »</p>
+    <p>« <strong>Un.</strong> Chaque conversation est rattachée à un chantier. Là, le canal <em>Résidence SUNSET · Général</em>, quatorze membres. Sofia annonce le coulage. Farid dit que la grue n°2 est HS et que le SAV passe à 10h. Teddy signale qu'il n'y a plus de rails. Marc répond de basculer sur le R+3. <span class="pause">·</span> Dans six mois, cette conversation est encore là, dans le chantier. Pas noyée dans un groupe qui parle aussi de foot. »</p>
+    <p>« <strong>Deux.</strong> Regardez cette ligne grise, au milieu de la conversation avec Sofia : <em>« le Copilote IA a lié cette conversation à la tâche Cloisons placo R+2 »</em>. <span class="pause">·</span> La discussion est accrochée à l'objet dont elle parle. Et cette photo du logement 23 que Sofia envoie : elle est classée dans le chantier, pas perdue dans une galerie de téléphone. »</p>
+    <p>« <strong>Trois</strong>, et c'est le meilleur. <span class="stage">(Survolez un message.)</span> <em>Créer une tâche depuis ce message.</em> <span class="pause">·</span> Un gars vous signale un problème dans un message ? Un clic, c'est une tâche affectée avec une échéance. Plus de « je te l'avais dit sur le groupe ». »</p>
+    <p><span class="stage">(Ouvrez la conversation avec Bruno Dijoux, PLOMB'ÉO. Écrivez un message et envoyez.)</span></p>
+    <p>« Et notre plombier. Vous voyez le fil : mon message de 9h02, puis la ligne système — <em>relance officielle préparée par le Copilote, en attente de validation dans Rapports</em> — et sa réponse à 11h47 : <em>« désolé, panne de camion ce matin et mon second est malade, je peux être là demain à la première heure »</em>. »</p>
+    <p>« La messagerie informelle et le circuit officiel avancent en parallèle, sur le même écran. <span class="pause">·</span> Le geste humain, et la trace écrite. »</p>
+    <p>« Et Bruno, chez PLOMB'ÉO — je le répète parce que c'est important dans le modèle — <strong>il ne paie rien</strong>. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Ouvrez le canal <kbd>Résidence SUNSET · Général</kbd> et faites lire l'échange sur la grue et les rails. <span class="tip">Laissez-les lire : ils vont reconnaître leur propre groupe WhatsApp mot pour mot.</span></li>
+    <li>Ouvrez la conversation <kbd>Sofia Bègue</kbd> : photo du logement 23, message vocal de 23 secondes, et <b>la ligne système du Copilote qui lie la conversation à une tâche</b>.</li>
+    <li>Survolez un message et montrez <kbd>Créer une tâche depuis ce message</kbd>.</li>
+    <li>Ouvrez <kbd>Bruno Dijoux</kbd>, <b>tapez un vrai message et envoyez-le</b> — attendez la réponse simulée. <span class="tip">Le fait de taper vous-même et de recevoir une réponse rend l'écran vivant. Prenez les cinq secondes.</span></li>
+    <li>Montrez le badge de non-lus dans la navigation de gauche et le filtre <kbd>Non lues</kbd>.</li>
+    <li>Ouvrez <kbd>Lot Menuiseries · Charpentes Payet</kbd> : le document joint (avis d'arrivée conteneur) reste attaché au chantier. <span class="tip">« Le blocage au port est documenté dans le fil. Six mois plus tard, vous savez pourquoi la pose a glissé. »</span></li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig"><span class="v">6</span><span class="k">conversations : directes et canaux chantier</span></div>
+    <div class="fig"><span class="v">14</span><span class="k">membres sur le canal SUNSET</span></div>
+    <div class="fig good"><span class="v">0 €</span><span class="k">accès messagerie pour les sous-traitants</span></div>
+    <div class="fig"><span class="v">1 clic</span><span class="k">d'un message à une tâche affectée</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Vos équipes ne quitteront pas WhatsApp pour un outil moins pratique. Elles le quitteront pour le même confort, avec les photos classées et les messages qui deviennent des tâches. »</div>
+
+  <h3>Objections</h3>
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Impossible, mes gars n'utiliseront jamais autre chose que WhatsApp.</p>
+      <p class="obj-a">« C'est l'objection la plus réaliste de tout le rendez-vous, et je ne vais pas vous dire le contraire. Deux réponses. D'abord, ce n'est pas obligatoire : les modules qui comptent — pointage, tâches, photos — fonctionnent sans que personne n'abandonne WhatsApp. Ensuite, ce qui fait basculer les équipes en général, ce n'est pas la messagerie elle-même : c'est que <b>les photos et les documents soient au bon endroit</b>. Le jour où un chef cherche une photo d'il y a trois mois et la trouve en dix secondes ici alors qu'elle est introuvable dans le groupe, il change tout seul. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 14 CHANTIERS ================= -->
+<section class="module" id="chantiers">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">14</span>
+      <h2>Chantiers<small>Quatre opérations, du démarrage au SAV — et le détail par zone.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2 min</span><span class="b b-role">Direction · Conducteur</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> la vision multi-chantiers pour le dirigeant, et la granularité par zone pour le conducteur. C'est aussi ici qu'on montre que l'outil n'annonce pas que des catastrophes.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Vue chantiers. Quatre opérations, quatre phases. »</p>
+    <p>« <strong>Résidence SUNSET</strong>, en cours, 48 logements, 7,4 millions, 68 %, douze jours de retard. <strong>Collège Jean Albany</strong>, en démarrage, douze classes et un préau, 3,1 millions, 12 %. <strong>Villa Horizon</strong>, en livraison, 280 m², 96 %, on livre dans douze jours. Et <strong>ZAC Cœur de Ville, îlot 3</strong>, 22 logements et des commerces, 41 %. »</p>
+    <p>« Regardez celui-là de plus près : <em>41 % réalisé contre 40 % planifié. Zéro jour de retard.</em> <span class="pause">·</span> Ce chantier va bien. Et vous le savez aussi vite que vous savez que SUNSET va mal. Un bon outil de pilotage, ce n'est pas une machine à mauvaises nouvelles : c'est une machine à savoir où regarder. »</p>
+    <p><span class="stage">(Ouvrez SUNSET, onglet « Zones & lots ».)</span></p>
+    <p>« Et dans un chantier, le détail par zone. Sept zones. <em>Bâtiment A RDC : 92 %. R+1 : 84 %. R+2 : 71 %. R+3 : 48 %. Bâtiment B RDC : 35 %. R+1 : 12 %. VRD extérieurs : 22 %.</em> »</p>
+    <p>« Un avancement global de 68 %, ça ne veut rien dire tout seul. <span class="pause">·</span> Ce qui veut dire quelque chose, c'est que le bâtiment B est à la traîne — et on sait pourquoi : les rails ne sont pas là et il manque trois plaquistes. »</p>
+    <p>« Onglet <em>Intervenants</em> : toutes les personnes rattachées, salariés et sous-traitants, avec leur métier et leur société. La météo du jour est là aussi — ensoleillé, 26 degrés, vent 20 km/h — parce que sur un chantier, le vent décide si la grue tourne. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Vue liste des quatre chantiers : nommez la phase de chacun.</li>
+    <li><b>Insistez sur la ZAC Cœur de Ville</b> (41 % vs 40 %, zéro retard). <span class="tip">Ce contrepoint vous crédibilise énormément : vous ne vendez pas la peur.</span></li>
+    <li>Ouvrez <kbd>Résidence SUNSET</kbd> → onglet <kbd>Zones &amp; lots</kbd> : les sept zones avec leur barre d'avancement.</li>
+    <li>Onglet <kbd>Intervenants</kbd> : la liste des personnes rattachées, avec sociétés.</li>
+    <li>Pointez la météo du jour dans l'aperçu.</li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig"><span class="v">4</span><span class="k">chantiers, 16,2 M€ de budget cumulé</span></div>
+    <div class="fig good"><span class="v">41 / 40 %</span><span class="k">ZAC Cœur de Ville : dans les temps</span></div>
+    <div class="fig warn"><span class="v">12 %</span><span class="k">Bât. B R+1, la zone en souffrance</span></div>
+    <div class="fig"><span class="v">7</span><span class="k">zones suivies séparément sur SUNSET</span></div>
+  </div>
+</section>
+
+<!-- ================= 15 EQUIPES ================= -->
+<section class="module" id="equipes">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">15</span>
+      <h2>Équipes &amp; sociétés<small>Le tableau de permissions qui répond à l'objection de la page 1.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">2,5 min</span><span class="b b-role">Direction · RH</span><span class="b b-star">Lève les freins</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> chacun ne voit que ce qui le concerne — et c'est vous qui le décidez. Plus la surveillance automatique des documents administratifs des sous-traitants, qui est un sujet de risque, pas de confort.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Équipes et sociétés. Quatre onglets : salariés, sous-traitants, fournisseurs, et — celui qui vous intéresse — <strong>rôles et permissions</strong>. »</p>
+    <p>« Les salariés : nom, matricule, corps d'état, chantier de rattachement, téléphone. Onze personnes ici, de la directrice au manœuvre. »</p>
+    <p><span class="stage">(Onglet Sous-traitants.)</span></p>
+    <p>« Les sous-traitants, en fiches. Et regardez les pastilles de statut. PLOMB'ÉO : <em>documents à jour</em>. Charpentes Payet : à jour. <span class="pause">·</span> <strong>ElecRun OI : documents manquants</strong>, en rouge. »</p>
+    <p>« Et celle-ci, Kolor Péi, en ambre : <em>document expirant — assurance décennale, J-21</em>. <span class="pause">·</span> Vingt et un jours avant l'expiration, le système le sait déjà, et la relance est programmée. »</p>
+    <p>« Vous savez comme moi ce que ça vaut. Un sous-traitant qui travaille chez vous avec une attestation périmée, en cas de contrôle, c'est votre problème — <strong>solidarité financière</strong>. <span class="pause">·</span> Aujourd'hui, qui suit ces dates dans votre entreprise ? Et sur un tableau Excel mis à jour quand ? »</p>
+    <p><span class="stage">(Onglet Rôles &amp; permissions.)</span></p>
+    <p>« Et maintenant je réponds à la question que vous m'avez posée au début. <span class="pause">·</span> Huit modules en lignes, cinq rôles en colonnes. »</p>
+    <p>« <em>Finances</em> : la direction a un accès complet, le conducteur peut écrire, le chef de chantier — <strong>rien</strong>. L'ouvrier — rien. Le sous-traitant — rien. »</p>
+    <p>« <em>Pointage</em> : l'ouvrier voit <em>« ses lots »</em>, c'est-à-dire ses heures à lui, pas celles des autres. Le sous-traitant pareil. »</p>
+    <p>« <em>Documents</em> : le sous-traitant ne voit que <em>ses lots</em>. Éric le menuisier a accès au CCTP menuiseries, pas au contrat de son concurrent plombier. <span class="pause">·</span> Et je vous rappelle que le Copilote respecte exactement cette grille : il ne répondra jamais à Éric sur un document qu'il n'a pas le droit de lire. »</p>
+    <p>« C'est votre grille, vous la réglez. <span class="pause">·</span> Et l'accès sous-traitant est gratuit — parce qu'un sous-traitant qui n'a pas accès ne remonte pas d'information, et un sous-traitant qui ne remonte rien vous coûte plus cher qu'une licence. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Onglet <kbd>Salariés</kbd> : le tableau avec matricules en police mono. <span class="tip">Détail à signaler : les données de terrain (matricules, heures, montants, versions) sont dans une police distincte. « Vous reconnaissez une donnée au premier regard. » Les DSI adorent ce genre de soin.</span></li>
+    <li>Onglet <kbd>Sous-traitants</kbd> : montrez ElecRun OI en rouge <b>et</b> Kolor Péi en ambre (décennale J-21).</li>
+    <li>Onglet <kbd>Fournisseurs</kbd>, rapidement.</li>
+    <li>Onglet <kbd>Rôles &amp; permissions</kbd> : parcourez la ligne <b>Finances</b>, puis la ligne <b>Documents</b>. <span class="tip">Deux lignes suffisent. Ne lisez pas les huit : vous perdriez l'attention juste avant le closing.</span></li>
+    <li>Rappelez explicitement le lien avec le Copilote et ses permissions.</li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig bad"><span class="v">2</span><span class="k">documents manquants chez ElecRun OI</span></div>
+    <div class="fig warn"><span class="v">J-21</span><span class="k">décennale Kolor Péi, relance programmée</span></div>
+    <div class="fig"><span class="v">8 × 5</span><span class="k">modules × rôles dans la grille de permissions</span></div>
+    <div class="fig good"><span class="v">Ses lots</span><span class="k">périmètre par défaut d'un sous-traitant</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Une attestation URSSAF périmée chez un sous-traitant, c'est votre risque, pas le sien. Ici, la date est surveillée et la relance est déjà écrite. »</div>
+</section>
+
+<!-- ================= 16 SUPPORT ================= -->
+<section class="module" id="support">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">16</span>
+      <h2>Support &amp; aide<small>Le module qui rassure sur l'après-vente.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">1,5 min</span><span class="b b-role">Tous</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> ils n'achètent pas seulement un logiciel, ils achètent une équipe joignable, sur leur fuseau, qui parle leur langue. Pour une PME qui a déjà été abandonnée par un éditeur, c'est parfois l'écran décisif.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Support. <span class="pause">·</span> Et je vais être direct : cet écran-là, en démo, personne ne le regarde. Alors qu'après la signature, c'est peut-être le plus important. »</p>
+    <p>« Une FAQ cherchable, dix questions terrain. Et pas des questions de brochure — regardez : <em>« que se passe-t-il si un ouvrier oublie de pointer son départ ? »</em>, <em>« le pointage fonctionne-t-il sans réseau ? »</em>, <em>« l'IA peut-elle envoyer une relance sans mon accord ? »</em>, <em>« la dictée vocale comprend-elle le créole réunionnais ? »</em> »</p>
+    <p>« Le contact : <strong>téléphone à La Réunion, du lundi au vendredi, 7h à 17h, heure locale</strong>. <span class="pause">·</span> Pas un centre d'appel à cinq heures de décalage qui ouvre quand vous fermez. »</p>
+    <p>« <strong>WhatsApp terrain</strong>, avec photos et vocaux acceptés. Parce qu'un chef de chantier ne rédige pas un ticket : il photographie l'écran et il envoie. »</p>
+    <p>« Réponse sous quatre heures ouvrées, en français. »</p>
+    <p><span class="stage">(Onglet « Mes demandes ».)</span></p>
+    <p>« Et les demandes en cours, tracées avec une référence. <em>SAV-2026-041 : badge NFC non reconnu sur la tablette du bungalow.</em> En cours, un technicien rappelle aujourd'hui avec une procédure de réappairage. <span class="pause">·</span> C'est un vrai problème de chantier, avec une vraie réponse. »</p>
+    <p>« Celle-là : <em>export paie, format attendu par Silae</em>. Résolue — le gabarit CSV est disponible. <span class="pause">·</span> Le support ne vous répond pas « c'est prévu dans la roadmap » : il vous dit où cliquer. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Recherchez <kbd>pointage</kbd> dans l'aide : les réponses remontent. Ouvrez celle sur l'oubli de pointage et <b>lisez la fin</b> : « aucune anomalie ne peut être exportée sans validation humaine ». <span class="tip">Le message de fond du produit se retrouve jusque dans la FAQ. Signalez cette cohérence.</span></li>
+    <li>Montrez les trois canaux de contact et l'horaire <kbd>7h–17h GMT+4</kbd>.</li>
+    <li>Onglet <kbd>Mes demandes</kbd> : les tickets avec référence et statut.</li>
+    <li>Ouvrez <kbd>Nouvelle demande</kbd>, montrez le formulaire, <b>fermez sans envoyer</b>.</li>
+  </ol>
+
+  <div class="figs">
+    <div class="fig"><span class="v">4 h</span><span class="k">délai de réponse ouvré, en français</span></div>
+    <div class="fig"><span class="v">7h–17h</span><span class="k">GMT+4, fuseau de La Réunion</span></div>
+    <div class="fig"><span class="v">10</span><span class="k">questions terrain dans l'aide</span></div>
+    <div class="fig good"><span class="v">WhatsApp</span><span class="k">photos et vocaux acceptés</span></div>
+  </div>
+
+  <div class="punch"><span class="lbl">La phrase à placer</span>« Un logiciel de chantier sans support sur votre fuseau horaire, c'est un logiciel que vous abandonnerez au premier problème un mardi matin. »</div>
+</section>
+
+<!-- ================= 17 PARAMETRES ================= -->
+<section class="module" id="parametres">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">17</span>
+      <h2>Paramètres<small>Trente secondes, et deux arguments à ne pas oublier.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">1 min</span><span class="b b-role">Tous</span></div>
+  </div>
+
+  <div class="goal"><b>Ce que vous prouvez :</b> l'internationalisation est réelle (utile si le prospect travaille avec Maurice, Madagascar ou des groupes étrangers), et la plateforme s'inscrit dans un écosystème d'outils existants plutôt que de prétendre les remplacer tous.</div>
+
+  <h3>Le script</h3>
+  <div class="say">
+    <p>« Dernier écran, très vite. »</p>
+    <p><span class="stage">(Basculez la langue en anglais.)</span></p>
+    <p>« La langue. <span class="pause">·</span> Toute l'interface, pas seulement les menus. Si vous travaillez avec Maurice, Madagascar, ou un groupe métropolitain avec des expatriés, c'est immédiat. <span class="stage">(Revenez au français.)</span> »</p>
+    <p>« Le <em>mode découverte</em>, ces repères bleus que vous voyez depuis le début : on les coupe. <span class="stage">(Désactivez, puis réactivez.)</span> Ils sont là pour la présentation et pour former un nouvel arrivant — pas pour gêner un utilisateur quotidien. »</p>
+    <p>« Et les <strong>intégrations</strong> : paie, comptabilité, planning, BIM, signature électronique. <span class="pause">·</span> Je vous le dis franchement — BuildNivo ne remplace pas votre comptabilité et ne remplacera pas votre logiciel de paie. Il s'y branche. Un éditeur qui vous promet de tout remplacer vous prépare un projet de dix-huit mois qui n'aboutira pas. »</p>
+    <p>« Et pour finir, la transparence : <em>cette démonstration est 100 % frontend, aucune donnée n'est envoyée à un serveur. Le pointage NFC, QR, GPS, la transcription vocale et les réponses de l'IA sont simulés pour illustrer le produit cible.</em> <span class="pause">·</span> C'est écrit dans l'application, je ne vous le cache pas dans une note de bas de page. »</p>
+  </div>
+
+  <h3>Ce que je clique</h3>
+  <ol class="clicks">
+    <li>Bascule <kbd>FR → EN → FR</kbd>. <span class="tip">Restez trois secondes en anglais, le temps qu'ils voient que tout a changé, pas juste le menu.</span></li>
+    <li>Désactivez puis réactivez le <kbd>Mode découverte</kbd>.</li>
+    <li>Montrez la liste des <kbd>Intégrations prévues</kbd> et assumez le périmètre.</li>
+    <li>Lisez la note « À propos de cette démo ». <span class="tip">Terminer sur un aveu de transparence juste avant le closing renforce beaucoup la confiance.</span></li>
+    <li>Ne cliquez <b>pas</b> sur <kbd>Réinitialiser la démo</kbd> maintenant. <span class="tip">Vous effaceriez sous leurs yeux tout ce que vous venez de construire. Faites-le après leur départ.</span></li>
+  </ol>
+</section>
+
+<!-- ================= 18 CLOSING ================= -->
+<section class="module" id="closing">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">18</span>
+      <h2>Le closing<small>Trois minutes. Ne les improvisez pas.</small></h2>
+    </div>
+    <div class="badges"><span class="b b-time">3 min</span></div>
+  </div>
+
+  <div class="goal"><b>L'erreur classique :</b> finir par « alors, qu'est-ce que vous en pensez ? ». Question ouverte, réponse polie, rendez-vous perdu. Fermez sur <b>leur</b> priorité et sur une <b>date</b>.</div>
+
+  <h3>La récapitulation — quatre phrases, pas dix-sept écrans</h3>
+  <div class="say">
+    <p><span class="stage">(Fermez l'écran ou revenez à la vue d'ensemble. Regardez-les, pas l'écran.)</span></p>
+    <p>« Je résume ce qu'on vient de voir en quatre points. »</p>
+    <p>« <strong>Un.</strong> Vos heures deviennent fiables et partent à la paie sans ressaisie. Le badge, le QR, le GPS. Les anomalies détectées et corrigées avant l'export. »</p>
+    <p>« <strong>Deux.</strong> Votre journal de chantier et vos rapports s'écrivent tout seuls, à partir de ce que le terrain fait déjà. Votre conducteur récupère ses soirées. »</p>
+    <p>« <strong>Trois.</strong> L'IA ne discute pas, elle agit : une phrase dictée devient cinq actions dans cinq modules. Et rien ne part sans qu'un humain valide. »</p>
+    <p>« <strong>Quatre.</strong> Vos sous-traitants sont dedans, gratuitement. Parce que l'information qui manque, elle vient presque toujours d'eux. »</p>
+    <p><span class="pause">·</span></p>
+    <p>« Maintenant ma question. <span class="pause">·</span> Sur ces dix-sept écrans, <strong>lequel vous ferait gagner du temps dès le mois prochain</strong> ? »</p>
+    <p><span class="stage">(Taisez-vous. Laissez-les répondre. Leur réponse est votre porte d'entrée pour le pilote — notez-la mot pour mot.)</span></p>
+  </div>
+
+  <h3>Puis, immédiatement, la proposition</h3>
+  <div class="say">
+    <p>« Alors voilà ce que je vous propose, et ce n'est pas un devis. <span class="pause">·</span> On prend <strong>un seul chantier</strong> — pas quatre, un — celui où vous avez le plus de sous-traitants. On met le pointage et les photos en place. Rien d'autre au départ. »</p>
+    <p>« Trois semaines. À la fin, on regarde deux chiffres ensemble : le temps passé à préparer la paie, et le nombre d'informations terrain qui sont remontées sans que personne les demande. <span class="pause">·</span> Si ces deux chiffres ne bougent pas, on arrête et vous ne me devez rien de plus. »</p>
+    <p>« Ce qu'il me faut de votre côté : un chantier, un chef de chantier motivé, et deux heures de votre conducteur pour le démarrage. <span class="pause">·</span> Vous avez ça pour la semaine du… ? »</p>
+  </div>
+
+  <div class="note tip"><span class="ic">✓</span><span><b>Pourquoi un pilote sur un seul chantier plutôt qu'un devis global ?</b> Parce qu'une PME du BTP a déjà été échaudée par un projet logiciel de dix-huit mois. En réduisant le périmètre à un chantier et deux modules, vous supprimez le risque perçu, et vous faites porter la décision par un chef de chantier plutôt que par un comité. Un pilote réussi sur un chantier se déploie tout seul aux trois autres.</span></div>
+
+  <h3>Les trois choses à obtenir avant de partir</h3>
+  <div class="grid2">
+    <div class="box">
+      <h4>1. Le nom du chantier pilote</h4>
+      <ul><li>Pas « on va voir » : <b>un nom</b>. S'ils ne peuvent pas le nommer, vous n'avez pas convaincu — revenez sur l'écran qu'ils ont préféré.</li></ul>
+    </div>
+    <div class="box">
+      <h4>2. Le nom du chef de chantier</h4>
+      <ul><li>C'est lui qui fera vivre ou mourir le pilote. Demandez : <b>« qui, chez vous, serait content d'essayer ça ? »</b> — la formulation compte.</li></ul>
+    </div>
+    <div class="box">
+      <h4>3. Une date dans l'agenda</h4>
+      <ul><li>Même une date de rappel. Un rendez-vous qui se termine sans date suivante est un rendez-vous perdu, quelle que soit la qualité de la démo.</li></ul>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 19 OBJECTIONS ================= -->
+<section class="module" id="objections">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">19</span>
+      <h2>Les objections difficiles<small>Celles qui arrivent à la fin, quand ils sont convaincus mais hésitants.</small></h2>
+    </div>
+  </div>
+
+  <div class="obj">
+    <div class="obj-row">
+      <p class="obj-q">Combien ça coûte ?</p>
+      <p class="obj-a"><b>Ne fuyez pas la question, mais ne donnez pas un chiffre nu.</b> « Je vous donne le cadre, et le chiffre exact dépend de deux choses : le nombre d'utilisateurs internes, et le nombre de chantiers actifs. Les sous-traitants ne comptent pas, ils sont gratuits. Ce que je vous propose, c'est qu'on chiffre <b>votre</b> cas maintenant, ensemble : combien de salariés sur chantier, combien de conducteurs, combien de chantiers en parallèle ? <i>(Prenez les chiffres.)</i> Et mettons ça en face du temps de préparation de paie et des trois jours de retard de cloisons qu'on a vus tout à l'heure. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">On en reparle après l'été / après ce chantier / au prochain budget.</p>
+      <p class="obj-a">« Je comprends, et je ne vais pas vous pousser. Juste une remarque : le pilote dont je vous parle démarre sur <b>un</b> chantier avec <b>deux</b> modules — ce n'est pas un projet d'entreprise, c'est trois semaines et deux heures de votre conducteur. <b>Attendre le prochain budget pour tester quelque chose de gratuit à l'essai, ça vous coûte une saison de données que vous n'aurez pas.</b> On peut au moins fixer la date de démarrage maintenant, quitte à la décaler ? »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Je dois en parler à mon associé / au comité.</p>
+      <p class="obj-a">« Bien sûr. Aidez-moi à l'aider : <b>quels sont ses deux critères à lui ?</b> <i>(Écoutez, notez.)</i> Je vous prépare une note d'une page sur ces deux points précis, et si c'est utile je viens la présenter en quinze minutes. Sur quelle date je peux me positionner ? » <i>Ne laissez jamais partir la décision sans avoir armé votre relais.</i></p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Vous êtes une jeune société. Et si vous disparaissez dans deux ans ?</p>
+      <p class="obj-a"><b>Objection légitime. Ne la balayez pas, elle mérite du respect.</b> « C'est une vraie question et vous avez raison de la poser. Ce que je peux vous engager : <b>vos données vous appartiennent et sont exportables</b> — heures, tâches, photos, documents. C'est un point que je veux voir écrit dans le contrat, pas dit en réunion. Et l'inverse est vrai aussi : un éditeur qui débute a un support qui décroche au premier appel et une feuille de route où vos demandes pèsent réellement. Le SAV-2026-038 que vous avez vu à l'écran — un accès lecture seule pour le maître d'œuvre — c'est exactement une demande de client qui devient une fonctionnalité. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Mes équipes ont plus de 50 ans, elles ne vont jamais s'y mettre.</p>
+      <p class="obj-a">« Ce qu'on demande à un compagnon de 55 ans, c'est <b>de passer un badge sur une tablette</b>. C'est tout. Il ne crée pas de tâche, il ne remplit pas de formulaire, il ne lit pas de tableau de bord. Le travail de saisie est concentré sur le chef de chantier, et pour lui, la saisie c'est <b>une photo et une phrase dictée</b>. La complexité est du côté du bureau, pas du côté du terrain — et c'est un choix de conception, pas un hasard. »</p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">On a déjà essayé un logiciel comme ça, ça n'a pas pris.</p>
+      <p class="obj-a"><b>C'est une chance : creusez, ne défendez pas.</b> « Racontez-moi. Qu'est-ce qui a bloqué exactement — la saisie trop lourde, le manque de formation, personne pour porter le sujet en interne ? <i>(Écoutez vraiment.)</i> » Puis raccrochez votre pilote sur la cause qu'ils nomment : si c'est la saisie, la dictée et le badge sont votre réponse. Si c'est le manque de portage interne, votre pilote sur un seul chantier avec un chef motivé est votre réponse. <b>Leur échec passé est votre meilleur argument de cadrage.</b></p>
+    </div>
+    <div class="obj-row">
+      <p class="obj-q">Vos données de démo sont trop belles. Un vrai chantier, c'est plus le bordel.</p>
+      <p class="obj-a">« Vous trouvez ça beau ? <span class="mono">(Sourire.)</span> Douze jours de retard, une grue en panne, un plombier absent sans prévenir, une attestation URSSAF périmée, un dépassement de 31 000 € sur la plomberie et une livraison bloquée au port. <b>J'ai justement construit une mauvaise journée</b>, parce qu'un outil ne se juge pas sur les chantiers qui vont bien. Et si votre réalité est encore plus dure, c'est un argument pour, pas contre. »</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 20 VARIANTES ================= -->
+<section class="module" id="variantes">
+  <div class="mod-head">
+    <div>
+      <span class="mod-num">20</span>
+      <h2>Démos courtes<small>Parce que « on a trente minutes » veut dire dix-huit.</small></h2>
+    </div>
+  </div>
+
+  <h3>La démo de 10 minutes — ascenseur, salon, café</h3>
+  <div class="scroll">
+  <table>
+    <thead><tr><th style="width:70px">Temps</th><th>Écran</th><th>Le seul geste à faire</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">0–1</td><td><b>Connexion</b></td><td>Nommer les cinq profils, dire « sous-traitants gratuits », entrer en conducteur.</td></tr>
+      <tr><td class="mono">1–4</td><td><b>Vue d'ensemble</b></td><td>68 % contre 75 %, puis <b>lire l'alerte des trois plaquistes</b> en entier.</td></tr>
+      <tr><td class="mono">4–6</td><td><b>Pointage</b></td><td>Badger en NFC, puis l'onglet Anomalies. Rien d'autre.</td></tr>
+      <tr><td class="mono">6–9</td><td><b>Copilote</b></td><td>La dictée, les cinq actions, et la phrase « rien n'est encore parti ».</td></tr>
+      <tr><td class="mono">9–10</td><td><b>Closing</b></td><td>« Lequel de ces écrans vous ferait gagner du temps le mois prochain ? »</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>Adapter à l'interlocuteur</h3>
+  <div class="grid2">
+    <div class="box">
+      <h4>Face au dirigeant / gérant</h4>
+      <ul>
+        <li><b>Insistez sur :</b> Vue d'ensemble, Finances, Rapports hebdo, Équipes (documents surveillés).</li>
+        <li><b>Vocabulaire :</b> risque, marge, solidarité financière, trésorerie, litige.</li>
+        <li><b>Le chiffre à marteler :</b> les 31 000 € de dépassement plomberie détectés automatiquement.</li>
+        <li><b>Survolez :</b> le kanban des tâches, la messagerie.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Face au conducteur de travaux</h4>
+      <ul>
+        <li><b>Insistez sur :</b> Tâches bloquées avec leur cause, Achats rapprochés du planning, Copilote documentaire.</li>
+        <li><b>Vocabulaire :</b> chemin critique, indice de plan, chaînage, relance.</li>
+        <li><b>Le moment fort :</b> « quel plan est applicable pour le R+2 » et les deux personnes notifiées.</li>
+        <li><b>Survolez :</b> Finances, Support.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Face au chef de chantier</h4>
+      <ul>
+        <li><b>Insistez sur :</b> Pointage, Photos en trois taps, Journal dicté. C'est tout, et c'est suffisant.</li>
+        <li><b>Vocabulaire :</b> vite, sous le soleil, une main, sans réseau.</li>
+        <li><b>Le moment fort :</b> la dictée. Faites-lui essayer <b>lui-même</b> si vous pouvez.</li>
+        <li><b>Ne montrez pas :</b> Finances. Il n'y a pas accès, et le lui montrer brouille le message des permissions.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h4>Face à un DSI / responsable informatique</h4>
+      <ul>
+        <li><b>Insistez sur :</b> la matrice de permissions, la traçabilité des sources du Copilote, la validation humaine systématique, les intégrations, le mode hors ligne.</li>
+        <li><b>Assumez d'emblée :</b> « cette démo est une maquette frontend, les données sont fictives et rien ne sort du navigateur ». Il vous respectera pour ça.</li>
+        <li><b>Préparez :</b> hébergement, sauvegarde, réversibilité et export des données, traitement des documents par l'IA. Si vous ne savez pas, <b>dites-le et notez la question</b> — un DSI pardonne « je vérifie », jamais une approximation.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note stop"><span class="ic">✕</span><span><b>Les cinq fautes qui tuent une démo BuildNivo.</b> 1. Parler par-dessus l'animation de dictée du Copilote. 2. Résumer les rapports au lieu de les lire — la qualité rédactionnelle est l'argument. 3. Montrer les dix-sept écrans à un chef de chantier qui n'en utilisera que trois. 4. Prétendre que la transcription vocale est parfaite : ils testeront le premier jour, et vous perdrez tout le crédit gagné. 5. Terminer sans date.</span></div>
+</section>
+
+<footer>
+  <p><b>BuildNivo — script de démonstration commerciale.</b> Construit à partir du contenu réel de la maquette : personas, quatre chantiers, alertes IA, pointages, tâches, journal, réserves, commandes, finances, documents, messagerie, support. Tous les chiffres cités correspondent à ce qui s'affiche à l'écran — s'ils changent dans les données, mettez ce script à jour.</p>
+  <p>Entreprise, chantiers, personnes et sociétés sont fictifs. À présenter comme une maquette de démonstration, jamais comme un environnement de production.</p>
+</footer>
+
+</main>
+</div>
+</body>
+</html>

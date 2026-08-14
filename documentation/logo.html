@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildNivo — Logo</title>
+<style>
+  html,body{height:100%;margin:0}
+  body{
+    display:grid;place-items:center;background:#f5f7f9;
+    font-family:"Archivo Variable","Archivo",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  /* Verrouillage : tout est proportionnel à la hauteur du symbole (font-size du bloc).
+     Écart 0,357 em · corps du mot 0,643 em — ratios repris de l'application. */
+  .logo{
+    display:inline-flex;align-items:center;gap:.357em;line-height:1;
+    font-size:96px;            /* = hauteur du symbole */
+    color:#1c222b;             /* encre : le mot */
+  }
+  .logo svg{height:1em;width:auto;display:block;fill:#2759d6}   /* bleu BuildNivo : le symbole */
+  .logo b{font-size:.643em;font-weight:700;letter-spacing:-.02em}
+</style>
+</head>
+<body>
+
+  <span class="logo">
+    <svg viewBox="0 0 34 38" role="img" aria-label="BuildNivo">
+      <polygon points="0,17 10,12 10,33 0,38"/>
+      <polygon points="12,5 22,0 22,33 12,38"/>
+      <polygon points="24,13 34,8 34,33 24,38"/>
+    </svg>
+    <b>BuildNivo</b>
+  </span>
+
+</body>
+</html>

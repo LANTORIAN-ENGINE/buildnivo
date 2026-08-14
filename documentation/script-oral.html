@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BuildNivo - Ce que je dis, dans l'ordre</title>
+<style>
+  :root{
+    --rouge:#c81e26;
+    --gris:#6b7280;
+    --gris-clair:#e5e7eb;
+    --fond:#ffffff;
+    --encre:#1f2430;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0 auto;padding:0 28px 120px;max-width:880px;background:var(--fond);color:var(--encre);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased;
+  }
+
+  header{padding:44px 0 22px;border-bottom:3px solid var(--rouge)}
+  h1{font-size:30px;line-height:1.2;margin:0 0 10px;letter-spacing:-0.02em}
+  header p{margin:0;color:var(--gris);font-size:15px}
+  .legende{margin-top:18px;padding:14px 16px;background:#f9fafb;border:1px solid var(--gris-clair);border-radius:8px;font-size:14.5px;line-height:1.9}
+  .legende b{color:var(--rouge)}
+
+  /* Écran */
+  section{padding:34px 0 10px;border-bottom:1px solid var(--gris-clair)}
+  h2{
+    font-size:15px;margin:0 0 20px;letter-spacing:.04em;text-transform:uppercase;
+    color:var(--encre);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  }
+  h2 .num{
+    background:var(--encre);color:#fff;font-size:13px;padding:3px 9px;border-radius:5px;
+    letter-spacing:0;font-weight:700;
+  }
+  h2 .duree{margin-left:auto;color:var(--gris);font-size:12.5px;font-weight:400;letter-spacing:0;text-transform:none}
+
+  /* CE QUE JE DIS */
+  .dis{
+    color:var(--rouge);font-size:18.5px;line-height:1.75;font-weight:500;
+    margin:0 0 18px;padding-left:16px;border-left:3px solid var(--rouge);
+  }
+  .dis strong{font-weight:800}
+
+  /* ACTION */
+  .fais{
+    color:var(--gris);font-size:14.5px;font-style:italic;
+    margin:0 0 18px;padding-left:19px;
+  }
+  .fais b{font-style:normal;font-weight:700;color:var(--encre)}
+
+  /* Pause */
+  .pause{
+    color:var(--gris);font-size:13.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    margin:0 0 18px;padding-left:19px;
+  }
+
+  footer{padding:40px 0 0;color:var(--gris);font-size:14px}
+
+  @media print{
+    body{max-width:none;padding:0;font-size:11.5pt}
+    section{page-break-inside:avoid}
+    .dis{color:#c81e26 !important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+  @media (max-width:640px){
+    body{padding:0 18px 80px;font-size:16px}
+    .dis{font-size:17px}
+    h1{font-size:24px}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Ce que je dis, dans l'ordre</h1>
+  <p>BuildNivo - script oral de démonstration. Environ 30 minutes.</p>
+  <div class="legende">
+    <b>En rouge</b> = ce que je dis, à voix haute.<br>
+    <i style="color:#6b7280">En gris italique</i> = ce que je clique, sans le dire.
+  </div>
+</header>
+
+
+<!-- 01 -->
+<section>
+  <h2><span class="num">01</span> Connexion <span class="duree">2 min</span></h2>
+
+  <p class="fais">Écran de connexion affiché. Ne cliquez pas encore.</p>
+
+  <p class="dis">Alors, première chose que vous voyez : on ne vous demande pas un identifiant. On vous demande qui vous êtes sur le chantier.</p>
+
+  <p class="dis">Parce que le problème des logiciels BTP, vous le connaissez mieux que moi : on achète un outil pour la direction, et six mois plus tard le chef de chantier continue de tout noter sur son carnet.</p>
+
+  <p class="dis">Là, il y a cinq profils. Nathalie, la directrice - elle veut des synthèses et des coûts. Marc, conducteur de travaux - il veut ses tâches et ses risques planning. Sofia, chef de chantier - elle veut saisir en trois gestes sous le soleil. Jimmy, maçon - il veut pointer et partir travailler. Et Éric, gérant de Charpentes Payet - c'est un sous-traitant, il n'est pas de la maison.</p>
+
+  <p class="dis">Et je vous le dis tout de suite : <strong>l'accès d'Éric est gratuit.</strong> On ne vous fait pas payer une licence pour chaque entreprise qui pose une fenêtre chez vous.</p>
+
+  <p class="fais">Montrez le panneau bleu à gauche.</p>
+
+  <p class="dis">À gauche, c'est un aperçu des modes de connexion. Mot de passe, Face ID, empreinte, badge NFC. En production, vous activez ce que vos équipements permettent. Ici c'est une simulation.</p>
+
+  <p class="dis">Je prends le profil de Marc, le conducteur de travaux.</p>
+
+  <p class="fais">Cliquez sur <b>Marc Dorseuil</b>.</p>
+</section>
+
+
+<!-- 02 -->
+<section>
+  <h2><span class="num">02</span> Vue d'ensemble <span class="duree">4 min</span></h2>
+
+  <p class="dis">Voilà. Nous sommes Bâtir Océan Indien, entreprise générale à Saint-Denis, et là on regarde la Résidence SUNSET - quarante-huit logements, sept millions quatre.</p>
+
+  <p class="dis">Quatre chiffres en haut. Budget consommé : 5,55 millions sur 7,4. Avancement : 68 %. Et juste en dessous, la mention qui fait mal : 75 % planifié. Retard : 12 jours. Équipe aujourd'hui : 42 personnes, et le point vert clignote parce que c'est du temps réel.</p>
+
+  <p class="dis">Ces quatre chiffres, aujourd'hui, chez vous, vous les avez quand ?</p>
+
+  <p class="pause">Attendez la réponse.</p>
+
+  <p class="dis">Là, ils sont calculés en continu. Le 68 % ne vient pas d'une estimation au doigt mouillé : il vient des tâches validées sur le terrain, avec photos. Le 42 vient du pointage de ce matin. Personne n'a rien ressaisi.</p>
+
+  <p class="fais">Passez à la colonne des alertes, à droite.</p>
+
+  <p class="dis">Et maintenant la partie qui intéresse un conducteur de travaux. Les alertes. Ce ne sont pas des notifications, c'est de l'analyse croisée.</p>
+
+  <p class="dis">Première alerte, en rouge : grue n°2 indisponible, en panne depuis deux jours. Jusque-là c'est une info. Mais lisez la suite : « le coulage de la dalle R+2 consomme la capacité de la grue n°1, risque sur les approvisionnements du bâtiment B ». Ça, c'est du raisonnement.</p>
+
+  <p class="dis">Deuxième : trois plaquistes présents sur six prévus. Et la conclusion : au rythme actuel, les cloisons du bâtiment B prennent trois jours de retard. C'est le pointage qui parle au planning.</p>
+
+  <p class="dis">Troisième : PLOMB'ÉO est totalement absent aujourd'hui. Personne n'a appelé. Le système l'a vu à sept heures vingt, parce que zéro pointage sur le lot plomberie.</p>
+
+  <p class="dis">Et celle-là, je vous la garde pour la fin : facture supérieure à la commande. Lot plomberie, engagé 511 000 € pour un budget de 480 000 €. Trente et un mille euros. Sur un seul lot. Détecté automatiquement.</p>
+
+  <p class="pause">Vraie pause. Laissez le dirigeant calculer.</p>
+
+  <p class="fais">Cliquez <b>Traiter</b> sur une alerte.</p>
+
+  <p class="dis">En bas à gauche, la présence par corps d'état. Gros œuvre 18 sur 20, second œuvre 12 sur 13, et plomberie zéro sur deux, en rouge. En une seconde vous savez qui manque.</p>
+
+  <p class="fais">En haut, changez le chantier pour <b>ZAC Cœur de Ville</b>.</p>
+
+  <p class="dis">Et je change de chantier : tout l'écran suit. Celui-là est à 41 % contre 40 % planifié, zéro retard. Un bon outil de pilotage, ce n'est pas une machine à mauvaises nouvelles : c'est une machine à savoir où regarder.</p>
+
+  <p class="fais">Revenez sur <b>Résidence SUNSET</b>.</p>
+</section>
+
+
+<!-- 03 -->
+<section>
+  <h2><span class="num">03</span> Pointage <span class="duree">4 min</span></h2>
+
+  <p class="dis">On descend sur le terrain. Pointage.</p>
+
+  <p class="dis">Quatorze personnes pointées aujourd'hui, douze présentes en ce moment. Avec l'heure d'arrivée, la méthode, l'état. Regardez la colonne des méthodes : badge NFC, QR dynamique, géolocalisation. Trois façons de pointer, parce qu'un chantier n'est pas un bureau.</p>
+
+  <p class="fais">Cliquez <b>Badger (NFC)</b> dans le simulateur.</p>
+
+  <p class="dis">Voilà. L'ouvrier passe son badge sur la tablette du bungalow, il est pointé, il monte travailler. Deux secondes.</p>
+
+  <p class="fais">Cliquez <b>Scanner le QR</b>. Faites remarquer que le motif a changé.</p>
+
+  <p class="dis">Le QR, à côté : il est dynamique. Regardez, il change à chaque pointage. Ce n'est pas un gadget : un QR fixe scotché sur la porte, il finit en photo dans le téléphone de tout le monde, et on pointe depuis la plage. Celui-là, non.</p>
+
+  <p class="dis">Et le GPS : position vérifiée sur chantier. On sait que la personne était bien sur le site.</p>
+
+  <p class="fais">Ouvrez l'onglet <b>Anomalies</b>.</p>
+
+  <p class="dis">Maintenant la partie que je préfère. Les anomalies. Quatre, ce matin.</p>
+
+  <p class="dis">Kevin Boyer, arrivée après l'horaire. Samuel Clain, départ non pointé hier - il a oublié de badger en partant. Teddy Maillot, pointé sur deux chantiers le même jour. Et Priya Ramaye, pointage hors zone.</p>
+
+  <p class="dis">Ces quatre lignes, aujourd'hui, chez vous, elles se règlent comment ?</p>
+
+  <p class="pause">Silence. Laissez-les répondre.</p>
+
+  <p class="dis">Voilà : on ne les voit pas. Elles finissent en heures approximatives sur la fiche de paie, dans un sens ou dans l'autre.</p>
+
+  <p class="fais">Cliquez <b>Corriger et valider</b> sur une seule anomalie.</p>
+
+  <p class="dis">Là, le responsable clique, l'heure retenue est tracée, et seule l'heure validée part vers la paie. Aucune anomalie ne peut être exportée sans qu'un humain soit passé dessus.</p>
+
+  <p class="fais">Ouvrez l'onglet <b>Export paie</b>.</p>
+
+  <p class="dis">Le vendredi. 571,5 heures cette semaine, 14 salariés. Un clic, et ça part au format Silae, Sage Paie ou Quadratus. Combien de temps ça vous prend aujourd'hui, ce transfert ?</p>
+
+  <p class="fais">Cliquez <b>Liste d'évacuation</b>.</p>
+
+  <p class="dis">Et une dernière chose. Alarme incendie. Vous devez savoir qui est sur le site, maintenant. Salariés et sous-traitants confondus.</p>
+
+  <p class="dis">Un clic. La liste horodatée, nominative, avec l'entreprise et l'heure d'arrivée. Imprimable. Avec des feuilles de pointage papier au bungalow, cette liste-là, vous ne l'avez pas.</p>
+
+  <p class="fais">Fermez la fenêtre.</p>
+</section>
+
+
+<!-- 04 -->
+<section>
+  <h2><span class="num">04</span> Tâches <span class="duree">2,5 min</span></h2>
+
+  <p class="dis">Le tableau des tâches. Cinq colonnes : à faire, en cours, à valider, terminée, bloquée.</p>
+
+  <p class="dis">La première : coulage dalle haute R+2, bâtiment A. Ce n'est pas « couler une dalle » - c'est localisé : bâtiment A, R+2. Affectée à Jimmy Hoarau. Échéance dans deux jours. Quatre photos. Et deux commentaires du terrain.</p>
+
+  <p class="dis">Celle-ci, colonne « à valider » : cloisons placo R+2, logements 21 à 26. Le commentaire de Sofia : « terminé d'après l'équipe, à contrôler avant validation ». L'équipe déclare, le responsable contrôle. Personne ne s'auto-valide.</p>
+
+  <p class="fais">Pointez la colonne <b>Bloquée</b>.</p>
+
+  <p class="dis">Et les deux tâches bloquées. C'est le cœur du sujet.</p>
+
+  <p class="dis">Pose rails cloisons, bâtiment B. Bloquée. Et le commentaire n'est pas d'un humain - regardez la signature : Copilote IA. « Blocage détecté : rails non livrés, commande CMD-2026-118. » Personne n'a saisi ce blocage.</p>
+
+  <p class="dis">Deuxième : raccordements du R+1, affectée à PLOMB'ÉO, échéance demain. Bloquée. « Entreprise absente aujourd'hui, relance préparée. » Le pointage a parlé aux tâches, et la relance est déjà écrite.</p>
+
+  <p class="fais">Cliquez <b>Valider la réalisation</b> sur les cloisons R+2.</p>
+
+  <p class="dis">Et je valide les cloisons. « Le journal et l'avancement sont mis à jour. » Voilà comment le 68 % du tableau de bord se fabrique : un clic, ici, par un responsable qui a vérifié. Pas une estimation.</p>
+</section>
+
+
+<!-- 05 -->
+<section>
+  <h2><span class="num">05</span> Journal de chantier <span class="duree">3 min</span></h2>
+
+  <p class="dis">Le journal de chantier. Soyons honnêtes deux secondes : chez vous, il est à jour ?</p>
+
+  <p class="pause">Sourire. La réponse est non, toujours.</p>
+
+  <p class="dis">Personne ne le tient, parce que le remplir le soir après dix heures de chantier, c'est impossible. Et pourtant c'est le document qui vous sauve en cas de litige.</p>
+
+  <p class="dis">Regardez la journée d'aujourd'hui, heure par heure. 6h30, météo. Signé « Auto ». 7h20, présences : 42 personnes sur 48, PLOMB'ÉO absent. Auto. 7h35, livraison béton, bon BL-88412 classé. Auto. 10h42, cloisons R+2 déclarées terminées. Auto.</p>
+
+  <p class="dis">Quatre entrées. Zéro saisie. Tout ça, l'entreprise le sait déjà quelque part. Ici, c'est simplement écrit au bon endroit, horodaté.</p>
+
+  <p class="fais">Pointez l'entrée de <b>8h10</b>, avec l'icône micro.</p>
+
+  <p class="dis">Et celle-là est différente. 8h10, incident : grue n°2 toujours indisponible, levage réorganisé. Signée Sofia Bègue, avec une icône micro. Sofia n'a rien tapé. Elle a parlé.</p>
+
+  <p class="fais">Cliquez <b>Dicter une note</b>. Puis TAISEZ-VOUS pendant l'animation.</p>
+
+  <p class="dis">Voilà ce qu'elle dit, en marchant sur le chantier :</p>
+
+  <p class="dis"><strong>« Le plombier n'est pas venu. Les cloisons du deuxième étage sont terminées. Il manque les rails pour commencer le bâtiment B. »</strong></p>
+
+  <p class="dis">Une phrase. Du langage de chantier, pas du langage de logiciel. Et le système répond : note transcrite et classée, trois actions proposées.</p>
+
+  <p class="fais">Cliquez <b>Générer le rapport du jour</b>.</p>
+
+  <p class="dis">Le rapport journalier. Synthèse, présences, avancement, photos, incidents. Ça, c'est ce que votre conducteur écrit le soir chez lui. Ou n'écrit pas.</p>
+
+  <p class="dis">Ces trois actions, on va aller les voir. C'est le moment le plus intéressant.</p>
+</section>
+
+
+<!-- 06 -->
+<section>
+  <h2><span class="num">06</span> Photos et problèmes <span class="duree">2,5 min</span></h2>
+
+  <p class="dis">Les photos. Question simple : combien de photos de chantier votre entreprise a prises cette semaine ? Et combien vous en retrouverez dans six mois, quand il faudra prouver quelque chose ?</p>
+
+  <p class="dis">Elles sont dans WhatsApp. Dans un groupe de trente personnes, entre un mème et une commande de sandwichs. Elles sont perdues.</p>
+
+  <p class="dis">Là, dix photos, filtrables par type et par zone. Avancement, problème, réserve, livraison, sécurité. Chacune a un auteur, une heure, une zone du bâtiment.</p>
+
+  <p class="fais">Ouvrez la photo <b>Garde-corps provisoire manquant</b>.</p>
+
+  <p class="dis">Regardez celle-ci : garde-corps provisoire manquant, trémie ascenseur. Type sécurité. Prise par Marc à 8h55. Le jour où l'inspection du travail passe, ou pire, le jour où quelqu'un tombe, cette photo horodatée avec l'action qui a suivi, elle vaut cher.</p>
+
+  <p class="fais">Ouvrez la photo <b>Éclat carrelage hall d'entrée</b>.</p>
+
+  <p class="dis">Et maintenant ce qui se passe quand on clique. Trois boutons : déclarer un problème, créer une tâche, créer une réserve. J'affecte l'entreprise responsable, je fixe une échéance.</p>
+
+  <p class="fais">Choisissez une entreprise, une échéance, cliquez <b>Créer une réserve</b>. Comptez les gestes à voix haute.</p>
+
+  <p class="dis">Un, deux, trois. Réserve créée et notifiée à l'entreprise. Sofia a mis quinze secondes, dans le hall, son téléphone à la main. L'entreprise est prévenue, l'échéance court.</p>
+
+  <p class="dis">Trois taps. Pas un email le soir. Pas un post-it. Pas un « je te l'avais dit ».</p>
+</section>
+
+
+<!-- 07 -->
+<section>
+  <h2><span class="num">07</span> Copilote IA - le sommet de la démo <span class="duree">5 min</span></h2>
+
+  <p class="pause">Ralentissez. C'est le moment le plus important.</p>
+
+  <p class="dis">On revient à la phrase de Sofia. « Le plombier n'est pas venu, les cloisons du deuxième étage sont terminées, il manque les rails pour commencer le bâtiment B. »</p>
+
+  <p class="dis">Trois informations dites en dix secondes, en marchant. Regardons ce que le système en fait.</p>
+
+  <p class="fais">Cliquez <b>Dicter (simulation)</b>. Puis SILENCE COMPLET jusqu'à l'affichage des cinq cartes.</p>
+
+  <p class="dis">Cinq actions. Pour une phrase.</p>
+
+  <p class="dis"><strong>Un</strong> - absence PLOMB'ÉO enregistrée. Le pointage est mis à jour, anomalie créée.</p>
+
+  <p class="dis"><strong>Deux</strong> - risque planning. La tâche d'échéance demain est marquée bloquée, retard estimé plus deux jours. Sofia n'a jamais parlé de planning. Le système a fait le lien.</p>
+
+  <p class="dis"><strong>Trois</strong> - cloisons R+2 passées à « à valider », et l'avancement de la zone mis à jour à 71 %. Le pourcentage du tableau de bord vient de bouger. Parce que quelqu'un a parlé.</p>
+
+  <p class="dis"><strong>Quatre</strong> - et c'est ma préférée. Demande d'achat : rails cloisons. Mais lisez le détail : « rapprochée de la commande CMD-2026-118, confirmée, livraison dans trois jours, pas de double commande ». Le système a vérifié que la commande existait déjà. Il ne vous a pas fait commander deux fois mille deux cents mètres de rails.</p>
+
+  <p class="dis"><strong>Cinq</strong> - trois entrées ajoutées au journal, horodatées et signées.</p>
+
+  <p class="pause">Vraie pause. Laissez-les regarder l'écran.</p>
+
+  <p class="dis">Dix secondes de parole. Cinq objets métier dans cinq modules différents. Et maintenant le point le plus important de toute cette démonstration : <strong>rien ne s'est encore passé.</strong></p>
+
+  <p class="dis">Regardez : chaque action a un bouton « Créer ». Le système propose. C'est moi qui décide.</p>
+
+  <p class="fais">Cliquez <b>Créer</b> sur une seule action, puis <b>Tout valider</b>.</p>
+
+  <p class="dis">Je peux tout valider, ou en refuser une, ou corriger. C'est la ligne rouge du produit : <strong>l'IA prépare, l'humain décide.</strong> Rien ne part sans qu'un responsable ait cliqué.</p>
+
+  <p class="fais">Cliquez la question suggérée <b>« Quel matériau est prévu pour la façade du bâtiment A ? »</b></p>
+
+  <p class="dis">Deuxième usage. Le Copilote a lu tous les documents du chantier : les plans, les CCTP, les contrats, les comptes rendus.</p>
+
+  <p class="dis">Question banale, celle qu'on pose douze fois par chantier. Réponse : isolation extérieure en laine de roche 120 mm, enduit taloché, teinte Blanc Corail, calepinage validé en réunion n°34.</p>
+
+  <p class="fais">Pointez les sources avec le curseur.</p>
+
+  <p class="dis">Et sous la réponse - c'est ça qui compte - les sources citées. CCTP Lot 03, page 18. Le plan. Le compte rendu de réunion, page 2. Avec les versions.</p>
+
+  <p class="dis">Vous ne croyez pas la machine sur parole : vous cliquez sur la source et vous vérifiez. C'est la différence entre une IA qu'on peut utiliser sur un chantier et une IA qui invente.</p>
+
+  <p class="fais">Cliquez <b>« Quel plan est actuellement applicable pour le R+2 ? »</b></p>
+
+  <p class="dis">Celle-là est encore plus concrète. Le plan applicable est l'indice C, diffusé il y a trois jours. L'indice B est obsolète : une réservation de gaine mal positionnée. Et la phrase qui tue : « deux personnes ont consulté l'indice B cette semaine, une notification leur a été envoyée ».</p>
+
+  <p class="dis">Combien vous coûte une reprise sur un mauvais indice de plan ?</p>
+
+  <p class="fais">Tapez une question à vous, hors script, sans réponse possible.</p>
+
+  <p class="dis">Et regardez : quand il ne sait pas, il le dit. Il ne répond qu'à partir des documents du chantier accessibles à votre rôle. Un système qui sait dire « je ne sais pas » vaut dix systèmes qui répondent toujours.</p>
+
+  <p class="dis">Dernier point, en haut : le Copilote respecte les permissions. Si Éric, votre menuisier sous-traitant, pose une question sur le budget global, il n'aura pas de réponse.</p>
+</section>
+
+
+<!-- 08 -->
+<section>
+  <h2><span class="num">08</span> Rapports IA <span class="duree">3 min</span></h2>
+
+  <p class="dis">Rapports. Trois onglets. On commence par le rapport journalier.</p>
+
+  <p class="dis">Regardez la mention en haut : « composé à partir des pointages, tâches, journal, livraisons et photos du jour ». Ce n'est pas un modèle vide qu'on remplit. C'est une rédaction.</p>
+
+  <p class="dis">Effectifs : « 42 personnes présentes sur 48 prévues, 12 entreprises. Absence totale PLOMB'ÉO. 3 plaquistes sur 6 prévus côté bâtiment B. »</p>
+
+  <p class="dis">Incidents : « Grue n°2 indisponible, levage réorganisé. Garde-corps provisoire manquant trémie ascenseur, mis en sécurité à 9h10. Quatre anomalies de pointage, une corrigée. »</p>
+
+  <p class="dis">Et actions attendues : quatre lignes, dont « régulariser l'URSSAF d'ElecRun OI sous 48 heures ». Ce n'est pas un compte rendu, c'est un ordre du jour.</p>
+
+  <p class="dis">Ce texte, aujourd'hui, qui l'écrit chez vous ? Et à quelle heure ?</p>
+
+  <p class="pause">Attendez la réponse.</p>
+
+  <p class="fais">Onglet <b>Synthèse hebdo</b>.</p>
+
+  <p class="dis">Version direction, hebdomadaire. Retard global 12 jours, stable. Chemin critique : menuiseries puis cloisons bâtiment B. Taux de présence : 91 %. Quatorze anomalies, douze corrigées. Nathalie lit ça le lundi matin en huit minutes. Sur ses quatre chantiers.</p>
+
+  <p class="fais">Onglet <b>Relances</b>.</p>
+
+  <p class="dis">Et voilà l'onglet qui fait la différence. Quatre relances à valider. Déjà écrites.</p>
+
+  <p class="dis">Celle-ci, à PLOMB'ÉO : « Bonjour, aucune présence de vos équipes n'a été enregistrée aujourd'hui alors que les raccordements du R+1, échéance demain, sont sur le chemin critique. Merci de confirmer votre présence demain 7h ou de proposer un plan de rattrapage. »</p>
+
+  <p class="dis">Le ton est professionnel. Les faits sont exacts. L'enjeu est nommé. Et vous n'avez pas écrit une ligne.</p>
+
+  <p class="dis">Celle-ci, à ElecRun : « votre attestation URSSAF est expirée depuis dix jours. Sans document à jour sous 48 heures, nous suspendrons l'accès chantier. » Là on parle de solidarité financière. Vous savez ce que ça coûte, un contrôle avec un sous-traitant non à jour.</p>
+
+  <p class="fais">Cliquez <b>Ajuster le texte</b>, puis <b>Valider l'envoi</b>.</p>
+
+  <p class="dis">Je relis, j'ajuste si je veux, je valide. Chaque envoi requiert une validation humaine : l'IA prépare, vous décidez.</p>
+
+  <p class="dis">Ces quatre relances, franchement : dans une semaine chargée, combien vous en auriez envoyé ? Une ? Aucune ? Et le retard, on le découvre quand ?</p>
+</section>
+
+
+<!-- 09 -->
+<section>
+  <h2><span class="num">09</span> Réserves <span class="duree">1,5 min</span></h2>
+
+  <p class="fais">Filtrez sur <b>Villa Horizon</b>.</p>
+
+  <p class="dis">Les réserves. Je bascule sur la Villa Horizon, qui est à 96 % et qu'on livre dans douze jours. C'est là que les réserves se jouent.</p>
+
+  <p class="dis">Quatre statuts : ouverte, notifiée, levée, contestée. Chacune rattachée à une entreprise, avec la date d'ouverture et la date limite.</p>
+
+  <p class="dis">Rayure baie vitrée séjour, quarante centimètres - Charpentes Payet, notifiée, à lever dans cinq jours. Avec la photo.</p>
+
+  <p class="dis">Et celle-là : prise RJ45 non raccordée, ElecRun OI, contestée. Ce statut, c'est celui qui manque dans tous les tableaux Excel. Parce que dans la vraie vie, l'entreprise répond « ce n'était pas dans mon lot ». Là, le désaccord est tracé, daté, avec la photo.</p>
+
+  <p class="dis">La levée de réserves, chez vous, ça prend combien de temps après la livraison ? Deux mois ? Et c'est autant de retenue de garantie qui dort.</p>
+</section>
+
+
+<!-- 10 -->
+<section>
+  <h2><span class="num">10</span> Achats et livraisons <span class="duree">2 min</span></h2>
+
+  <p class="dis">Les achats. Sept commandes suivies, avec leur statut : brouillon, envoyée, confirmée, livraison partielle, livrée, en retard.</p>
+
+  <p class="dis">Celle-ci en rouge : CMD-2026-114, menuiseries alu, vingt-six châssis, 74 200 €, attendue il y a six jours. Vous la reconnaissez : c'est elle qui a déclenché l'alerte du tableau de bord, la tâche sans matière, et la relance à Éric Payet.</p>
+
+  <p class="dis">Une même information, trois modules, une seule saisie. C'est ça, une plateforme, plutôt que quatre outils qui ne se parlent pas.</p>
+
+  <p class="dis">Et CMD-2026-118, les rails de cloisons, confirmée, livraison dans trois jours. C'est celle que le Copilote a retrouvée quand Sofia a dit « il manque les rails ». Sans ça, vous commandiez deux fois.</p>
+
+  <p class="fais">Cliquez <b>Confirmer la réception</b> sur la commande de béton.</p>
+
+  <p class="dis">Le béton livré ce matin : je confirme la réception. « Bon de livraison classé automatiquement. » Le BL part dans les documents du chantier, sans que personne ne le scanne le soir.</p>
+</section>
+
+
+<!-- 11 -->
+<section>
+  <h2><span class="num">11</span> Finances <span class="duree">2,5 min</span></h2>
+
+  <p class="pause">Regardez le dirigeant en parlant.</p>
+
+  <p class="dis">Finances. Huit lots, quatre colonnes : budget, engagé, facturé, payé. Le gros œuvre : 3,11 millions de budget, 2,46 engagés. Tout est là, à jour.</p>
+
+  <p class="fais">Arrêtez-vous sur la ligne plomberie. Laissez trois secondes de silence.</p>
+
+  <p class="dis">Et maintenant regardez la ligne plomberie. Budget : 480 000 €. Engagé : 511 000 €.</p>
+
+  <p class="dis">Dépassement détecté. Trente et un mille euros au-dessus du budget. Sur un lot.</p>
+
+  <p class="dis">La question honnête : aujourd'hui, ce dépassement, vous le découvrez quand ? À la situation de fin de mois ? Au bilan du chantier ?</p>
+
+  <p class="pause">Silence.</p>
+
+  <p class="dis">Ici, il est signalé au moment où l'engagement est pris. Donc quand vous pouvez encore négocier.</p>
+
+  <p class="dis">Et souvenez-vous de l'alerte du tableau de bord : « la facture dépasse la commande de 6,4 % ». Le rapprochement facture-commande est automatique. C'est le genre d'écart qui passe inaperçu vingt fois par an, et qui se paie.</p>
+</section>
+
+
+<!-- 12 -->
+<section>
+  <h2><span class="num">12</span> Documents <span class="duree">2 min</span></h2>
+
+  <p class="fais">Dépliez l'historique de <b>PLN-A-201</b>.</p>
+
+  <p class="dis">Documents. Douze documents sur ce chantier : plans, CCTP, contrats, administratif, bons de livraison.</p>
+
+  <p class="dis">Le premier : plan étage courant bâtiment A, indice C, mis à jour il y a trois jours. Je déroule l'historique : indice C il y a trois jours, indice B il y a vingt-quatre jours, indice A il y a soixante et un jours.</p>
+
+  <p class="dis">Trois indices en deux mois. C'est la vie normale d'un plan. Et la seule question qui compte sur un chantier : <strong>est-ce que le gars qui coule est sur le bon indice ?</strong></p>
+
+  <p class="dis">Souvenez-vous de ce que le Copilote nous a dit : l'indice B était mauvais, et deux personnes l'avaient encore consulté cette semaine. Elles ont été notifiées. Une reprise de réservation dans une dalle, c'est combien ?</p>
+
+  <p class="fais">Pointez les étiquettes <b>Classé automatiquement par l'IA</b>.</p>
+
+  <p class="dis">Ces étiquettes : classé automatiquement. Le bon de livraison de ce matin, le compte rendu, l'attestation URSSAF - personne ne les a rangés. Vous déposez un vrac : photos, PDF, pièces jointes de mails. Le système reconnaît et classe.</p>
+
+  <p class="fais">Tapez <b>URSSAF</b> dans la recherche.</p>
+
+  <p class="dis">Et cette ligne en rouge : attestation URSSAF ElecRun OI, expirée. C'est le document qui a déclenché l'alerte et la relance. Trois secondes pour savoir si un sous-traitant est en règle.</p>
+
+  <p class="dis">Dernier point : disponible hors ligne sur mobile. Dans un sous-sol en cours de coulage, il n'y a pas de 4G. Le plan doit être là quand même.</p>
+</section>
+
+
+<!-- 13 -->
+<section>
+  <h2><span class="num">13</span> Messages <span class="duree">2,5 min</span></h2>
+
+  <p class="dis">Messages. Et je commence par une question que vous vous posez sûrement : pourquoi vos équipes quitteraient WhatsApp ?</p>
+
+  <p class="dis">Réponse : elles ne quitteront rien si vous leur donnez un truc moins pratique. Alors regardez - c'est exactement la même chose. Conversations directes, canaux de chantier, photos, documents, vocaux, accusés de lecture, point vert de présence.</p>
+
+  <p class="dis">La différence est ailleurs. Trois différences.</p>
+
+  <p class="fais">Ouvrez le canal <b>Résidence SUNSET · Général</b>.</p>
+
+  <p class="dis">Un. Chaque conversation est rattachée à un chantier. Sofia annonce le coulage. Farid dit que la grue n°2 est HS. Teddy signale qu'il n'y a plus de rails. Marc répond de basculer sur le R+3. Dans six mois, cette conversation est encore là, dans le chantier. Pas noyée dans un groupe qui parle aussi de foot.</p>
+
+  <p class="fais">Ouvrez la conversation <b>Sofia Bègue</b>.</p>
+
+  <p class="dis">Deux. Regardez cette ligne grise au milieu de la conversation : « le Copilote a lié cette conversation à la tâche Cloisons placo R+2 ». La discussion est accrochée à l'objet dont elle parle. Et cette photo que Sofia envoie est classée dans le chantier, pas perdue dans une galerie de téléphone.</p>
+
+  <p class="fais">Survolez un message.</p>
+
+  <p class="dis">Trois, et c'est le meilleur : créer une tâche depuis ce message. Un gars vous signale un problème ? Un clic, c'est une tâche affectée avec une échéance. Plus de « je te l'avais dit sur le groupe ».</p>
+
+  <p class="fais">Ouvrez <b>Bruno Dijoux</b>, tapez un message, envoyez, attendez la réponse.</p>
+
+  <p class="dis">Et notre plombier. Mon message de 9h02, la ligne système - relance officielle préparée, en attente de validation - et sa réponse : « désolé, panne de camion ce matin, je peux être là demain à la première heure ».</p>
+
+  <p class="dis">La messagerie informelle et le circuit officiel avancent en parallèle, sur le même écran. Le geste humain, et la trace écrite. Et Bruno ne paie rien.</p>
+</section>
+
+
+<!-- 14 -->
+<section>
+  <h2><span class="num">14</span> Chantiers <span class="duree">2 min</span></h2>
+
+  <p class="dis">Vue chantiers. Quatre opérations, quatre phases. Résidence SUNSET, en cours, 68 %. Collège Jean Albany, en démarrage, 12 %. Villa Horizon, en livraison, 96 %. Et la ZAC Cœur de Ville, 41 %.</p>
+
+  <p class="fais">Ouvrez <b>SUNSET</b>, onglet <b>Zones et lots</b>.</p>
+
+  <p class="dis">Et dans un chantier, le détail par zone. Sept zones. Bâtiment A RDC : 92 %. R+1 : 84 %. R+2 : 71 %. R+3 : 48 %. Bâtiment B RDC : 35 %. R+1 : 12 %.</p>
+
+  <p class="dis">Un avancement global de 68 %, ça ne veut rien dire tout seul. Ce qui veut dire quelque chose, c'est que le bâtiment B est à la traîne. Et on sait pourquoi : les rails ne sont pas là et il manque trois plaquistes.</p>
+
+  <p class="fais">Onglet <b>Intervenants</b>.</p>
+
+  <p class="dis">Toutes les personnes rattachées, salariés et sous-traitants, avec leur métier et leur société. La météo du jour est là aussi, parce que sur un chantier, le vent décide si la grue tourne.</p>
+</section>
+
+
+<!-- 15 -->
+<section>
+  <h2><span class="num">15</span> Équipes et sociétés <span class="duree">2,5 min</span></h2>
+
+  <p class="dis">Équipes et sociétés. Quatre onglets : salariés, sous-traitants, fournisseurs, et celui qui vous intéresse - rôles et permissions.</p>
+
+  <p class="fais">Onglet <b>Sous-traitants</b>.</p>
+
+  <p class="dis">Les sous-traitants, en fiches. Regardez les pastilles. PLOMB'ÉO : documents à jour. ElecRun OI : documents manquants, en rouge.</p>
+
+  <p class="dis">Et celle-ci, Kolor Péi, en ambre : document expirant, assurance décennale, J-21. Vingt et un jours avant l'expiration, le système le sait déjà, et la relance est programmée.</p>
+
+  <p class="dis">Vous savez ce que ça vaut. Un sous-traitant qui travaille chez vous avec une attestation périmée, en cas de contrôle, c'est votre problème. Solidarité financière. Aujourd'hui, qui suit ces dates chez vous ? Et sur un Excel mis à jour quand ?</p>
+
+  <p class="fais">Onglet <b>Rôles et permissions</b>.</p>
+
+  <p class="dis">Et maintenant je réponds à la question du début. Huit modules en lignes, cinq rôles en colonnes.</p>
+
+  <p class="dis">Finances : la direction a un accès complet, le conducteur peut écrire, le chef de chantier - rien. L'ouvrier - rien. Le sous-traitant - rien.</p>
+
+  <p class="dis">Documents : le sous-traitant ne voit que ses lots. Éric le menuisier a accès au CCTP menuiseries, pas au contrat de son concurrent plombier. Et le Copilote respecte exactement cette grille.</p>
+
+  <p class="dis">C'est votre grille, vous la réglez. Et l'accès sous-traitant est gratuit, parce qu'un sous-traitant qui n'a pas accès ne remonte pas d'information - et ça vous coûte plus cher qu'une licence.</p>
+</section>
+
+
+<!-- 16 -->
+<section>
+  <h2><span class="num">16</span> Support et aide <span class="duree">1,5 min</span></h2>
+
+  <p class="dis">Support. Et je vais être direct : cet écran-là, en démo, personne ne le regarde. Alors qu'après la signature, c'est peut-être le plus important.</p>
+
+  <p class="dis">Une FAQ cherchable, dix questions terrain. Et pas des questions de brochure : « que se passe-t-il si un ouvrier oublie de pointer son départ ? », « le pointage fonctionne-t-il sans réseau ? », « la dictée comprend-elle le créole réunionnais ? »</p>
+
+  <p class="dis">Le contact : téléphone à La Réunion, du lundi au vendredi, 7h à 17h, heure locale. Pas un centre d'appel à cinq heures de décalage qui ouvre quand vous fermez.</p>
+
+  <p class="dis">WhatsApp terrain, avec photos et vocaux acceptés. Parce qu'un chef de chantier ne rédige pas un ticket : il photographie l'écran et il envoie. Réponse sous quatre heures ouvrées, en français.</p>
+
+  <p class="fais">Onglet <b>Mes demandes</b>.</p>
+
+  <p class="dis">Et les demandes en cours, tracées avec une référence. Badge NFC non reconnu sur la tablette du bungalow : un technicien rappelle aujourd'hui avec une procédure. Le support ne vous répond pas « c'est prévu dans la roadmap » : il vous dit où cliquer.</p>
+</section>
+
+
+<!-- 17 -->
+<section>
+  <h2><span class="num">17</span> Paramètres <span class="duree">1 min</span></h2>
+
+  <p class="fais">Basculez la langue en anglais, puis revenez au français.</p>
+
+  <p class="dis">Dernier écran, très vite. La langue : toute l'interface, pas seulement les menus. Si vous travaillez avec Maurice, Madagascar ou un groupe métropolitain, c'est immédiat.</p>
+
+  <p class="fais">Désactivez puis réactivez le <b>Mode découverte</b>.</p>
+
+  <p class="dis">Le mode découverte, ces repères bleus que vous voyez depuis le début : on les coupe. Ils sont là pour la présentation et pour former un nouvel arrivant, pas pour gêner un utilisateur quotidien.</p>
+
+  <p class="dis">Et les intégrations : paie, comptabilité, planning, BIM, signature électronique. Je vous le dis franchement - BuildNivo ne remplace pas votre comptabilité et ne remplacera pas votre logiciel de paie. Il s'y branche. Un éditeur qui vous promet de tout remplacer vous prépare un projet de dix-huit mois qui n'aboutira pas.</p>
+
+  <p class="dis">Et pour finir, la transparence : c'est écrit dans l'application. Cette démonstration ne fait sortir aucune donnée, et le pointage NFC, la transcription vocale et les réponses de l'IA sont simulés pour illustrer le produit cible.</p>
+
+  <p class="fais">Ne cliquez PAS sur « Réinitialiser la démo » maintenant.</p>
+</section>
+
+
+<!-- 18 -->
+<section>
+  <h2><span class="num">18</span> Le closing <span class="duree">3 min</span></h2>
+
+  <p class="fais">Fermez l'écran ou revenez à la vue d'ensemble. Regardez-les, pas l'écran.</p>
+
+  <p class="dis">Je résume ce qu'on vient de voir en quatre points.</p>
+
+  <p class="dis"><strong>Un.</strong> Vos heures deviennent fiables et partent à la paie sans ressaisie. Le badge, le QR, le GPS. Les anomalies détectées et corrigées avant l'export.</p>
+
+  <p class="dis"><strong>Deux.</strong> Votre journal de chantier et vos rapports s'écrivent tout seuls, à partir de ce que le terrain fait déjà. Votre conducteur récupère ses soirées.</p>
+
+  <p class="dis"><strong>Trois.</strong> L'IA ne discute pas, elle agit : une phrase dictée devient cinq actions dans cinq modules. Et rien ne part sans qu'un humain valide.</p>
+
+  <p class="dis"><strong>Quatre.</strong> Vos sous-traitants sont dedans, gratuitement. Parce que l'information qui manque, elle vient presque toujours d'eux.</p>
+
+  <p class="dis">Maintenant ma question. Sur tous ces écrans, <strong>lequel vous ferait gagner du temps dès le mois prochain ?</strong></p>
+
+  <p class="pause">Taisez-vous. Notez leur réponse mot pour mot.</p>
+
+  <p class="dis">Alors voilà ce que je vous propose, et ce n'est pas un devis. On prend un seul chantier - pas quatre, un - celui où vous avez le plus de sous-traitants. On met le pointage et les photos en place. Rien d'autre au départ.</p>
+
+  <p class="dis">Trois semaines. À la fin, on regarde deux chiffres ensemble : le temps passé à préparer la paie, et le nombre d'informations terrain remontées sans que personne les demande. Si ces deux chiffres ne bougent pas, on arrête.</p>
+
+  <p class="dis">Ce qu'il me faut de votre côté : un chantier, un chef de chantier motivé, et deux heures de votre conducteur pour le démarrage. Vous avez ça pour la semaine du… ?</p>
+
+  <p class="pause">Avant de partir, obtenez : le nom du chantier pilote, le nom du chef de chantier, une date dans l'agenda.</p>
+</section>
+
+
+<footer>
+  <p>Les explications, les objections et les variantes de démo courte sont dans le document de préparation <b>script-demo.html</b>. Celui-ci ne sert qu'à parler.</p>
+</footer>
+
+</body>
+</html>

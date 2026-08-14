@@ -203,7 +203,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
                 ))}
                 <div className="mt-1 border-t border-line pt-1">
                   <Link
-                    href="/"
+                    href="/connexion"
                     onClick={() => setPersonaOpen(false)}
                     className="flex items-center gap-2.5 rounded-lg px-3 py-2 text-[12.5px] font-semibold text-ink-soft hover:bg-line-soft/70 hover:text-ink"
                   >

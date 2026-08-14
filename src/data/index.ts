@@ -4,3 +4,4 @@ export * from "./gestion";
 export * from "./ai";
 export * from "./comms";
 export * from "./acteurs";
+export * from "./marketing";

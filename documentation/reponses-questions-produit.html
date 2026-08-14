@@ -1,0 +1,770 @@
+<title>Réponses aux questions ouvertes — BuildNivo</title>
+
+<h1>BuildNivo — Réponses aux questions ouvertes</h1>
+
+<p>
+  Réponse au <strong>Document de référence produit v2.0 (août 2026)</strong>, section 11
+  « Décisions produit &amp; questions ouvertes ».
+</p>
+
+<p>
+  <strong>Auteur :</strong> référent technique / lead développeur<br>
+  <strong>Date :</strong> 14 août 2026<br>
+  <strong>Base d'analyse :</strong> document de référence produit v2.0 + code de la démo BuildNivo
+  (Next.js 15 / React 19 / TypeScript strict, 20 modules, 11 profils)<br>
+  <strong>Statut :</strong> propositions techniques argumentées — les points marqués
+  « à arbitrer » relèvent de la direction
+</p>
+
+<hr>
+
+<h2>Sommaire</h2>
+
+<ol>
+  <li><a href="#preambule">Préambule — d'où je parle</a></li>
+  <li><a href="#tech">Questions pour l'équipe tech</a>
+    <ol>
+      <li><a href="#q1">Q1 — Durée de rétention des données après l'essai Company</a></li>
+      <li><a href="#q2">Q2 — Empêcher le rejeu de l'essai de 30 jours</a></li>
+      <li><a href="#q3">Q3 — Les Studios dépendants de Company : vraiment le plus simple ?</a></li>
+      <li><a href="#q4">Q4 — Implémentation du « bris de glace » sur les données nominatives</a></li>
+    </ol>
+  </li>
+  <li><a href="#business">Questions pour la direction — avis technique</a>
+    <ol>
+      <li><a href="#q5">Q5 — Prix de lancement du MVP</a></li>
+      <li><a href="#q6">Q6 — Ordre de priorité des quatre Studios métier</a></li>
+    </ol>
+  </li>
+  <li><a href="#decisions">Validation technique des décisions déjà arbitrées</a></li>
+  <li><a href="#ecarts">Écart entre la démo actuelle et la cible du document</a></li>
+  <li><a href="#risques">Trois risques que je remonte</a></li>
+</ol>
+
+<hr>
+
+<h2 id="preambule">1. Préambule — d'où je parle</h2>
+
+<p>
+  La démo BuildNivo existante n'est pas le produit : c'est une maquette fonctionnelle
+  100 % frontend, sans backend ni base, dont tout l'état vit en mémoire navigateur.
+  Elle est néanmoins un actif utile pour répondre à ces questions, parce qu'elle a déjà
+  tranché un certain nombre de choses au niveau du modèle de domaine : 11 rôles typés,
+  une matrice de permissions par module (<code>src/lib/permissions.ts</code>), un modèle
+  d'objets métier complet (opérations, pointages, tâches, visas, avis, réunions, réserves,
+  achats, finances, documents), et un circuit de visa MOEX ↔ BET ↔ contrôleur technique.
+</p>
+
+<p>
+  Ce que la démo ne contient pas, et qui est précisément l'objet des questions ouvertes :
+  la séparation Project / Company, la mécanique d'essai, les trois barrières de visibilité
+  au niveau du champ (et non du module), l'accès d'urgence, le journal d'audit, et le
+  catalogue tarifaire. Les réponses ci-dessous visent donc à figer ce qui doit l'être
+  <em>avant</em> l'écriture du backend, parce que ce sont typiquement les décisions
+  qu'on ne peut plus corriger à moindre coût six mois plus tard.
+</p>
+
+<hr>
+
+<h2 id="tech">2. Questions pour l'équipe tech</h2>
+
+<h3 id="q1">Q1 — Quelle durée exacte de rétention des données après la fin de l'essai Company ?</h3>
+
+<p><strong>Rappel du contexte du document :</strong> « fixée à titre de principe à environ 1 an,
+à confirmer selon les contraintes techniques et de coût de stockage réelles ».</p>
+
+<p><strong>Réponse : 12 mois, confirmés, mais en trois phases et non en un seul palier.</strong></p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Phase</th>
+      <th>Période</th>
+      <th>État technique des données Company</th>
+      <th>Ce que l'entreprise peut faire</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Gel</td>
+      <td>J+30 → J+120 (90 jours)</td>
+      <td>Données conservées dans la base de production, workspace marqué
+        <code>frozen</code>, exclues des requêtes applicatives par la politique d'accès</td>
+      <td>Souscrire et tout retrouver instantanément ; exporter ses données
+        (CSV / ZIP documentaire) sans souscrire</td>
+    </tr>
+    <tr>
+      <td>Archivage froid</td>
+      <td>J+120 → J+395 (9 mois)</td>
+      <td>Dump chiffré vers stockage objet froid, suppression des lignes de la base chaude
+        hormis l'identité de l'entreprise et le journal d'essai</td>
+      <td>Restauration sur demande support, sous 48 h ouvrées</td>
+    </tr>
+    <tr>
+      <td>Purge</td>
+      <td>J+395</td>
+      <td>Suppression définitive et irréversible</td>
+      <td>Plus rien — sauf le journal d'essai (voir Q2)</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Pourquoi ce découpage plutôt qu'un « 1 an » uniforme :</strong></p>
+
+<ul>
+  <li>
+    <strong>La reconversion se joue dans les 90 premiers jours.</strong> Une entreprise qui
+    revient souscrire 8 mois après avoir laissé filer son essai est un cas rare ; une qui
+    revient à J+60 parce qu'un deuxième chantier l'a convaincue est un cas fréquent. Le premier
+    palier doit donc être instantané, le second peut être manuel.
+  </li>
+  <li>
+    <strong>Le coût est documentaire, pas relationnel.</strong> Les lignes de pointage, tâches
+    et journaux d'une PME sur 30 jours pèsent quelques dizaines de mégaoctets. Ce sont les
+    photos de chantier et les PDF qui pèsent : compter un ordre de grandeur de 2 à 15 Go par
+    entreprise-essai. À 5 000 essais cumulés, on parle de ~40 To. Conservés en stockage chaud
+    sur 12 mois, c'est un coût mensuel à quatre chiffres qui grimpe linéairement et
+    indéfiniment ; basculés en froid à J+120, c'est un coût négligeable et stable.
+    Le découpage n'est pas un raffinement, c'est ce qui rend la promesse « 1 an » soutenable.
+  </li>
+  <li>
+    <strong>L'export doit être gratuit et disponible en phase de gel.</strong> C'est une
+    obligation de portabilité (RGPD art. 20) et, accessoirement, le meilleur argument de
+    confiance à l'entrée : une entreprise accepte beaucoup plus facilement de tester un outil
+    dont elle sait qu'elle peut ressortir ses données.
+  </li>
+</ul>
+
+<p><strong>Point non négociable à graver dans l'architecture :</strong> cette rétention ne concerne
+<em>que</em> les données Company. Les données produites dans un Project (pointages du chantier,
+tâches, photos, journal, documents du projet) appartiennent au Project financé par le porteur
+et ne sont jamais affectées par la fin d'un essai Company. Techniquement, cela veut dire que
+la clé de rattachement d'une donnée (<code>project_id</code> ou <code>company_id</code>) doit
+être décidée à la création de l'objet et ne jamais être ambiguë. Une donnée à double
+rattachement — typiquement un pointage, qui est à la fois un événement de chantier et une
+heure de travail d'un salarié — doit avoir un propriétaire canonique (le Project) et une
+projection dérivée côté Company. Si on inverse, la fin d'un essai casse un chantier en cours,
+ce qui contredit frontalement la promesse commerciale de la section 3 du document.</p>
+
+<p><strong>Deux exigences d'implémentation :</strong></p>
+<ul>
+  <li>Les durées doivent vivre dans une table de politique de rétention par tenant, pas en dur
+    dans le code : un geste commercial (« on vous garde vos données 6 mois de plus ») ne doit
+    jamais nécessiter un déploiement.</li>
+  <li>Notifications automatiques à J+23, J+30, J+113 (avant passage en froid) et J+380
+    (avant purge). Une purge non annoncée est un litige.</li>
+</ul>
+
+<h3 id="q2">Q2 — Comment empêcher qu'une entreprise recrée un compte pour rejouer l'essai de 30 jours ?</h3>
+
+<p><strong>Réponse : ancrer l'essai sur l'entité juridique, jamais sur le compte ni sur le
+workspace — avec le SIREN comme clé, vérifié à la source auprès de l'INSEE.</strong></p>
+
+<p>Le principe directeur est simple : ce n'est pas un utilisateur qui consomme un essai, c'est
+une société. Il faut donc séparer dans le schéma trois notions que les produits SaaS
+confondent souvent :</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Entité</th>
+      <th>Rôle</th>
+      <th>Unicité</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>legal_entity</code></td>
+      <td>La société réelle (SIREN, raison sociale, NAF, adresse)</td>
+      <td>Unique par SIREN — <strong>porte le droit à l'essai</strong></td>
+    </tr>
+    <tr>
+      <td><code>company</code> (workspace)</td>
+      <td>L'espace de travail BuildNivo, rattaché à une <code>legal_entity</code></td>
+      <td>Supprimable, recréable — ne redonne aucun droit</td>
+    </tr>
+    <tr>
+      <td><code>user</code></td>
+      <td>Le compte d'une personne, membre d'un ou plusieurs workspaces</td>
+      <td>Sans effet sur l'essai</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Les cinq couches, de la plus structurante à la plus accessoire :</strong></p>
+
+<ol>
+  <li>
+    <strong>Journal d'essai en append-only.</strong> Une table
+    <code>company_trial (legal_entity_id, started_at, ended_at, triggered_by_project_id)</code>
+    sans DELETE ni UPDATE possibles au niveau des droits base. Point crucial : supprimer un
+    workspace ne doit pas effacer la trace de consommation. C'est le seul mécanisme réellement
+    infranchissable ; tout le reste est du confort.
+  </li>
+  <li>
+    <strong>Vérification SIRET/SIREN via l'API Sirene de l'INSEE</strong> à la création du
+    workspace. Elle est gratuite, officielle, et rend trois services d'un coup : elle rejette
+    les numéros inventés, elle pré-remplit la fiche entreprise (raison sociale, adresse, code
+    NAF, état actif ou cessé), et elle donne le SIREN normalisé qui sert de clé. La clé d'essai
+    est le <strong>SIREN</strong> (9 chiffres, la société) et non le SIRET (14 chiffres,
+    l'établissement) : sinon une entreprise à cinq agences obtient cinq essais.
+  </li>
+  <li>
+    <strong>Collision = rattachement, pas nouvel essai.</strong> Si un utilisateur saisit un
+    SIREN déjà connu, on ne crée pas de second workspace : on lui propose de demander à
+    rejoindre l'existant, la demande partant à l'administrateur de ce workspace. Ce
+    comportement règle au passage un vrai cas d'usage — le deuxième salarié d'une entreprise
+    invité sur un autre chantier — et c'est un bon exemple de contrainte anti-abus qui améliore
+    le produit au lieu de le dégrader.
+  </li>
+  <li>
+    <strong>Signaux secondaires en scoring, jamais en blocage.</strong> Domaine de messagerie,
+    similarité raison sociale + adresse, empreinte de facturation, fréquence des créations
+    depuis une même adresse IP : ces signaux alimentent un score de suspicion qui déclenche une
+    revue manuelle. Ils ne doivent jamais bloquer automatiquement. Le coût d'un faux positif
+    (un vrai prospect refoulé à l'inscription) est très supérieur à celui d'un faux négatif
+    (une entreprise qui obtient 30 jours de trop).
+  </li>
+  <li>
+    <strong>Prévoir l'international dès le schéma, même si le lancement est France + Outre-mer.</strong>
+    L'Outre-mer utilise le SIRET standard, donc pas de sujet immédiat. Mais il faut modéliser
+    <code>legal_id_type</code> (<code>siren</code> | <code>vat</code> | <code>manual</code>),
+    <code>legal_id_value</code> et <code>country</code>, avec un index unique composite. Ajouter
+    un identifiant TVA intracommunautaire (VIES) ou une validation manuelle sur Kbis équivalent
+    devient alors une extension, pas une migration.
+  </li>
+</ol>
+
+<p><strong>Sur le RGPD :</strong> conserver indéfiniment un SIREN et des dates d'essai ne pose pas
+de difficulté — un SIREN identifie une personne morale, pas une personne physique. La purge de
+J+395 (Q1) porte sur les données du workspace, pas sur le journal d'essai, qui reste. C'est
+cohérent et défendable ; il suffit de le mentionner dans la politique de confidentialité.</p>
+
+<p><strong>Verdict :</strong> le document qualifie le sujet de « non bloquant pour le MVP mais à
+anticiper dans l'architecture des comptes ». Je confirme, avec une nuance : les points 1 et 2
+doivent être <strong>dans</strong> le MVP, pas anticipés. Rétro-fitter une clé d'identité sur une
+base déjà peuplée est la migration la plus douloureuse qui soit, et elle arrive toujours au
+pire moment — c'est-à-dire quand il y a assez de clients pour que ça vaille la peine.
+Les points 3 à 5 peuvent attendre la V2.</p>
+
+<h3 id="q3">Q3 — L'architecture retenue pour les Studios (dépendants de Company plutôt qu'autonomes) est-elle bien la plus simple à développer ?</h3>
+
+<p><strong>Réponse : oui, la décision est la bonne — mais l'argument avancé dans le document
+n'est pas le plus fort, et la simplicité n'est acquise que si on la construit explicitement.</strong></p>
+
+<p>Le document justifie le choix par la réutilisation du socle (documents, comptes utilisateurs,
+dashboard). C'est vrai mais secondaire. La vraie raison est le modèle d'autorisation et de
+propriété des données.</p>
+
+<p>Un Studio autonome ne serait pas « un produit de plus » : ce serait une <strong>seconde racine
+de tenancy</strong>. Il faudrait qu'il puisse posséder des données en propre, porter son propre
+abonnement, et surtout répondre à une question à laquelle il n'existe pas de bonne réponse :
+que devient un Studio Promoteur actif quand l'abonnement Company sous-jacent est résilié ?
+Toutes les options sont mauvaises (on supprime des données que le client paie, ou on maintient
+un accès à un socle non payé, ou on invente un troisième état). En rendant le Studio dépendant,
+la question ne se pose jamais : le Studio est un sur-ensemble de droits sur un workspace qui a
+un seul cycle de vie.</p>
+
+<p><strong>Implémentation recommandée — et c'est là que se joue la simplicité annoncée :</strong></p>
+
+<ul>
+  <li>
+    <strong>Ne pas coder « Studio » comme un enum en dur.</strong> Modéliser un moteur
+    d'<em>entitlements</em> générique : une table <code>feature</code> (clé fonctionnelle), une
+    table <code>plan</code> (Essential, Business, Studio Promoteur, Studio Architecte…), une
+    table de jointure <code>plan_feature</code>, et une table
+    <code>company_entitlement</code> résolue et mise en cache par workspace. Le contrôle d'accès
+    applicatif se réduit alors à un seul appel :
+    <code>hasEntitlement(companyId, "studio.promoteur.appels_de_fonds")</code>.
+  </li>
+  <li>
+    <strong>Un Studio = un pack d'entitlements + éventuellement des tables métier
+    additionnelles.</strong> Le Studio Promoteur ajoute par exemple des objets propres (appels de
+    fonds, lots commercialisés, acquéreurs) ; le Studio Maîtrise d'œuvre n'ajoute presque rien
+    en tables et beaucoup en fonctions sur des objets existants. Cette asymétrie est normale et
+    n'a pas besoin d'être uniformisée.
+  </li>
+  <li>
+    <strong>Coût :</strong> une à deux semaines de développement supplémentaires au MVP par
+    rapport à des drapeaux booléens en dur. C'est le seul endroit du MVP où je recommande
+    d'investir dans du générique dès le départ, parce que c'est là que la direction commerciale
+    aura besoin de bouger vite ensuite : ouvrir un Studio à un client, faire une offre packagée,
+    accorder du grandfathering, lancer une promotion — tout cela doit être une écriture en base
+    et jamais un déploiement.
+  </li>
+</ul>
+
+<p><strong>Point de vigilance à remonter à la direction (commercial, pas technique).</strong> La
+dépendance crée un plancher de prix : 99 € (Essential) + 99 € (Studio) = 198 € HT/mois minimum.
+Le document juge le risque mineur parce que la cible est la PME de 20 à 300 salariés, et c'est
+juste pour le Studio Entreprise Travaux et le Studio Promoteur. Ça l'est beaucoup moins pour le
+Studio Architecte et le Studio Maîtrise d'œuvre, qui visent des structures typiquement plus
+petites — une agence d'architecture de 4 à 10 personnes, un cabinet de maîtrise d'œuvre de 3
+personnes. Si l'un de ces deux Studios remonte en priorité commerciale, il faudra une offre
+packagée « Essential + Studio » à prix unique. Avec le moteur d'entitlements décrit ci-dessus,
+c'est une ligne de catalogue ; sans lui, c'est un chantier. La décision d'architecture tient,
+c'est la grille tarifaire qui doit rester souple.</p>
+
+<h3 id="q4">Q4 — Comment implémenter techniquement le mécanisme d'accès d'urgence sécurité (« bris de glace ») sur les données nominatives de pointage ?</h3>
+
+<p>C'est la question la plus structurante des six, parce qu'elle conditionne la crédibilité de
+toute la section 4 du document : les entreprises invitées n'accepteront le cloisonnement que
+s'il est réellement technique, et elles n'accepteront la dérogation que si elle est réellement
+bornée.</p>
+
+<p><strong>Réponse : une autorisation additive, temporaire, portée par un incident, à périmètre
+réduit, journalisée en écriture seule et notifiée aux employeurs concernés.</strong> Cinq
+propriétés, chacune indispensable.</p>
+
+<h4>a) Modèle de données</h4>
+
+<p>Trois tables suffisent :</p>
+
+<ul>
+  <li><code>security_incident</code> — projet, déclarant, gravité (mineur / sérieux / grave),
+    nature, horodatage d'ouverture et de clôture.</li>
+  <li><code>emergency_access_grant</code> — incident, bénéficiaire, rôle, périmètre,
+    <code>granted_at</code>, <code>expires_at</code>, <code>revoked_at</code>, motif saisi.</li>
+  <li><code>audit_log</code> — append-only, chaînée par hachage (chaque ligne contient le hash
+    de la précédente), droits base limités à l'INSERT pour le rôle applicatif. Aucun UPDATE,
+    aucun DELETE, y compris pour l'administrateur applicatif.</li>
+</ul>
+
+<p>Le point important : un grant <strong>n'est pas un changement de rôle</strong>. Il ne modifie
+jamais l'appartenance ni les permissions de base de l'utilisateur ; il ajoute une autorisation
+datée qui s'éteint toute seule. Un mécanisme qui élève un rôle est un mécanisme qu'on oublie
+de redescendre.</p>
+
+<h4>b) Déclenchement</h4>
+
+<p>Conformément à la section 4 du document, le déclenchement est manuel, depuis la fiche
+incident. Une gravité « grave » (ou une évacuation déclarée) crée automatiquement les grants
+pour les rôles habilités <em>présents sur ce projet</em> : promoteur, maîtrise d'œuvre
+d'exécution, conducteur de travaux, coordonnateur SPS. Le dirigeant et le chef de chantier
+d'une entreprise intervenante n'ont pas besoin de grant pour leurs propres salariés — ils ont
+déjà l'accès nominatif complet ; ils en ont besoin pour les salariés des autres entreprises.</p>
+
+<h4>c) Périmètre — le point qui rend le mécanisme défendable</h4>
+
+<p>Le grant ouvre <strong>uniquement</strong> la liste nominative des personnes pointées présentes
+sur ce projet à l'instant T : nom, prénom, entreprise, téléphone d'urgence, zone du dernier
+pointage. Il n'ouvre pas l'historique des pointages, pas les heures travaillées, pas les jours
+précédents, pas les autres chantiers, et évidemment aucune donnée de paie.</p>
+
+<p>Concrètement : le grant donne accès à une <strong>vue dédiée</strong>
+(<code>v_evacuation_roster(project_id)</code>), pas au déverrouillage du module Pointage. C'est
+une différence d'implémentation minuscule et une différence de posture considérable. C'est
+aussi ce qui permettra de répondre à la première entreprise qui posera la question en rendez-vous
+commercial — et elle la posera.</p>
+
+<h4>d) Durée et extinction</h4>
+
+<p>Expiration automatique à <code>min(clôture de l'incident, granted_at + 4 h)</code>.
+Prolongeable par tranche d'une heure avec saisie d'un nouveau motif, chaque prolongation créant
+une ligne de journal distincte. Quatre heures couvrent une évacuation et l'arrivée des secours ;
+au-delà, on n'est plus dans l'urgence mais dans la gestion de crise, qui relève d'une décision
+explicite et non d'un automatisme. Aucun grant permanent, aucune reconduction silencieuse.</p>
+
+<h4>e) Où se fait le contrôle</h4>
+
+<p>Surtout pas écran par écran dans le code applicatif : on l'oubliera quelque part, et la fuite
+viendra de l'endroit oublié. Deux niveaux, tous les deux :</p>
+
+<ul>
+  <li>
+    <strong>Base de données</strong> — Row Level Security PostgreSQL, avec le contexte
+    d'exécution injecté par session (<code>SET LOCAL app.user_id</code>,
+    <code>app.company_id</code>, <code>app.active_grants</code>). La politique de la vue
+    nominative accepte deux conditions : appartenance employeur, ou grant actif sur ce projet.
+    Même une requête écrite de travers dans le code ne peut pas retourner un nom qu'elle n'a
+    pas le droit de retourner.
+  </li>
+  <li>
+    <strong>API</strong> — un middleware d'autorisation unique qui résout
+    <code>rôle + entitlements + grants actifs</code> et refuse tout accès à un champ classé
+    <code>nominative</code> sans l'un des deux. La classification des champs
+    (<code>nominative</code>, <code>commercial</code>, <code>strategique</code>) est portée par
+    les métadonnées du schéma, pas par des conditions écrites à la main dans les contrôleurs.
+  </li>
+</ul>
+
+<p>C'est aussi ce double niveau qui permettra d'appliquer proprement les trois barrières de la
+section 4 du document (nominative, commerciale, documentaire) au niveau du champ, alors que
+notre matrice actuelle raisonne au niveau du module — voir la section 5 de ce document.</p>
+
+<h4>f) Traçabilité</h4>
+
+<p>On journalise le déclenchement, <strong>chaque consultation effective sous grant</strong> (pas
+seulement l'ouverture du droit : savoir que Monsieur X a ouvert la liste trois fois à 14 h 12,
+14 h 40 et 15 h 05 est ce qui a de la valeur en cas de contentieux), l'expiration et la
+révocation. Rétention 5 ans, alignée sur les délais de contentieux en accident du travail.
+À la clôture de l'incident, un registre PDF « accès d'urgence » est produit et joint au dossier :
+c'est exactement la pièce que réclamera une inspection du travail ou la CARSAT.</p>
+
+<h4>g) Notification — la contrepartie</h4>
+
+<p>Au déclenchement, notification immédiate (push + email) au dirigeant de chaque entreprise dont
+des salariés figurent dans la liste consultée : qui a ouvert l'accès, à quelle heure, pour quel
+motif, pour combien de temps. L'entreprise n'a pas de droit de veto, la sécurité des personnes
+prime. Mais elle sait, immédiatement, sans avoir à le demander. C'est précisément ce qui
+transforme un mécanisme perçu comme intrusif en argument commercial de confiance — et c'est
+gratuit à implémenter puisque le moteur de notifications est déjà au socle du MVP.</p>
+
+<h4>h) Le cas hors ligne — à arbitrer</h4>
+
+<p>Une remarque qui n'est pas dans le document et qui compte : un incident grave se produit
+souvent là où il n'y a pas de réseau (sous-sol, parking, cage d'ascenseur), et l'application
+doit fonctionner hors ligne par ailleurs. Si la liste d'évacuation nécessite un appel serveur,
+le mécanisme échouera exactement au moment où il sert.</p>
+
+<p><strong>Ma recommandation :</strong> mise en cache locale chiffrée de la liste nominative,
+rafraîchie à chaque synchronisation de pointage, <strong>pour les seuls rôles qui possèdent déjà
+le droit nominatif hors incident</strong> — le dirigeant et le chef de chantier pour leurs propres
+équipes, et le coordonnateur SPS. Pas pour le promoteur ni pour la maîtrise d'œuvre, qui n'ont
+l'accès qu'en dérogation et pour qui une pré-ouverture serait une contradiction. La consultation
+hors ligne est journalisée localement et remontée à la reconnexion.</p>
+
+<h4>i) Charge</h4>
+
+<p>Environ 3 à 4 semaines de développement pour l'ensemble (modèle, RLS, middleware, écran
+incident, notifications, registre PDF, cache hors ligne). À réaliser <strong>pendant</strong> le
+MVP, puisque la section 10 du document annonce le RBAC comme intégré dès le MVP et qu'il en est
+le cas limite : un modèle d'autorisation qui n'a pas prévu sa dérogation se fait contourner par
+un contournement métier (« envoie-moi la liste par WhatsApp »), ce qui ruine à la fois la
+sécurité et la promesse produit.</p>
+
+<hr>
+
+<h2 id="business">3. Questions pour la direction — avis technique</h2>
+
+<p>Ces deux décisions appartiennent à la direction. J'apporte l'éclairage coût / faisabilité et
+une recommandation argumentée.</p>
+
+<h3 id="q5">Q5 — Quel prix de lancement pour le MVP, si différent des 790 €/mois cibles ?</h3>
+
+<p><strong>Recommandation : 390 € HT/mois pour l'opération pilote (+ 149 € par opération
+supplémentaire), avec une trajectoire tarifaire annoncée dès la signature.</strong></p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Phase</th>
+      <th>Project</th>
+      <th>Opération supplémentaire</th>
+      <th>Condition</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Pilote (MVP)</td>
+      <td>390 € HT/mois</td>
+      <td>149 € HT/mois</td>
+      <td>Engagement de test hebdomadaire sur chantier réel</td>
+    </tr>
+    <tr>
+      <td>Sortie de MVP</td>
+      <td>590 € HT/mois</td>
+      <td>229 € HT/mois</td>
+      <td>Produit complet sur le noyau des cinq problèmes quotidiens</td>
+    </tr>
+    <tr>
+      <td>Produit final</td>
+      <td>790 € HT/mois</td>
+      <td>299 € HT/mois</td>
+      <td>Grille cible du document</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Trois arguments :</strong></p>
+
+<ul>
+  <li>
+    <strong>390 € ≈ la moitié du prix cible.</strong> Assez bas pour lever l'objection d'achat
+    sur un produit inachevé, assez haut pour ne pas ancrer une valeur perçue à 150-200 € qui
+    rendrait ensuite le passage à 790 € impraticable. Le risque d'un tarif de lancement n'est
+    pas de perdre de la marge sur dix clients, il est de fixer durablement la valeur perçue.
+  </li>
+  <li>
+    <strong>Ne jamais offrir le Project pilote gratuitement.</strong> Un client à 0 € ne teste
+    pas sérieusement, ne remonte pas de bugs, n'impose pas l'outil à ses entreprises, et ne se
+    convertit pas. Or le document identifie lui-même l'adoption terrain comme la difficulté
+    principale, devant la technique : les pilotes sont notre seul instrument de mesure, ils
+    doivent être engagés.
+  </li>
+  <li>
+    <strong>La montée doit être contractuelle et connue à la signature.</strong> « 390 € pendant
+    la phase pilote, puis 590 €, puis 790 € » écrit dans le contrat initial est une information ;
+    la même hausse annoncée dans neuf mois est une renégociation, et on la perd une fois sur
+    deux. Prévoir en contrepartie un gel « tarif fondateur » de 12 à 24 mois pour les dix à
+    quinze premiers clients — c'est un coût faible et un excellent argument de closing.
+  </li>
+</ul>
+
+<p><strong>Ce que j'ajoute depuis la position technique :</strong> pendant la phase pilote, le
+Project n'est pas le produit qu'on monétise, c'est le canal d'acquisition. Un Project à 390 €
+qui embarque 30 entreprises en essai Company vaut structurellement plus qu'un Project à 790 €
+qui n'en embarque aucune. L'indicateur à piloter en phase MVP est donc le nombre d'entreprises
+réellement actives par opération, pas le revenu par porteur. Vu sous cet angle, le tarif de
+lancement bas n'est pas une concession commerciale, il est cohérent avec le modèle décrit en
+section 3 du document.</p>
+
+<p><strong>En revanche, ne pas discounter Company (99 / 299 €).</strong> C'est ce prix-là qui
+portera le revenu récurrent, il est déjà agressif au regard du marché, et c'est celui dont il
+faut valider l'acceptabilité <em>sans</em> remise dès les premiers clients. Une remise sur
+Company pendant le pilote nous priverait de la seule donnée de pricing qui compte vraiment.</p>
+
+<p><strong>Exigence technique associée :</strong> le catalogue tarifaire (plans, prix, dates
+d'effet, tarifs négociés par client, gels contractuels) doit vivre en base dès le MVP. Un prix
+en dur dans le code transforme chaque geste commercial en déploiement, et chaque trajectoire
+tarifaire en migration.</p>
+
+<h3 id="q6">Q6 — Quel ordre de priorité de développement pour les quatre Studios métier ?</h3>
+
+<p>Le document indique justement que l'ordre dépendra des clients identifiés. Je propose donc
+un <strong>ordre par défaut</strong>, fondé sur le coût de développement et la réutilisation du
+socle MVP, à écraser dès qu'un prospect signé dit le contraire.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Rang</th>
+      <th>Studio</th>
+      <th>Réutilisation du socle MVP</th>
+      <th>Effort</th>
+      <th>Risque produit</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>Maîtrise d'œuvre</td>
+      <td>Très forte — comptes rendus, visas, réserves, planning, suivi d'exécution sont déjà
+        au noyau (et déjà maquettés dans la démo)</td>
+      <td>Faible</td>
+      <td>Faible</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>Entreprise Travaux</td>
+      <td>Forte — s'appuie sur le socle Company (achats, stocks, RH, pointage)</td>
+      <td>Moyen</td>
+      <td>Faible</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>Promoteur</td>
+      <td>Faible — objets métier nouveaux (VEFA, appels de fonds, acquéreurs, livraison, SAV)</td>
+      <td>Élevé</td>
+      <td>Moyen</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td>Architecte</td>
+      <td>Faible — IA CCTP/DPGF, quantitatifs, BIM documentaire</td>
+      <td>Très élevé</td>
+      <td>Élevé</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>Justification du classement :</strong></p>
+
+<ul>
+  <li>
+    <strong>Maîtrise d'œuvre en premier</strong> parce que c'est le coût marginal le plus faible
+    — les fonctions annoncées (comptes rendus automatiques, visas, OPR, réserves, planning,
+    tableaux de bord) sont déjà largement le noyau du MVP, et notre démo actuelle les couvre
+    déjà en maquette. Et surtout parce que le maître d'œuvre d'exécution est, sur un chantier,
+    celui qui impose l'outil aux autres au quotidien : c'est le meilleur multiplicateur
+    d'adoption terrain, ce qui répond directement au risque n°1 identifié en section 10.
+  </li>
+  <li>
+    <strong>Entreprise Travaux en second</strong> parce que c'est la cible cœur du produit
+    (PME de 20 à 300 salariés) et le Studio qui touche le plus grand nombre de comptes : chaque
+    Project en embarque 20 à 50. C'est le Studio qui a le meilleur rendement en volume
+    d'abonnements Company.
+  </li>
+  <li>
+    <strong>Promoteur en troisième</strong> malgré sa force de différenciation (aucun concurrent
+    listé en section 9 ne va jusqu'aux acquéreurs), parce que c'est un vrai module métier neuf
+    avec peu de réutilisation : échéanciers d'appels de fonds, VEFA, relations notaires,
+    livraison, SAV acquéreurs. <strong>Réserve importante :</strong> le promoteur est le payeur du
+    Project. Dès qu'un promoteur pilote est signé et demande ce Studio, il passe en position 2 —
+    l'argument commercial l'emporte sur l'argument de coût.
+  </li>
+  <li>
+    <strong>Architecte en dernier</strong>, non par manque d'intérêt mais par profil de risque.
+    L'extraction de quantitatifs fiables depuis des plans et la génération de DPGF sont les
+    fonctions les plus lourdes et les plus impitoyables du lot : un compte rendu imparfait se
+    corrige en trente secondes par l'utilisateur, un quantitatif faux disqualifie le produit
+    immédiatement et définitivement chez un professionnel. Ce Studio demande une équipe dédiée
+    et idéalement un partenaire métier ; il ne doit pas être mené en parallèle du reste avec
+    les mêmes ressources.
+  </li>
+</ul>
+
+<p><strong>Règle d'arbitrage que je propose d'adopter :</strong> un Studio ne démarre pas sans au
+moins deux clients pilotes identifiés qui s'engagent à le tester. À défaut, l'effort va au socle
+Company et au moteur d'entitlements, qui bénéficient à tous les Studios futurs sans paris
+sur l'un d'eux.</p>
+
+<hr>
+
+<h2 id="decisions">4. Validation technique des décisions déjà arbitrées</h2>
+
+<p>Les décisions prises dans le corps du document ne sont pas rouvertes ici. Je signale seulement
+celles qui emportent une conséquence technique qui n'y figure pas encore.</p>
+
+<table border="1" cellpadding="6" cellspacing="0">
+  <thead>
+    <tr>
+      <th>Décision (section)</th>
+      <th>Avis</th>
+      <th>Conséquence technique à intégrer</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Essai Company de 30 jours, une seule fois par entreprise (§3)</td>
+      <td>Validé</td>
+      <td>Dépend entièrement de Q2 : sans clé d'entité juridique, la règle « une seule fois »
+        n'est pas applicable.</td>
+    </tr>
+    <tr>
+      <td>Délai de grâce de 15 jours en cas d'impayé (§3)</td>
+      <td>Validé</td>
+      <td>À implémenter comme une machine à états du Project
+        (<code>active → grace → locked → archived</code>), pilotée par un job quotidien et les
+        webhooks du prestataire de paiement. Attention : « lecture seule + export possible »
+        pendant la grâce implique que l'export ne soit pas conditionné à un abonnement Company
+        dans ce cas précis — à câbler explicitement, sinon la règle sera contredite par le code.</td>
+    </tr>
+    <tr>
+      <td>Pointage classé fonction Project gratuite (§3)</td>
+      <td>Validé</td>
+      <td>C'est le plus gros volume d'écritures de la plateforme (une opération de 50 entreprises
+        × 300 personnes × 4 événements/jour), et il est financé par le porteur et non par les
+        entreprises. Prévoir dès la conception le partitionnement mensuel de la table de
+        pointage et une politique d'archivage : ce n'est pas bloquant, mais ça ne se rattrape
+        pas facilement en production.</td>
+    </tr>
+    <tr>
+      <td>Classification documentaire Standard / Confidentiel au dépôt (§4)</td>
+      <td>Validé avec une réserve</td>
+      <td>Techniquement trivial (un champ + un droit de reclassification). Mais je recommande une
+        valeur par défaut <em>par catégorie</em> plutôt que « Standard » partout : un document
+        déposé en catégorie contrat, marché ou situation devrait proposer « Confidentiel » par
+        défaut. Le premier incident de confidentialité viendra de là, et il coûtera plus cher que
+        la friction qu'on cherche à éviter.</td>
+    </tr>
+    <tr>
+      <td>Alertes aux tiers en déclenchement manuel uniquement (§4)</td>
+      <td>Validé</td>
+      <td>Le coût technique n'est pas dans le déclenchement mais dans les destinataires : banque,
+        investisseur et fournisseurs ne sont pas nécessairement utilisateurs de la plateforme.
+        Prévoir un canal externe (email tracé + page de consultation à accès jetonné et expirant),
+        pas seulement une notification dans l'application.</td>
+    </tr>
+    <tr>
+      <td>IA limitée aux données auxquelles l'utilisateur a accès (§8)</td>
+      <td>Validé — exigence structurante</td>
+      <td>Le RAG doit filtrer <strong>avant</strong> la recherche vectorielle (pré-filtrage par ACL
+        sur les métadonnées des fragments), jamais après génération. Un index vectoriel unique
+        non cloisonné fuiterait par les réponses, sans laisser de trace exploitable. C'est un
+        choix de conception qu'il coûte peu de faire maintenant et très cher de rattraper.</td>
+    </tr>
+    <tr>
+      <td>Studios à 99 € nécessitant Company en dessous (§6)</td>
+      <td>Validé</td>
+      <td>Voir Q3 — sous condition du moteur d'entitlements.</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="ecarts">5. Écart entre la démo actuelle et la cible du document</h2>
+
+<p>Pour que la démo continue de servir de référence produit, voici ce qu'elle couvre déjà et ce
+qu'elle ne couvre pas.</p>
+
+<h3>Déjà couvert (utilisable comme spécification vivante)</h3>
+
+<ul>
+  <li>11 profils typés et matrice de permissions par module
+    (<code>src/lib/permissions.ts</code>), avec indicateurs et sections de tableau de bord
+    différenciés par rôle.</li>
+  <li>Le noyau des cinq problèmes quotidiens de la section 10 : pointage, tâches, journal,
+    photos et problèmes, documents, comptes rendus.</li>
+  <li>Le circuit de visa des plans d'exécution (BET → MOEX → contrôleur technique), les avis, les
+    réunions et comptes rendus hebdomadaires, la reprise d'un chantier déjà démarré.</li>
+  <li>Les principes IA du document : dictée terrain transformée en actions structurées, réponses
+    du copilote citant leurs sources documentaires, validation humaine obligatoire avant toute
+    action sortante (relances).</li>
+</ul>
+
+<h3>Non couvert — à construire</h3>
+
+<ul>
+  <li>La séparation Project / Company et les trois états d'entreprise (Project Member, Company
+    Trial, Company Subscriber). La démo ne connaît qu'un seul espace.</li>
+  <li>La mécanique d'essai, la rétention, le cycle d'impayé.</li>
+  <li>Le catalogue tarifaire et le moteur d'entitlements (l'écran Paramètres présente des paliers
+    illustratifs, sans logique derrière).</li>
+  <li>Le bris de glace, le journal d'audit, la classification documentaire.</li>
+  <li>BuildNivo Supply et les Studios.</li>
+</ul>
+
+<h3>Le point d'écart le plus structurant</h3>
+
+<p>Notre modèle de permissions actuel raisonne <strong>module × rôle → niveau</strong>, avec cinq
+niveaux : <code>full</code>, <code>write</code>, <code>read</code>, <code>own</code>,
+<code>none</code>. Les trois barrières de la section 4 du document exigent un raisonnement
+<strong>objet/champ × classification × rôle × contexte</strong>, avec un niveau supplémentaire
+qui n'existe pas chez nous : <code>agrégé</code> (chiffres et statistiques sans détail
+individuel), plus un état contextuel <code>urgence</code>.</p>
+
+<p>La conséquence est visible dès aujourd'hui dans la démo : notre matrice donne
+<code>pointage: moa = none</code>, alors que le document prévoit que le promoteur voit le nombre
+de personnes présentes en agrégé et accède au nominatif en urgence. Ce n'est pas une erreur de
+saisie, c'est la limite du modèle : un accès « partiel à l'intérieur d'un module » n'y est pas
+exprimable.</p>
+
+<p><strong>Ce qu'il faut en tirer pour le backend :</strong> l'unité d'autorisation n'est pas
+l'écran, c'est le champ, avec sa classification. Trois classifications
+(<code>nominative</code>, <code>commercial</code>, <code>strategique</code>), quatre niveaux
+(<code>complet</code>, <code>agrégé</code>, <code>urgence</code>, <code>aucun</code>), résolus par
+un middleware unique et doublés par la RLS (Q4). C'est la décision d'architecture la plus
+importante du MVP, et elle doit être prise avant la première table.</p>
+
+<hr>
+
+<h2 id="risques">6. Trois risques que je remonte</h2>
+
+<ol>
+  <li>
+    <strong>Le pointage gratuit est le poste de coût d'infrastructure le moins prévisible.</strong>
+    Il est financé par le porteur, mais son volume est proportionnel au nombre d'entreprises
+    invitées, que le porteur ne contrôle pas et que nous ne facturons pas. Sur une grosse
+    opération, l'écart entre le revenu (790 €) et le volume traité peut devenir défavorable.
+    Rien de bloquant au MVP ; à instrumenter dès le début pour mesurer le coût réel par opération
+    avant de figer la grille finale.
+  </li>
+  <li>
+    <strong>La gratuité Project crée un chemin de contournement de Company.</strong> Une
+    entreprise présente sur cinq opérations BuildNivo obtient cinq espaces de pointage gratuits.
+    Elle n'a pas la consolidation multi-chantiers, ce qui est exactement la frontière posée en
+    section 3 — mais une PME de 25 salariés peut très bien s'en contenter et consolider dans
+    Excel. La frontière fonctionnelle est bien posée dans le document ; il faut simplement
+    accepter que le taux de conversion des petites structures sera plus bas que celui des
+    entreprises de 100 salariés et plus, et calibrer les prévisions en conséquence.
+  </li>
+  <li>
+    <strong>L'adoption terrain reste le premier risque, et le document a raison de le dire.</strong>
+    La conséquence technique concrète : la saisie d'un pointage doit tenir en un geste et
+    fonctionner hors ligne, sans exception. Toute fonction qui allonge le parcours de l'ouvrier
+    ou du chef de chantier doit être refusée au MVP, y compris si elle est demandée par un
+    client pilote. C'est la seule règle produit que je recommande de rendre non négociable.
+  </li>
+</ol>
