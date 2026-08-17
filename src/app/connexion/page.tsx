@@ -12,6 +12,7 @@ import {
   HandshakeIcon,
   HardHat,
   Hammer,
+  Landmark,
   LineChart,
   NotebookPen,
   QrCode,
@@ -23,7 +24,7 @@ import { useRouter } from "next/navigation";
 import type { Persona, Role } from "@/types";
 import { personas } from "@/data";
 import { useI18n } from "@/lib/i18n";
-import { isExternal } from "@/lib/permissions";
+import { homeFor, isExternal, isFinancial } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
 import { Avatar, Badge, LanguageSelect, Logo } from "@/components/ui";
 import { AuthShowcase } from "@/components/AuthShowcase";
@@ -40,6 +41,7 @@ const roleIcons: Record<Role, React.ComponentType<{ className?: string }>> = {
   bet: DraftingCompass,
   controleur: Stamp,
   csps: ShieldCheck,
+  financier: Landmark,
 };
 
 export default function LoginPage() {
@@ -47,8 +49,9 @@ export default function LoginPage() {
   const { setPersona } = useDemo();
   const router = useRouter();
 
-  const internals = personas.filter((p) => !isExternal(p.role));
+  const internals = personas.filter((p) => !isExternal(p.role) && !isFinancial(p.role));
   const externals = personas.filter((p) => isExternal(p.role));
+  const financials = personas.filter((p) => isFinancial(p.role));
 
   const PersonaCard = ({ p }: { p: Persona }) => {
     const Icon = roleIcons[p.role];
@@ -56,7 +59,7 @@ export default function LoginPage() {
       <button
         onClick={() => {
           setPersona(p);
-          router.push("/dashboard");
+          router.push(homeFor(p.role));
         }}
         className="group card flex flex-col gap-3 p-4 text-left transition-all duration-150 hover:-translate-y-0.5 hover:border-blue/50 hover:shadow-(--shadow-pop)"
       >
@@ -150,6 +153,17 @@ export default function LoginPage() {
           </div>
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {externals.map((p) => (
+              <PersonaCard key={p.id} p={p} />
+            ))}
+          </div>
+
+          {/* Contrôle financier : une troisième famille, en lecture seule */}
+          <div className="mt-8 mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <p className="text-[11px] font-bold tracking-[0.14em] text-ink-faint uppercase">{d.login.financialTitle}</p>
+            <p className="max-w-[70ch] text-[11.5px] leading-relaxed text-ink-soft">{d.login.financialHint}</p>
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {financials.map((p) => (
               <PersonaCard key={p.id} p={p} />
             ))}
           </div>

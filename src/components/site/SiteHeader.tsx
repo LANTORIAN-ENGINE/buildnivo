@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Bot, ChevronDown, Layers, Menu, ShieldCheck, Truck, X } from "lucide-react";
+import { ArrowRight, Bot, ChevronDown, Landmark, Layers, Menu, ShieldCheck, Truck, X } from "lucide-react";
 import { useI18n } from "@/lib/i18n";
 import { LanguageSelect, Logo, cn } from "@/components/ui";
 import { CtaLink } from "./kit";
@@ -12,6 +12,7 @@ const platformLinks = [
   { href: "/produit", key: "product", hint: "productHint", Icon: Layers },
   { href: "/ia", key: "ai", hint: "aiHint", Icon: Bot },
   { href: "/securite", key: "security", hint: "securityHint", Icon: ShieldCheck },
+  { href: "/finance", key: "finance", hint: "financeHint", Icon: Landmark },
   { href: "/supply", key: "supply", hint: "supplyHint", Icon: Truck },
 ] as const;
 

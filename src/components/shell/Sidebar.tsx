@@ -14,12 +14,15 @@ import {
   FileBarChart2,
   FolderOpen,
   History,
+  Landmark,
   LayoutDashboard,
   LifeBuoy,
   ListChecks,
   MessageCircle,
   NotebookPen,
   Settings,
+  ScrollText,
+  ShieldCheck,
   ShoppingCart,
   Stamp,
   Users,
@@ -27,7 +30,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
-import { canSee, type ModuleKey } from "@/lib/permissions";
+import { canSee, homeFor, type ModuleKey } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
 import { cn, LogoMark } from "@/components/ui";
 
@@ -77,6 +80,15 @@ const groups: NavGroup[] = [
     ],
   },
   {
+    labelKey: "controle",
+    items: [
+      { href: "/controle", labelKey: "controle", icon: Landmark },
+      { href: "/controle/rapports", labelKey: "controleRapports", icon: ScrollText },
+      { href: "/controle/justificatifs", labelKey: "controleJustificatifs", icon: FileBarChart2 },
+      { href: "/controle/acces", labelKey: "controleAcces", icon: ShieldCheck },
+    ],
+  },
+  {
     labelKey: "intelligence",
     items: [
       { href: "/rapports", labelKey: "rapports", icon: FileBarChart2 },
@@ -111,6 +123,13 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
     .map((g) => ({ ...g, items: g.items.filter((it) => canSee(persona.role, it.labelKey)) }))
     .filter((g) => g.items.length > 0);
 
+  // Une seule entrée active : la plus spécifique (« /controle » ne s'allume pas
+  // quand on est sur « /controle/rapports »).
+  const activeHref = visibleGroups
+    .flatMap((g) => g.items.map((it) => it.href))
+    .filter((href) => pathname === href || pathname.startsWith(href + "/"))
+    .sort((a, b) => b.length - a.length)[0];
+
   return (
     <nav
       aria-label="Navigation"
@@ -119,7 +138,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         collapsed ? "w-[72px]" : "w-[248px]"
       )}
     >
-      <Link href="/dashboard" className="flex items-center gap-2.5 px-5 pt-5 pb-4" onClick={onNavigate}>
+      <Link href={homeFor(persona.role)} className="flex items-center gap-2.5 px-5 pt-5 pb-4" onClick={onNavigate}>
         <LogoMark className="h-7 w-7 shrink-0 text-white" />
         {!collapsed && <span className="text-[17px] font-bold tracking-tight text-white">BuildNivo</span>}
       </Link>
@@ -134,7 +153,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             )}
             <ul className="space-y-0.5">
               {g.items.map((it) => {
-                const active = pathname === it.href || pathname.startsWith(it.href + "/");
+                const active = it.href === activeHref;
                 const Icon = it.icon;
                 return (
                   <li key={it.href}>

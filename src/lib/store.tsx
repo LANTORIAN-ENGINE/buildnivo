@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
 import type {
+  AccessLogAction,
+  AccessLogEntry,
   AiAlert,
   AiDocDraft,
   AiReminder,
@@ -9,12 +11,17 @@ import type {
   ChatMessage,
   ClockMethod,
   Conversation,
+  FinanceReport,
+  FinanceReminder,
+  FinancialAccess,
   JournalEntry,
+  MaterialRisk,
   Persona,
   PlanSubmission,
   PurchaseOrder,
   Reserve,
   ReserveStatus,
+  RiskStatus,
   SiteMeeting,
   SitePhoto,
   SiteTask,
@@ -24,13 +31,18 @@ import type {
   VisaStatus,
 } from "@/types";
 import {
+  accessLogs as seedAccessLogs,
   aiAlerts,
   aiDocDrafts,
   aiReminders,
   avisList,
   conversations as seedConversations,
+  financeReminders as seedFinanceReminders,
+  financeReports as seedFinanceReports,
+  financialAccesses as seedFinancialAccesses,
   inDays,
   journalEntries,
+  materialRisks,
   personas,
   planSubmissions,
   purchaseOrders,
@@ -70,6 +82,13 @@ interface DemoState {
   meetings: SiteMeeting[];
   drafts: AiDocDraft[];
 
+  /* Contrôle financier */
+  accesses: FinancialAccess[];
+  reports: FinanceReport[];
+  risks: MaterialRisk[];
+  logs: AccessLogEntry[];
+  financeReminders: FinanceReminder[];
+
   toasts: Toast[];
   toast: (message: string) => void;
 
@@ -97,6 +116,24 @@ interface DemoState {
   toggleAvisHidden: (avisId: string) => void;
   diffuseMeeting: (meetingId: string) => void;
   validateDraft: (draftId: string) => void;
+
+  /* ------------------------- Contrôle financier -------------------------- */
+  /** Le promoteur invite un organisme financier sur une opération. */
+  inviteAccess: (access: FinancialAccess) => void;
+  /** Périmètre partagé, dates, documents, fréquence, notifications. */
+  updateAccess: (accessId: string, patch: Partial<FinancialAccess>) => void;
+  /** Révocation immédiate : l'accès se ferme et l'action est journalisée. */
+  setAccessStatus: (accessId: string, status: FinancialAccess["status"], by: string) => void;
+  /** L'IA prépare le rapport ; il reste en attente de vérification humaine. */
+  prepareReport: (projectId: string) => void;
+  /** Le promoteur valide : le rapport est daté, figé, archivé, les invités notifiés. */
+  publishReport: (reportId: string, by: string) => void;
+  /** Une correction ne réécrit rien : elle crée une version supplémentaire. */
+  correctReport: (reportId: string, note: string, by: string) => void;
+  setRiskStatus: (riskId: string, status: RiskStatus) => void;
+  sendFinanceReminder: (reminderId: string) => void;
+  /** Toute consultation d'un invité est tracée. */
+  logAccess: (accessId: string, user: string, action: AccessLogAction, target?: string) => void;
   resetDemo: () => void;
 }
 
@@ -106,6 +143,27 @@ const clone = <T,>(arr: T[]): T[] => arr.map((x) => ({ ...x }));
 
 const cloneConvs = (arr: Conversation[]): Conversation[] =>
   arr.map((c) => ({ ...c, messages: c.messages.map((m) => ({ ...m })), replies: [...c.replies] }));
+
+const cloneAccesses = (arr: FinancialAccess[]): FinancialAccess[] =>
+  arr.map((a) => ({
+    ...a,
+    users: a.users.map((u) => ({ ...u })),
+    sharedDocIds: [...a.sharedDocIds],
+    share: { ...a.share },
+    notify: { ...a.notify },
+  }));
+
+const cloneReports = (arr: FinanceReport[]): FinanceReport[] =>
+  arr.map((r) => ({
+    ...r,
+    sections: r.sections.map((s) => ({ ...s })),
+    history: r.history.map((h) => ({ ...h })),
+    photoIds: [...r.photoIds],
+    docIds: [...r.docIds],
+    gaps: [...r.gaps],
+  }));
+
+const cloneRisks = (arr: MaterialRisk[]): MaterialRisk[] => arr.map((r) => ({ ...r, measures: [...r.measures] }));
 
 const nowHHMM = () => {
   const now = new Date();
@@ -131,6 +189,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
   const [avis, setAvis] = useState<Avis[]>(() => clone(avisList));
   const [meetings, setMeetings] = useState<SiteMeeting[]>(() => clone(siteMeetings));
   const [drafts, setDrafts] = useState<AiDocDraft[]>(() => clone(aiDocDrafts));
+  const [accesses, setAccesses] = useState<FinancialAccess[]>(() => cloneAccesses(seedFinancialAccesses));
+  const [reports, setReports] = useState<FinanceReport[]>(() => cloneReports(seedFinanceReports));
+  const [risks, setRisks] = useState<MaterialRisk[]>(() => cloneRisks(materialRisks));
+  const [logs, setLogs] = useState<AccessLogEntry[]>(() => clone(seedAccessLogs));
+  const [financeReminders, setFinanceReminders] = useState<FinanceReminder[]>(() => clone(seedFinanceReminders));
 
   const [toasts, setToasts] = useState<Toast[]>([]);
   const toastId = useRef(0);
@@ -289,6 +352,100 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setDrafts((prev) => prev.map((dr) => (dr.id === draftId ? { ...dr, status: "valide" } : dr)));
   }, []);
 
+  /* ------------------------- Contrôle financier --------------------------- */
+
+  const logAccess = useCallback(
+    (accessId: string, user: string, action: AccessLogAction, target?: string) => {
+      setLogs((prev) => [
+        { id: `log-${Date.now()}`, accessId, at: `${inDays(0)} ${nowHHMM()}`, user, action, target, ip: "88.174.22.41" },
+        ...prev,
+      ]);
+    },
+    []
+  );
+
+  const inviteAccess = useCallback((accessItem: FinancialAccess) => {
+    setAccesses((prev) => [accessItem, ...prev]);
+  }, []);
+
+  const updateAccess = useCallback((accessId: string, patch: Partial<FinancialAccess>) => {
+    setAccesses((prev) => prev.map((a) => (a.id === accessId ? { ...a, ...patch } : a)));
+  }, []);
+
+  const setAccessStatus = useCallback(
+    (accessId: string, status: FinancialAccess["status"], by: string) => {
+      setAccesses((prev) =>
+        prev.map((a) =>
+          a.id === accessId
+            ? { ...a, status, revokedAt: status === "revoque" ? inDays(0) : undefined }
+            : a
+        )
+      );
+      if (status === "revoque") logAccess(accessId, by, "revocation");
+    },
+    [logAccess]
+  );
+
+  const prepareReport = useCallback((projectId: string) => {
+    setReports((prev) => {
+      const pending = prev.find((r) => r.projectId === projectId && r.status !== "publie");
+      if (pending) {
+        return prev.map((r) =>
+          r.id === pending.id ? { ...r, status: "aValider", generatedAt: inDays(0) } : r
+        );
+      }
+      const last = prev.find((r) => r.projectId === projectId);
+      if (!last) return prev;
+      const fresh: FinanceReport = {
+        ...last,
+        id: `${last.id.replace(/\d+$/, "")}${Date.now().toString().slice(-2)}`,
+        status: "aValider",
+        version: 1,
+        generatedAt: inDays(0),
+        publishedAt: undefined,
+        validatedBy: undefined,
+        periodEnd: inDays(0),
+        nextUpdate: inDays(30),
+        gaps: [],
+        history: [{ version: 1, at: inDays(0), author: "Copilote BuildNivo", note: "Préparation automatique." }],
+      };
+      return [fresh, ...prev];
+    });
+  }, []);
+
+  const publishReport = useCallback((reportId: string, by: string) => {
+    setReports((prev) =>
+      prev.map((r) =>
+        r.id === reportId
+          ? { ...r, status: "publie", publishedAt: inDays(0), validatedBy: by }
+          : r
+      )
+    );
+  }, []);
+
+  const correctReport = useCallback((reportId: string, note: string, by: string) => {
+    setReports((prev) =>
+      prev.map((r) =>
+        r.id === reportId
+          ? {
+              ...r,
+              version: r.version + 1,
+              publishedAt: inDays(0),
+              history: [...r.history, { version: r.version + 1, at: inDays(0), author: by, note }],
+            }
+          : r
+      )
+    );
+  }, []);
+
+  const setRiskStatus = useCallback((riskId: string, status: RiskStatus) => {
+    setRisks((prev) => prev.map((r) => (r.id === riskId ? { ...r, status, updatedAt: inDays(0) } : r)));
+  }, []);
+
+  const sendFinanceReminder = useCallback((reminderId: string) => {
+    setFinanceReminders((prev) => prev.map((r) => (r.id === reminderId ? { ...r, status: "envoyee" } : r)));
+  }, []);
+
   const resetDemo = useCallback(() => {
     setEntries(clone(timeEntries));
     setTasks(clone(siteTasks));
@@ -303,6 +460,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
     setAvis(clone(avisList));
     setMeetings(clone(siteMeetings));
     setDrafts(clone(aiDocDrafts));
+    setAccesses(cloneAccesses(seedFinancialAccesses));
+    setReports(cloneReports(seedFinanceReports));
+    setRisks(cloneRisks(materialRisks));
+    setLogs(clone(seedAccessLogs));
+    setFinanceReminders(clone(seedFinanceReminders));
   }, []);
 
   const value = useMemo<DemoState>(
@@ -327,6 +489,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       avis,
       meetings,
       drafts,
+      accesses,
+      reports,
+      risks,
+      logs,
+      financeReminders,
       toasts,
       toast,
       clockDemo,
@@ -350,6 +517,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       toggleAvisHidden,
       diffuseMeeting,
       validateDraft,
+      inviteAccess,
+      updateAccess,
+      setAccessStatus,
+      prepareReport,
+      publishReport,
+      correctReport,
+      setRiskStatus,
+      sendFinanceReminder,
+      logAccess,
       resetDemo,
     }),
     [
@@ -370,6 +546,11 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       avis,
       meetings,
       drafts,
+      accesses,
+      reports,
+      risks,
+      logs,
+      financeReminders,
       toasts,
       toast,
       clockDemo,
@@ -393,6 +574,15 @@ export function DemoProvider({ children }: { children: React.ReactNode }) {
       toggleAvisHidden,
       diffuseMeeting,
       validateDraft,
+      inviteAccess,
+      updateAccess,
+      setAccessStatus,
+      prepareReport,
+      publishReport,
+      correctReport,
+      setRiskStatus,
+      sendFinanceReminder,
+      logAccess,
       resetDemo,
     ]
   );

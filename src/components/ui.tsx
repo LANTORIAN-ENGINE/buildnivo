@@ -174,6 +174,53 @@ export function Avatar({ name, size = "md", className }: { name: string; size?: 
   );
 }
 
+/* --------------------------------- Switch --------------------------------- */
+
+export function Switch({
+  checked,
+  onChange,
+  label,
+  hint,
+  disabled = false,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label: string;
+  hint?: string;
+  disabled?: boolean;
+}) {
+  const id = useId();
+  return (
+    <div className={cn("flex items-start justify-between gap-4", disabled && "opacity-55")}>
+      <span className="min-w-0">
+        <label htmlFor={id} className="block text-[12.5px] font-semibold text-ink">
+          {label}
+        </label>
+        {hint && <span className="mt-0.5 block text-[11.5px] leading-relaxed text-ink-soft">{hint}</span>}
+      </span>
+      <button
+        id={id}
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        disabled={disabled}
+        onClick={() => onChange(!checked)}
+        className={cn(
+          "relative mt-0.5 h-6 w-11 shrink-0 rounded-full transition-colors duration-150 disabled:cursor-not-allowed",
+          checked ? "bg-blue" : "bg-line"
+        )}
+      >
+        <span
+          className={cn(
+            "absolute top-0.75 h-4.5 w-4.5 rounded-full bg-white shadow transition-[left] duration-150",
+            checked ? "left-5.75" : "left-0.75"
+          )}
+        />
+      </button>
+    </div>
+  );
+}
+
 /* ---------------------------------- Tabs ---------------------------------- */
 
 export function Tabs({

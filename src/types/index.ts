@@ -12,7 +12,11 @@ export type Role =
   | "architecte"
   | "bet" // bureau d'études (VRD, fluides, électricité, structure, charpente)
   | "controleur" // contrôleur technique (type Veritas)
-  | "csps"; // coordonnateur sécurité et protection de la santé
+  | "csps" // coordonnateur sécurité et protection de la santé
+  /* Contrôle financier (brief du 16/08/2026) : garant, banque, assureur,
+     courtier, investisseur, escrow, séquestre, organisme institutionnel.
+     Un seul rôle, strictement en lecture. */
+  | "financier";
 
 /** Rôles internes à l'entreprise de travaux (par opposition aux intervenants externes). */
 export const internalRoles: Role[] = ["direction", "conducteur", "chef", "ouvrier", "soustraitant"];
@@ -29,6 +33,8 @@ export interface Persona {
   company: string;
   companyId?: string;
   discipline?: Discipline;
+  /** Rôle « financier » : accès de contrôle dont dépend le périmètre partagé. */
+  accessId?: string;
 }
 
 export type Trade =
@@ -49,7 +55,8 @@ export type CompanyKind =
   | "moex"
   | "architecte"
   | "bet"
-  | "controle";
+  | "controle"
+  | "financier";
 
 export interface Company {
   id: string;
@@ -469,4 +476,236 @@ export interface CopilotAnswer {
   answer: string;
   sources: { docId: string; page?: number }[];
   actions?: CopilotAction[];
+}
+
+/* ========================================================================== */
+/* BuildNivo Finance — accès « Contrôle financier »                           */
+/* (brief produit du 16/08/2026 : garant, banque, assureur, courtier,         */
+/*  investisseur, escrow, séquestre, organisme institutionnel)                */
+/* ========================================================================== */
+
+/** Nature de l'organisme invité. Un seul rôle plateforme, huit métiers. */
+export type FinancialOrgKind =
+  | "garant"
+  | "banque"
+  | "assureur"
+  | "courtier"
+  | "investisseur"
+  | "escrow"
+  | "sequestre"
+  | "institutionnel";
+
+/** Statut de validation d'une donnée partagée (§9 Traçabilité). */
+export type DataStatus = "valide" | "aValider" | "declaratif";
+
+export type FigureUnit = "euro" | "pct" | "days" | "count";
+
+/**
+ * Donnée tracée : une valeur ne circule jamais seule vers un financeur.
+ * Elle porte sa date de mise à jour, son origine, son mode de calcul, son
+ * statut de validation et ses pièces justificatives (§9 du brief).
+ * `value: null` = donnée non renseignée — affichée comme telle, jamais à 0.
+ */
+export interface TracedFigure {
+  /** Clé i18n du libellé. */
+  key: string;
+  value: number | null;
+  unit: FigureUnit;
+  updatedAt: string; // ISO jour
+  /** Clés i18n : d'où vient la donnée, comment elle est calculée. */
+  originKey: string;
+  methodKey: string;
+  status: DataStatus;
+  /** Pièces justificatives partagées à l'appui. */
+  docIds?: string[];
+  /** Écart affiché en second plan (avenants, dépassement…). */
+  deltaOf?: string;
+}
+
+/** Bloc « Identification » du tableau de bord standardisé (§3). */
+export interface OperationIdentity {
+  projectId: string;
+  promoter: string;
+  spv: string; // société de projet
+  address: string;
+  programKey: string; // clé i18n de la nature du programme
+  operationAmount: number;
+  worksAmount: number;
+  startDate: string;
+  contractualDelivery: string;
+  forecastDelivery: string;
+  updatedAt: string;
+}
+
+export type MilestoneState = "atteint" | "aVenir" | "retard";
+
+export interface FinanceMilestone {
+  id: string;
+  projectId: string;
+  label: string;
+  planned: string;
+  actual?: string;
+  state: MilestoneState;
+  /** Écart en jours (positif = retard). */
+  driftDays: number;
+}
+
+/** Les huit familles de risques à incidence matérielle (§3). */
+export type RiskCategory =
+  | "delai"
+  | "budget"
+  | "achevement"
+  | "financement"
+  | "tresorerie"
+  | "assurances"
+  | "autorisations"
+  | "continuite";
+
+export type RiskLevel = "vert" | "orange" | "rouge";
+export type RiskStatus = "ouvert" | "enCours" | "maitrise" | "clos";
+
+export interface MaterialRisk {
+  id: string;
+  projectId: string;
+  category: RiskCategory;
+  level: RiskLevel;
+  title: string;
+  summary: string;
+  detectedAt: string;
+  /** Incidence estimée, formulée pour un financeur. */
+  impact: string;
+  /** Mesures correctives engagées. */
+  measures: string[];
+  status: RiskStatus;
+  updatedAt: string;
+}
+
+/* ------------------------- Rapport périodique (§4) ------------------------- */
+
+export type ReportStatus = "brouillon" | "aValider" | "publie";
+
+export interface FinanceReportVersion {
+  version: number;
+  at: string;
+  author: string;
+  /** Motif de la nouvelle version : une correction ne réécrit jamais l'ancienne. */
+  note: string;
+}
+
+export interface FinanceReport {
+  id: string; // « RPT-2026-08 »
+  projectId: string;
+  periodKey: string; // clé i18n du mois
+  periodEnd: string;
+  status: ReportStatus;
+  version: number;
+  generatedAt: string;
+  publishedAt?: string;
+  validatedBy?: string;
+  /** Les treize rubriques standardisées, dans l'ordre du brief. */
+  sections: { key: string; text: string }[];
+  photoIds: string[];
+  docIds: string[];
+  nextUpdate: string;
+  history: FinanceReportVersion[];
+  /** Données incomplètes ou anciennes signalées avant publication. */
+  gaps: string[];
+}
+
+/* --------------------- Paramétrage de l'accès (§8, §10) -------------------- */
+
+export type AccessStatus = "invite" | "actif" | "suspendu" | "revoque";
+
+export interface FinancialUser {
+  name: string;
+  jobKey: string;
+  email: string;
+  lastSeen?: string;
+}
+
+/** Périmètre optionnel : le socle avancement/budget/délai/risque reste standard. */
+export interface AccessShare {
+  commercialisation: boolean;
+  tresorerie: boolean;
+  sequestre: boolean;
+  photos: boolean;
+}
+
+export interface AccessNotify {
+  publication: boolean;
+  rappel: boolean;
+  risque: boolean;
+}
+
+export interface FinancialAccess {
+  id: string;
+  projectId: string;
+  orgId: string; // companyId de l'organisme invité
+  /** Nom saisi à la volée quand l'organisme n'est pas au référentiel. */
+  orgName?: string;
+  kind: FinancialOrgKind;
+  /** Référence du contrat qui justifie l'accès (garantie, prêt, police). */
+  reference: string;
+  users: FinancialUser[];
+  startDate: string;
+  endDate: string;
+  status: AccessStatus;
+  invitedAt: string;
+  revokedAt?: string;
+  sharedDocIds: string[];
+  share: AccessShare;
+  frequency: "mensuelle" | "trimestrielle";
+  notify: AccessNotify;
+}
+
+/* ---------------------- Journal des accès (§9 in fine) --------------------- */
+
+export type AccessLogAction =
+  | "connexion"
+  | "synthese"
+  | "rapport"
+  | "document"
+  | "export"
+  | "revocation";
+
+export interface AccessLogEntry {
+  id: string;
+  accessId: string;
+  /** Horodatage complet : « 2026-08-14 09:12 ». */
+  at: string;
+  user: string;
+  action: AccessLogAction;
+  target?: string;
+  ip: string;
+}
+
+/* -------------------- Tableau de bord standardisé (§3) --------------------- */
+
+export interface OperationSnapshot {
+  projectId: string;
+  identity: OperationIdentity;
+  /** Avancement physique prévu / constaté / écart / retard global. */
+  progress: TracedFigure[];
+  /** Situation financière : les onze lignes du brief. */
+  financial: TracedFigure[];
+  /** Financement et commercialisation : partagés seulement si autorisés. */
+  funding: TracedFigure[];
+  /** Besoins de trésorerie prévisionnels. */
+  cashCurve: { month: string; need: number; available: number }[];
+  /** Évolution de l'avancement au cours des derniers mois. */
+  progressCurve: { month: string; planned: number; actual: number }[];
+}
+
+/** Rappel automatique du cycle de publication (§5). */
+export type FinanceReminderKind = "echeance" | "donneesAnciennes" | "validation" | "publication";
+
+export interface FinanceReminder {
+  id: string;
+  projectId: string;
+  kind: FinanceReminderKind;
+  target: string;
+  subject: string;
+  body: string;
+  dueAt: string;
+  status: "aValider" | "envoyee";
 }

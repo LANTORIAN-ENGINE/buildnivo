@@ -30,28 +30,38 @@ src/
   app/
     layout.tsx                # Racine : fonts + I18nProvider + DemoProvider
     globals.css               # TOUS les tokens design (@theme inline, OKLCH) + keyframes
-    connexion/page.tsx        # Connexion par persona (11 profils), fond blueprint-grid
+    connexion/page.tsx        # Connexion par persona (14 profils), fond blueprint-grid
     (site)/                   # Vitrine publique : SiteHeader + SiteFooter
-      page.tsx                # Accueil (hero animé, 12 sections issues du doc de référence)
-      produit/ studios/ tarifs/ ia/ securite/ supply/ comparatif/ contact/
+      page.tsx                # Accueil (hero animé, 13 sections issues du doc de référence)
+      produit/ studios/ tarifs/ ia/ securite/ finance/ supply/ comparatif/ contact/
     (app)/                    # Groupe authentifié : AppLayout (sidebar + topbar + Toaster)
       layout.tsx
       dashboard/  chantiers/  chantiers/[id]/  pointage/  taches/  journal/  photos/
+      visas/  reunions/  reprise/
       reserves/  achats/  finances/  documents/  rapports/  copilote/
+      controle/                 # Contrôle financier : synthèse
+      controle/rapports/  controle/justificatifs/  controle/acces/
       messages/  support/  equipes/  parametres/
   components/
     ui.tsx                    # Kit UI unique : cn, Logo, Button, StatusPill, Badge, ProgressBar,
                               # Avatar, Tabs, Tooltip, DemoTip, Modal, SectionCard, EmptyState,
-                              # PhotoScene (photo chantier SVG), FlagFR/FlagEN, LanguageSelect, Toaster
+                              # PhotoScene (photo chantier SVG), Switch, FlagFR/FlagEN,
+                              # LanguageSelect, Toaster
+    finance.tsx               # Contrôle financier : FigureTile/FigureRow/FigureTable (donnée
+                              # certifiée), Provenance, Freshness, NotSharedBlock,
+                              # ReadOnlyBanner, ReportSeal
     site/                     # Vitrine : SiteHeader/SiteFooter, kit.tsx (SiteSection,
                               # SectionHeading, Eyebrow, CtaLink, PageHero, FinalCta),
                               # motion.tsx (Reveal, Stagger, CountUp, Marquee, useInView…),
                               # figures/ (ToolConvergence, LevelStack, NetworkEffect,
                               # TrialTimeline, DictationDemo, BarrierMatrix, SupplyFlow,
-                              # CompareGrid, PricingCards, ModuleGrid, StudioCards, FAQ)
+                              # CompareGrid, PricingCards, ModuleGrid, StudioCards, FAQ,
+                              # AccessWall, ReportCycle)
     shell/Sidebar.tsx         # Nav bleue groupée (badge non-lus sur Messages) — config `groups[]`
     shell/Topbar.tsx          # Chantier actif, recherche, mode découverte, langue, notifs, persona
   lib/
+    permissions.ts            # matrice rôle × module, KPI et rubriques par rôle, homeFor, moduleForPath
+    finance.ts                # useFinance() : accès du profil, opération, blocs partagés
     i18n/fr.ts                # Dictionnaire source (type Dict = typeof fr — SANS `as const`)
     i18n/en.ts                # Miroir typé `en: Dict` (toute clé FR doit exister en EN)
     i18n/index.tsx            # I18nProvider, useI18n() → { lang, setLang, d, t }, fmtEuro, fmtDate
@@ -62,6 +72,10 @@ src/
     activity.ts               # timeEntries, weekHours, siteTasks, journalEntries, sitePhotos
     gestion.ts                # documents, reserves, purchaseOrders, financeRows
     ai.ts                     # aiAlerts, aiReminders, dictée Copilote + Q&A scriptée, rapports générés
+    acteurs.ts                # visas, avis, réunions de chantier, brouillons IA, reprise
+    finance.ts                # BuildNivo Finance : snapshots d'opération (données tracées),
+                              # jalons, risques matériels, rapports périodiques versionnés,
+                              # accès financiers, journal des accès, rappels
     comms.ts                  # conversations messagerie, supportTickets, faqItems
     marketing.ts              # vitrine : offres, studios, matrices RBAC, concurrents,
                               # Supply, chiffres clés — structure pure, libellés dans `site.*`
@@ -93,6 +107,12 @@ src/
   Nouvelles photos « chantier » = `PhotoScene hue={n}` (SVG, jamais d'images externes — démo hors ligne).
 - **Mode découverte** : chaque nouveau module reçoit un `DemoTip` avec argumentaire commercial
   dans `tips.*` (fr+en) — c'est un différenciateur de la démo.
+- **Contrôle financier** (`/controle/*`) : accès en lecture seule des garants et financeurs.
+  Règle du module — **aucun chiffre ne circule seul** : toute valeur passe par `TracedFigure`
+  (date de mise à jour, origine, mode de calcul, statut de validation, pièces) et se rend avec
+  `FigureTile` / `FigureRow`. Au-delà de 30 jours → hachure `stale-hatch` ; valeur `null` →
+  gabarit `figure-void` « non communiquée », **jamais un zéro**. Un rapport publié est figé :
+  une correction ajoute une version (`correctReport`), elle n'écrase jamais la précédente.
 - **IA** : toute action IA est simulée de façon crédible et **validée par un humain** ; les réponses
   du Copilote citent leurs sources (ids de `documents`). Cohérence narrative des mocks : absence
   PLOMB'ÉO, cloisons R+2, rails manquants (CMD-2026-118), grue n°2 HS, menuiseries en retard

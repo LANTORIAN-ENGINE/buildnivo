@@ -27,6 +27,10 @@ export type ModuleKey =
   | "reprise"
   | "rapports"
   | "copilote"
+  | "controle"
+  | "controleRapports"
+  | "controleJustificatifs"
+  | "controleAcces"
   | "messages"
   | "support"
   | "equipes"
@@ -45,12 +49,20 @@ export const roleOrder: Role[] = [
   "bet",
   "controleur",
   "csps",
+  "financier",
 ];
 
 /** Rôles des intervenants extérieurs à l'entreprise de travaux. */
 export const externalRoles: Role[] = ["moa", "moex", "architecte", "bet", "controleur", "csps"];
 
 export const isExternal = (role: Role) => externalRoles.includes(role);
+
+/**
+ * Intervenants financiers : ils financent, garantissent, assurent ou contrôlent
+ * l'opération sans participer au chantier. Accès strictement en lecture, limité
+ * à l'opération pour laquelle ils ont été invités.
+ */
+export const isFinancial = (role: Role) => role === "financier";
 
 type Access = Record<Role, AccessLevel>;
 
@@ -65,30 +77,41 @@ const access = (
   architecte: AccessLevel,
   bet: AccessLevel,
   controleur: AccessLevel,
-  csps: AccessLevel
-): Access => ({ direction, conducteur, chef, ouvrier, soustraitant, moa, moex, architecte, bet, controleur, csps });
+  csps: AccessLevel,
+  financier: AccessLevel
+): Access => ({ direction, conducteur, chef, ouvrier, soustraitant, moa, moex, architecte, bet, controleur, csps, financier });
 
-/*                        dir     cond    chef    ouvr    st      moa     moex    archi   bet     ct      csps  */
+/*
+ * Le contrôle financier n'ouvre que quatre écrans, tous en lecture. Il ne voit
+ * ni la messagerie interne, ni les pointages, ni les achats, ni les autres
+ * opérations du promoteur (§7 du brief). Les écrans de paramétrage de l'accès
+ * appartiennent au promoteur, jamais à l'invité.
+ */
+/*                              dir     cond    chef    ouvr    st      moa     moex    archi   bet     ct      csps    fin   */
 export const moduleAccess: Record<ModuleKey, Access> = {
-  dashboard:  access("full", "full", "read", "own",  "own",  "read", "full", "read", "own",  "read", "read"),
-  chantiers:  access("full", "full", "read", "none", "own",  "read", "full", "read", "own",  "read", "read"),
-  pointage:   access("full", "full", "write","own",  "own",  "none", "read", "none", "none", "none", "read"),
-  taches:     access("full", "full", "write","read", "own",  "none", "write","none", "none", "none", "none"),
-  journal:    access("read", "full", "write","none", "read", "read", "full", "read", "none", "read", "read"),
-  photos:     access("read", "full", "write","write","own",  "read", "full", "read", "none", "read", "write"),
-  visas:      access("read", "write","none", "none", "none", "read", "full", "write","own",  "write","none"),
-  reunions:   access("read", "write","read", "none", "read", "full", "full", "write","read", "write","write"),
-  reserves:   access("read", "full", "write","none", "own",  "read", "full", "read", "none", "read", "none"),
-  achats:     access("full", "full", "read", "none", "none", "none", "none", "none", "none", "none", "none"),
-  finances:   access("full", "write","none", "none", "none", "read", "read", "none", "none", "none", "none"),
-  documents:  access("full", "full", "read", "read", "own",  "read", "full", "write","own",  "read", "write"),
-  reprise:    access("full", "write","none", "none", "none", "read", "full", "none", "none", "none", "none"),
-  rapports:   access("full", "full", "read", "none", "none", "read", "full", "none", "none", "none", "none"),
-  copilote:   access("full", "full", "write","none", "none", "read", "full", "read", "own",  "read", "read"),
-  messages:   access("full", "full", "full", "write","write","write","full", "write","write","write","write"),
-  support:    access("full", "full", "write","write","write","write","write","write","write","write","write"),
-  equipes:    access("full", "full", "read", "none", "none", "read", "read", "none", "none", "none", "none"),
-  parametres: access("full", "full", "write","write","write","write","write","write","write","write","write"),
+  dashboard:             access("full", "full", "read", "own",  "own",  "read", "full", "read", "own",  "read", "read", "none"),
+  chantiers:             access("full", "full", "read", "none", "own",  "read", "full", "read", "own",  "read", "read", "none"),
+  pointage:              access("full", "full", "write","own",  "own",  "none", "read", "none", "none", "none", "read", "none"),
+  taches:                access("full", "full", "write","read", "own",  "none", "write","none", "none", "none", "none", "none"),
+  journal:               access("read", "full", "write","none", "read", "read", "full", "read", "none", "read", "read", "none"),
+  photos:                access("read", "full", "write","write","own",  "read", "full", "read", "none", "read", "write", "none"),
+  visas:                 access("read", "write","none", "none", "none", "read", "full", "write","own",  "write","none", "none"),
+  reunions:              access("read", "write","read", "none", "read", "full", "full", "write","read", "write","write", "none"),
+  reserves:              access("read", "full", "write","none", "own",  "read", "full", "read", "none", "read", "none", "none"),
+  achats:                access("full", "full", "read", "none", "none", "none", "none", "none", "none", "none", "none", "none"),
+  finances:              access("full", "write","none", "none", "none", "read", "read", "none", "none", "none", "none", "none"),
+  documents:             access("full", "full", "read", "read", "own",  "read", "full", "write","own",  "read", "write", "none"),
+  reprise:               access("full", "write","none", "none", "none", "read", "full", "none", "none", "none", "none", "none"),
+  rapports:              access("full", "full", "read", "none", "none", "read", "full", "none", "none", "none", "none", "none"),
+  copilote:              access("full", "full", "write","none", "none", "read", "full", "read", "own",  "read", "read", "none"),
+  controle:              access("full", "read", "none", "none", "none", "full", "read", "none", "none", "none", "none", "read"),
+  controleRapports:      access("full", "read", "none", "none", "none", "full", "read", "none", "none", "none", "none", "read"),
+  controleJustificatifs: access("read", "read", "none", "none", "none", "full", "read", "none", "none", "none", "none", "read"),
+  controleAcces:         access("full", "read", "none", "none", "none", "full", "none", "none", "none", "none", "none", "none"),
+  messages:              access("full", "full", "full", "write","write","write","full", "write","write","write","write", "none"),
+  support:               access("full", "full", "write","write","write","write","write","write","write","write","write", "write"),
+  equipes:               access("full", "full", "read", "none", "none", "read", "read", "none", "none", "none", "none", "none"),
+  parametres:            access("full", "full", "write","write","write","write","write","write","write","write","write", "write"),
 };
 
 export const levelFor = (role: Role, moduleKey: ModuleKey): AccessLevel => moduleAccess[moduleKey][role];
@@ -124,6 +147,9 @@ export type KpiKey =
   | "openReserves"
   | "marketInvoiced";
 
+/** Écran d'accueil du profil : le contrôle financier n'a pas de vue d'ensemble chantier. */
+export const homeFor = (role: Role): string => (isFinancial(role) ? "/controle" : "/dashboard");
+
 export const roleKpis: Record<Role, KpiKey[]> = {
   direction: ["budget", "progress", "delay", "team"],
   conducteur: ["budget", "progress", "delay", "team"],
@@ -136,6 +162,8 @@ export const roleKpis: Record<Role, KpiKey[]> = {
   bet: ["myPlans", "visaDelay", "obsToLift", "nextMeeting"],
   controleur: ["conformity", "avisOpen", "visasPending", "safetyAvis"],
   csps: ["safetyAvis", "avisOpen", "team", "progress"],
+  /* Le contrôle financier a son propre tableau de bord standardisé (/controle). */
+  financier: [],
 };
 
 /** Sections de la vue d'ensemble visibles par profil. */
@@ -153,4 +181,41 @@ export const roleSections: Record<Role, DashSection[]> = {
   bet: ["visas", "avis", "meeting", "curve"],
   controleur: ["visas", "avis", "meeting", "curve"],
   csps: ["avis", "presence", "meeting", "curve"],
+  financier: [],
+};
+
+/* -------------------- Périmètre du contrôle financier ---------------------- */
+
+/**
+ * Correspondance route → module, utilisée pour empêcher l'accès direct par URL
+ * à un écran hors périmètre (un garant qui saisirait /pointage, par exemple).
+ * Les routes absentes de cette table ne sont pas contrôlées.
+ */
+export const moduleForPath = (pathname: string): ModuleKey | undefined => {
+  const routes: [string, ModuleKey][] = [
+    ["/controle/rapports", "controleRapports"],
+    ["/controle/justificatifs", "controleJustificatifs"],
+    ["/controle/acces", "controleAcces"],
+    ["/controle", "controle"],
+    ["/dashboard", "dashboard"],
+    ["/chantiers", "chantiers"],
+    ["/pointage", "pointage"],
+    ["/taches", "taches"],
+    ["/journal", "journal"],
+    ["/photos", "photos"],
+    ["/visas", "visas"],
+    ["/reunions", "reunions"],
+    ["/reprise", "reprise"],
+    ["/reserves", "reserves"],
+    ["/achats", "achats"],
+    ["/finances", "finances"],
+    ["/documents", "documents"],
+    ["/rapports", "rapports"],
+    ["/copilote", "copilote"],
+    ["/messages", "messages"],
+    ["/support", "support"],
+    ["/equipes", "equipes"],
+    ["/parametres", "parametres"],
+  ];
+  return routes.find(([href]) => pathname === href || pathname.startsWith(href + "/"))?.[1];
 };

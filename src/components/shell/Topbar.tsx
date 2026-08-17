@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { personas, projectById, projects } from "@/data";
 import { useI18n } from "@/lib/i18n";
-import { isExternal } from "@/lib/permissions";
+import { canSee, homeFor, isExternal, isFinancial } from "@/lib/permissions";
 import { useDemo } from "@/lib/store";
 import { Avatar, cn, LanguageSelect, StatusPill, Tooltip } from "@/components/ui";
 
@@ -24,7 +24,8 @@ function useClickOutside(onClose: () => void) {
 
 export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const { d, t } = useI18n();
-  const { persona, setPersona, activeProjectId, setActiveProjectId, discovery, setDiscovery, alerts, toast } = useDemo();
+  const { persona, setPersona, activeProjectId, setActiveProjectId, discovery, setDiscovery, alerts, accesses, toast } =
+    useDemo();
   const router = useRouter();
 
   const [personaOpen, setPersonaOpen] = useState(false);
@@ -33,7 +34,15 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
   const notifRef = useClickOutside(() => setNotifOpen(false));
 
   const project = projectById(activeProjectId);
-  const unhandled = alerts.filter((a) => a.projectId === activeProjectId && !a.handled);
+  const unhandled = canSee(persona.role, "dashboard")
+    ? alerts.filter((a) => a.projectId === activeProjectId && !a.handled)
+    : [];
+
+  /* Un intervenant financier n'est invité que sur une opération : le sélecteur
+     ne doit pas lui révéler les autres programmes du promoteur. */
+  const access = persona.accessId ? accesses.find((a) => a.id === persona.accessId) : undefined;
+  const visibleProjects =
+    isFinancial(persona.role) && access ? projects.filter((p) => p.id === access.projectId) : projects;
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-card/95 backdrop-blur-sm">
@@ -49,15 +58,18 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
               value={activeProjectId}
               onChange={(e) => setActiveProjectId(e.target.value)}
               aria-label={d.common.project}
-              className="w-full min-w-0 cursor-pointer appearance-none rounded-[10px] border border-transparent bg-transparent py-1.5 pr-8 pl-2 text-[16px] font-bold text-ink transition-colors hover:border-line hover:bg-line-soft/60 sm:text-[18px]"
+              disabled={visibleProjects.length === 1}
+              className="w-full min-w-0 appearance-none rounded-[10px] border border-transparent bg-transparent py-1.5 pr-8 pl-2 text-[16px] font-bold text-ink transition-colors not-disabled:cursor-pointer hover:not-disabled:border-line hover:not-disabled:bg-line-soft/60 sm:text-[18px]"
             >
-              {projects.map((p) => (
+              {visibleProjects.map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}
                 </option>
               ))}
             </select>
-            <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2 text-ink-faint" />
+            {visibleProjects.length > 1 && (
+              <ChevronDown className="pointer-events-none absolute top-1/2 right-2.5 h-4 w-4 -translate-y-1/2 text-ink-faint" />
+            )}
           </div>
           {project && (
             <div className="hidden items-center gap-3 md:flex">
@@ -108,7 +120,8 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
           {/* Langue */}
           <LanguageSelect />
 
-          {/* Notifications */}
+          {/* Notifications — alertes chantier, hors périmètre du contrôle financier */}
+          {canSee(persona.role, "dashboard") && (
           <div className="relative" ref={notifRef}>
             <button
               onClick={() => setNotifOpen((v) => !v)}
@@ -147,6 +160,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
               </div>
             )}
           </div>
+          )}
 
           {/* Persona */}
           <div className="relative" ref={personaRef}>
@@ -170,8 +184,12 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
                 {/* Entreprise de travaux puis intervenants de l'opération. */}
                 {(
                   [
-                    { label: d.login.internalTitle, list: personas.filter((p) => !isExternal(p.role)) },
+                    {
+                      label: d.login.internalTitle,
+                      list: personas.filter((p) => !isExternal(p.role) && !isFinancial(p.role)),
+                    },
                     { label: d.login.externalTitle, list: personas.filter((p) => isExternal(p.role)) },
+                    { label: d.login.financialTitle, list: personas.filter((p) => isFinancial(p.role)) },
                   ] as const
                 ).map((group) => (
                   <div key={group.label}>
@@ -182,6 +200,7 @@ export function Topbar({ onOpenMenu }: { onOpenMenu: () => void }) {
                         onClick={() => {
                           setPersona(p);
                           setPersonaOpen(false);
+                          router.push(homeFor(p.role));
                         }}
                         className={cn(
                           "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left hover:bg-line-soft/70",

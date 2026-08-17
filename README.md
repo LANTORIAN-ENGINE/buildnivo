@@ -22,12 +22,13 @@ Blue Valoris FZCO v2.0), entièrement bilingue FR/EN.
 
 | Page | Contenu |
 |---|---|
-| **`/` Accueil** | Hero « les outils du chantier se rassemblent », coût de la dispersion, vision et marché, les 18 modules, empilement Project/Company/Studios, effet réseau et essai 30 jours, dictée IA, cloisonnement par rôle, Supply, comparatif, tarifs, mises en situation, FAQ |
+| **`/` Accueil** | Hero « les outils du chantier se rassemblent », coût de la dispersion, vision et marché, les 19 modules, empilement Project/Company/Studios, effet réseau et essai 30 jours, dictée IA, cloisonnement par rôle, contrôle financier, Supply, comparatif, tarifs, mises en situation, FAQ |
 | **`/produit`** | Les deux produits, frontière Project ↔ Company cas par cas, mécanique d'acquisition, essai 30 jours, trois états d'une entreprise, continuité de service en cas d'impayé (J0 / J15), noyau MVP et principes techniques |
 | **`/studios`** | Les quatre Studios métier (Promoteur, Architecte, Maîtrise d'œuvre, Entreprise Travaux) et leur dépendance à Company |
 | **`/tarifs`** | Project 790 €, Company Essential 99 € / Business 299 €, Studios 99 €, opération supplémentaire, socle gratuit permanent détaillé |
 | **`/ia`** | Dictée terrain → actions structurées, six capacités, gouvernance (périmètre, validation humaine, sources, audit), architecture |
 | **`/securite`** | Explorateur interactif des trois barrières (nominative, commerciale, documentaire), tableaux complets par rôle, bris de glace tracé, alertes incident manuelles |
+| **`/finance`** | BuildNivo Finance : l'accès de contrôle des garants, banques, assureurs, courtiers, investisseurs et escrow teams — tableau de bord standardisé, traçabilité de chaque donnée, cycle de publication du rapport mensuel avec porte humaine, périmètre ouvert/fermé, journal des accès, critères d'acceptation |
 | **`/supply`** | Du quantitatif à la demande de prix, scénarios d'approvisionnement comparés, rôle de BlueFulfill, neutralité de la plateforme |
 | **`/comparatif`** | Procore, Autodesk, CMiC, solutions françaises, outils terrain — matrice de couverture, angle mort, leviers de différenciation |
 | **`/contact`** | Demande de démonstration (formulaire simulé), canaux, déroulé de l'accompagnement |
@@ -41,7 +42,7 @@ Company, dictée transcrite en direct, volets des barrières RBAC, flux Supply a
 
 | Module | Contenu |
 |---|---|
-| **Connexion par persona** | 11 profils : 5 côté entreprise (direction, conducteur, chef de chantier, ouvrier, sous-traitant) et 6 intervenants de l'opération (maître d'ouvrage, maître d'œuvre d'exécution, architecte, bureau d'études, contrôleur technique, coordonnateur SPS) — navigation, indicateurs et droits s'adaptent au rôle |
+| **Connexion par persona** | 14 profils : 5 côté entreprise (direction, conducteur, chef de chantier, ouvrier, sous-traitant), 6 intervenants de l'opération (maître d'ouvrage, maître d'œuvre d'exécution, architecte, bureau d'études, contrôleur technique, coordonnateur SPS) et 3 intervenants financiers (garant d'achèvement, banque, courtier) — navigation, indicateurs et droits s'adaptent au rôle |
 | **Vue d'ensemble** | Indicateurs et rubriques choisis selon le profil (budget/avancement/retard/effectif, visas en attente, avis en cours, conformité, prochaine réunion, marchés facturés…), courbe planifié/réalisé, alertes IA prioritaires, présence par corps d'état, échéances, répartition budgétaire |
 | **Pointage** | Simulateur NFC / QR dynamique / GPS, présents en temps réel, feuille de pointage, anomalies (retard, oubli, double chantier, hors zone), liste d'évacuation imprimable, export paie |
 | **Tâches** | Kanban + liste, localisation bâtiment/zone/lot, affectation entreprise ou salarié, priorités, circuit de validation, tâches créées par l'IA |
@@ -54,11 +55,15 @@ Company, dictée transcrite en direct, volets des barrières RBAC, flux Supply a
 | **Achats & livraisons** | Commandes, retards, confirmations de réception, rapprochement planning |
 | **Finances** | Budget / engagé / facturé / payé par lot, détection de dépassement |
 | **Documents** | Plans, CCTP, contrats avec historique d'indices, classement automatique IA, recherche |
+| **Contrôle financier — synthèse** | Tableau de bord standardisé pour un financeur : identification de l'opération, avancement prévu/constaté/écart/jalons, situation financière (budget initial et révisé, marchés, engagé, facturé, validé, payé, reste à engager, coût à terminaison, avenants, aléas, dépassement), financement, commercialisation, séquestre, trésorerie, risques matériels. Chaque chiffre porte sa date de mise à jour, son origine, son mode de calcul, son statut et ses pièces ; au-delà de 30 jours il est signalé comme ancien, et une donnée absente s'affiche « non communiquée » |
+| **Contrôle financier — rapports** | Rapport mensuel en treize rubriques préparé par l'IA, vérifié et publié par le promoteur ; publié il est daté, figé et archivé — une correction crée une version supplémentaire. Rappels automatiques : échéance de publication, données non actualisées, validation en attente |
+| **Contrôle financier — justificatifs** | Documents expressément partagés, photographies d'avancement sélectionnées, historique des rapports publiés, miroir des consultations de l'organisme |
+| **Contrôle financier — accès** | Le promoteur invite un garant, une banque ou un investisseur en quelques minutes : utilisateurs autorisés, dates, documents partagés, blocs optionnels (commercialisation, trésorerie, séquestre, photos), fréquence, notifications, suspension et révocation immédiate, journal complet des accès |
 | **Rapports IA** | Rapport journalier, synthèse hebdo (visas et avis inclus), relances préparées par l'IA, génération de CCTP / estimatifs / contrats / ordres de service à partir des plans — validation humaine obligatoire |
 | **Copilote IA** | Q&A documentaire scriptée **citant ses sources** + dictée terrain transformée en actions structurées (CDC §6.1) |
 | **Messages** | Messagerie type Messenger rattachée aux chantiers : conversations directes + canaux de chantier, présence en ligne, photos/documents/vocaux, accusés de lecture, indicateur de saisie, réponses simulées, « créer une tâche depuis un message » |
 | **Support & aide** | FAQ recherchable, contact (téléphone/WhatsApp/email, fuseau Réunion), statut du service, tickets suivis avec création inline |
-| **Équipes & sociétés** | Salariés, sous-traitants, fournisseurs, intervenants de l'opération (mission et périmètre), matrice rôles & permissions sur 11 profils, documents administratifs surveillés |
+| **Équipes & sociétés** | Salariés, sous-traitants, fournisseurs, intervenants de l'opération (mission et périmètre), matrice rôles & permissions sur 14 profils, documents administratifs surveillés |
 | **Paramètres** | Langue FR/EN, mode découverte, paliers de fonctionnalités (Terrain / Pilotage / Coordination / offre promoteur), réinitialisation de la démo |
 
 ## Fonctions transverses

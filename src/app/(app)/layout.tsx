@@ -1,13 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { X } from "lucide-react";
 import { SidebarNav } from "@/components/shell/Sidebar";
 import { Topbar } from "@/components/shell/Topbar";
+import { canSee, homeFor, isFinancial, moduleForPath } from "@/lib/permissions";
+import { useDemo } from "@/lib/store";
 import { Toaster } from "@/components/ui";
+
+/**
+ * Le périmètre d'un profil ne tient pas qu'à la navigation : une URL saisie à
+ * la main ne doit pas ouvrir un écran hors périmètre. Un intervenant financier
+ * est en outre ramené sur l'opération de son accès — les autres opérations du
+ * promoteur ne lui sont ni listées, ni accessibles.
+ */
+function useScopeGuard() {
+  const pathname = usePathname();
+  const router = useRouter();
+  const { persona, accesses, activeProjectId, setActiveProjectId } = useDemo();
+
+  useEffect(() => {
+    const moduleKey = moduleForPath(pathname);
+    if (moduleKey && !canSee(persona.role, moduleKey)) router.replace(homeFor(persona.role));
+  }, [pathname, persona.role, router]);
+
+  useEffect(() => {
+    if (!isFinancial(persona.role) || !persona.accessId) return;
+    const access = accesses.find((a) => a.id === persona.accessId);
+    if (access && access.projectId !== activeProjectId) setActiveProjectId(access.projectId);
+  }, [persona, accesses, activeProjectId, setActiveProjectId]);
+}
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  useScopeGuard();
 
   return (
     <div className="flex min-h-dvh">

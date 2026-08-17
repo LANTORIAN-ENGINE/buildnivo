@@ -76,8 +76,8 @@ export const keyFigures = {
   targetMax: 300,
   mvpDifficulty: 7,
   fullDifficulty: 9,
-  demoRoles: 11,
-  demoModules: 18,
+  demoRoles: 14,
+  demoModules: 19,
 };
 
 /* -------------------------------------------------------------------------- */
@@ -106,6 +106,7 @@ export const siteModules: SiteModule[] = [
   { id: "equipes", pole: "gestion", href: "/equipes" },
   { id: "visas", pole: "gestion", href: "/visas" },
   { id: "reprise", pole: "gestion", href: "/reprise" },
+  { id: "controle", pole: "gestion", href: "/controle" },
   { id: "rapports", pole: "intelligence", href: "/rapports" },
   { id: "copilote", pole: "intelligence", href: "/copilote" },
   { id: "dashboard", pole: "intelligence", href: "/dashboard" },
@@ -201,7 +202,7 @@ export const plans: Plan[] = [
     family: "project",
     price: 790,
     featured: true,
-    features: ["operation", "usersInternes", "intervenants", "acquereurs", "ged", "planning", "journal", "reserves", "photos", "cr", "pointage", "ia", "automations"],
+    features: ["operation", "usersInternes", "intervenants", "acquereurs", "controleFinancier", "ged", "planning", "journal", "reserves", "photos", "cr", "pointage", "ia", "automations"],
   },
   {
     id: "essential",
@@ -322,7 +323,7 @@ export interface Studio {
 }
 
 export const studios: Studio[] = [
-  { id: "promoteur", price: 99, features: ["bilan", "commercialisation", "acquereurs", "appels", "livraison", "sav", "marge", "tresorerie"] },
+  { id: "promoteur", price: 99, features: ["bilan", "commercialisation", "acquereurs", "appels", "livraison", "sav", "marge", "tresorerie", "controleFinancier"] },
   { id: "architecte", price: 99, features: ["cctp", "dpgf", "quantitatifs", "bim", "plans", "variantes", "notices"] },
   { id: "moe", price: 99, features: ["cr", "visas", "opr", "reserves", "planning", "execution", "dashboards"] },
   { id: "entreprise", price: 99, features: ["materiel", "stocks", "achats", "productivite", "soustraitance", "pointage"] },

@@ -99,6 +99,61 @@ body {
   box-shadow: var(--shadow-card);
 }
 
+/* ========================================================================== */
+/* Contrôle financier — la donnée certifiée                                    */
+/* ========================================================================== */
+
+/* Hachure de péremption : au-delà de 30 jours, une donnée ne peut pas avoir la
+   même apparence qu'une donnée du jour. Reprise du hachurage des plans de
+   géomètre, portée en soulignement sous la valeur. */
+.stale-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    oklch(0.7 0.16 55 / 0.5) 0 2px,
+    transparent 2px 5px
+  );
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 100% 4px;
+  padding-bottom: 4px;
+}
+
+/* Donnée absente : un gabarit vide, jamais un zéro. */
+.figure-void {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    oklch(0.65 0.015 258 / 0.3) 0 1px,
+    transparent 1px 6px
+  );
+}
+
+/* Tampon d'un rapport publié : daté, figé, archivé. Le seul aplat penché de
+   l'interface — il ne sert qu'à cet état, qui est irréversible. */
+.report-seal {
+  border: 1.5px solid currentColor;
+  box-shadow: inset 0 0 0 1px currentColor;
+  transform: rotate(-3.5deg);
+}
+
+@keyframes seal-press {
+  from {
+    opacity: 0;
+    transform: rotate(-14deg) scale(1.5);
+  }
+  70% {
+    opacity: 1;
+    transform: rotate(-2deg) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-3.5deg) scale(1);
+  }
+}
+
+.seal-press {
+  animation: seal-press 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 /* Pastille de présence pulsante */
 @keyframes presence-pulse {
   0% {

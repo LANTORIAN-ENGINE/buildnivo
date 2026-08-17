@@ -225,6 +225,87 @@ export const companies: Company[] = [
     phone: "0692 05 61 37",
     docsOk: true,
   },
+
+  /* Intervenants financiers — brief « Accès contrôle financier » du 16/08/2026.
+     Ils financent, garantissent, assurent ou contrôlent l'opération sans
+     participer au chantier : un seul rôle plateforme, en lecture seule. */
+  {
+    id: "c-gfa",
+    name: "Garantie Océan Indien",
+    kind: "financier",
+    role: "financier",
+    missionKey: "garant",
+    city: "Saint-Denis",
+    contact: "Nadia Ferrand",
+    phone: "0262 90 14 70",
+    docsOk: true,
+  },
+  {
+    id: "c-mascareignes",
+    name: "Banque des Mascareignes",
+    kind: "financier",
+    role: "financier",
+    missionKey: "banque",
+    city: "Saint-Denis",
+    contact: "Pascal Ellama",
+    phone: "0262 40 33 18",
+    docsOk: true,
+  },
+  {
+    id: "c-decatria",
+    name: "Decatria Courtage",
+    kind: "financier",
+    role: "financier",
+    missionKey: "courtier",
+    city: "Saint-Pierre",
+    contact: "Yann Vergès",
+    phone: "0262 35 71 09",
+    docsOk: true,
+  },
+  {
+    id: "c-assurconstruction",
+    name: "Réunion Assurances Construction",
+    kind: "financier",
+    role: "financier",
+    missionKey: "assureur",
+    city: "Sainte-Clotilde",
+    contact: "Léonie Grondin",
+    phone: "0262 29 84 02",
+    docsOk: true,
+  },
+  {
+    id: "c-escrowdmcc",
+    name: "Escrow Partners DMCC",
+    kind: "financier",
+    role: "financier",
+    missionKey: "escrow",
+    city: "Dubaï",
+    contact: "Rania Al Nuaimi",
+    phone: "+971 4 512 60 40",
+    docsOk: true,
+  },
+  {
+    id: "c-etudevitry",
+    name: "Étude Vitry & Associés",
+    kind: "financier",
+    role: "financier",
+    missionKey: "sequestre",
+    city: "Saint-Denis",
+    contact: "Maître Anne Vitry",
+    phone: "0262 21 45 66",
+    docsOk: true,
+  },
+  {
+    id: "c-sofidom",
+    name: "Sofidom Investissement",
+    kind: "financier",
+    role: "financier",
+    missionKey: "investisseur",
+    city: "Le Port",
+    contact: "Bertrand Sautron",
+    phone: "0262 42 90 55",
+    docsOk: true,
+  },
 ];
 
 const sunsetCurve = [
@@ -427,6 +508,11 @@ export const personas: Persona[] = [
   { id: "per-bet", role: "bet", firstName: "Rémi", lastName: "Lauret", jobKey: "ingenieurBET", company: "Ohm Ingénierie", companyId: "c-ohm", discipline: "electricite" },
   { id: "per-ct", role: "controleur", firstName: "Jean-Marc", lastName: "Perrin", jobKey: "controleurTechnique", company: "Veritas Océan Indien", companyId: "c-veritas" },
   { id: "per-csps", role: "csps", firstName: "Karine", lastName: "Payet", jobKey: "coordonnateurSPS", company: "Prévencia SPS", companyId: "c-prevencia" },
+  /* Contrôle financier : chaque profil est rattaché à l'accès que le promoteur
+     lui a ouvert — c'est cet accès qui détermine ce qu'il voit. */
+  { id: "per-garant", role: "financier", firstName: "Nadia", lastName: "Ferrand", jobKey: "directriceEngagements", company: "Garantie Océan Indien", companyId: "c-gfa", accessId: "fa-gfa" },
+  { id: "per-banque", role: "financier", firstName: "Pascal", lastName: "Ellama", jobKey: "chargeAffairesPromotion", company: "Banque des Mascareignes", companyId: "c-mascareignes", accessId: "fa-banque" },
+  { id: "per-courtier", role: "financier", firstName: "Yann", lastName: "Vergès", jobKey: "courtierAssocie", company: "Decatria Courtage", companyId: "c-decatria", accessId: "fa-decatria" },
 ];
 
 export const companyById = (id: string) => companies.find((c) => c.id === id);

@@ -42,6 +42,7 @@ import { SupplyFlow } from "@/components/site/figures/SupplyFlow";
 import { CompareGrid } from "@/components/site/figures/CompareGrid";
 import { PricingCards } from "@/components/site/figures/PricingCards";
 import { FaqAccordion } from "@/components/site/figures/FaqAccordion";
+import { AccessWall } from "@/components/site/figures/AccessWall";
 
 const costIcons = {
   info: FileWarning,
@@ -406,17 +407,39 @@ export default function LandingPage() {
         </Reveal>
       </SiteSection>
 
-      {/* ------------------------------- Supply ----------------------------- */}
+      {/* -------------------------- Contrôle financier ---------------------- */}
       <SiteSection tone="card">
-        <SectionHeading eyebrow={d.site.supply.eyebrow} level="N+07" title={d.site.supply.title} lead={d.site.supply.lead} />
+        <SectionHeading
+          eyebrow={d.site.finance.eyebrow}
+          level="N+07"
+          title={d.site.finance.title}
+          lead={d.site.finance.lead}
+        />
+        <AccessWall className="mt-10" />
+        <Reveal delay={140} className="mt-8">
+          <div className="flex flex-col gap-4 rounded-(--radius-card) border border-blue/25 bg-blue-soft/45 p-6 sm:flex-row sm:items-center">
+            <div className="min-w-0 flex-1">
+              <p className="text-[13px] font-bold text-blue-deep">{d.site.finance.frozenTitle}</p>
+              <p className="mt-1.5 max-w-[70ch] text-[14px] leading-relaxed text-ink">{d.site.finance.frozen}</p>
+            </div>
+            <CtaLink href="/finance" variant="primary" icon={<ArrowRight className="h-4 w-4" />}>
+              {d.site.nav.finance}
+            </CtaLink>
+          </div>
+        </Reveal>
+      </SiteSection>
+
+      {/* ------------------------------- Supply ----------------------------- */}
+      <SiteSection>
+        <SectionHeading eyebrow={d.site.supply.eyebrow} level="N+08" title={d.site.supply.title} lead={d.site.supply.lead} />
         <Reveal delay={100} className="mt-10">
           <SupplyFlow />
         </Reveal>
       </SiteSection>
 
       {/* ----------------------------- Comparatif --------------------------- */}
-      <SiteSection>
-        <SectionHeading eyebrow={d.site.compare.eyebrow} level="N+08" title={d.site.compare.title} lead={d.site.compare.lead} />
+      <SiteSection tone="card">
+        <SectionHeading eyebrow={d.site.compare.eyebrow} level="N+09" title={d.site.compare.title} lead={d.site.compare.lead} />
         <Reveal delay={100} className="mt-10">
           <CompareGrid />
         </Reveal>
@@ -429,8 +452,8 @@ export default function LandingPage() {
       </SiteSection>
 
       {/* ------------------------------- Tarifs ----------------------------- */}
-      <SiteSection tone="card">
-        <SectionHeading eyebrow={d.site.pricing.eyebrow} level="N+09" title={d.site.pricing.title} lead={d.site.pricing.lead} />
+      <SiteSection>
+        <SectionHeading eyebrow={d.site.pricing.eyebrow} level="N+10" title={d.site.pricing.title} lead={d.site.pricing.lead} />
         <PricingCards className="mt-10" />
         <Reveal delay={120} className="mt-6">
           <Link
@@ -444,8 +467,8 @@ export default function LandingPage() {
       </SiteSection>
 
       {/* ------------------------------- Preuves ---------------------------- */}
-      <SiteSection>
-        <SectionHeading eyebrow={d.site.proof.eyebrow} level="N+10" title={d.site.proof.title} lead={d.site.proof.lead} />
+      <SiteSection tone="card">
+        <SectionHeading eyebrow={d.site.proof.eyebrow} level="N+11" title={d.site.proof.title} lead={d.site.proof.lead} />
         <Stagger className="mt-10 grid gap-4 md:grid-cols-3" step={90} itemClassName="h-full">
           {testimonials.map((person) => (
             <figure key={person.id} className="card flex h-full flex-col p-5">
@@ -497,9 +520,9 @@ export default function LandingPage() {
       </SiteSection>
 
       {/* --------------------------------- FAQ ------------------------------ */}
-      <SiteSection tone="card">
+      <SiteSection>
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
-          <SectionHeading eyebrow={d.site.faq.eyebrow} level="N+11" title={d.site.faq.title} />
+          <SectionHeading eyebrow={d.site.faq.eyebrow} level="N+12" title={d.site.faq.title} />
           <Reveal delay={100}>
             <FaqAccordion />
           </Reveal>
